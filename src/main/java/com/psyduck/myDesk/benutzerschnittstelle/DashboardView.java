@@ -6,7 +6,7 @@ import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
-@Route("Dashboard")
+@Route("dashboard")
 public class DashboardView extends VerticalLayout{
 
 	private Button loginButton = new Button("LoginPage");

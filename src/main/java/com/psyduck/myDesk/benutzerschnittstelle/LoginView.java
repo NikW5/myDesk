@@ -9,7 +9,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.H1;
 
-@Route("")
+@Route("login")
 public class LoginView extends VerticalLayout {
 
 	private FormLayout pageLayout = new FormLayout();
