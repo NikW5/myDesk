@@ -32,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Generierte Frontend-Dateien
+src/main/frontend/generated/
