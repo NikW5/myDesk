@@ -10,20 +10,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
 @Route("dashboard")
-public class DashboardView extends VerticalLayout{
-
-	private Button logoutButton = new Button("Abmelden");
+public class DashboardView extends VerticalLayout {
 
     private HorizontalLayout headerLayout = new HorizontalLayout();
     private VerticalLayout bodyLayout = new VerticalLayout();
 	
 	public DashboardView() {
 		setSizeFull();
-		
-		headerLayout.setPadding(true);
-		headerLayout.setWidthFull();
-		headerLayout.add(new H1("Dashboard"), logoutButton);
-		headerLayout.addToEnd(logoutButton);
 
 		bodyLayout.setPadding(true);
 		bodyLayout.setWidthFull();
@@ -32,10 +25,7 @@ public class DashboardView extends VerticalLayout{
 		
 		expand(bodyLayout); // gibt bodyLayout gesamten verbleibenden Platz auf der Seite
 		
-		
-		logoutButton.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
-		
-		add(headerLayout);
+		add(new Kopfzeile(Kopfzeile.Typ.DASHBOARD));
 		add(createDashboardNavigation());
 	}
 	

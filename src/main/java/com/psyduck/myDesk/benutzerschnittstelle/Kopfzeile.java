@@ -1,7 +1,7 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class Kopfzeile extends HorizontalLayout {
@@ -20,23 +20,25 @@ public class Kopfzeile extends HorizontalLayout {
         switch (typ) {
 
             case LOGIN -> {
-                Button abbrechen = new Button("Abbrechen");
-                Button abmelden = new Button("Abmelden");
+                Button registrieren = new Button("Registrieren");
 
-                add(abbrechen, abmelden);
+                add(registrieren);
             }
 
             case DASHBOARD -> {
+                H1 titel = new H1("Dashboard");
+
                 Button abmelden = new Button("Abmelden");
 
                 HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
 
-                add(buttons);
+                add(titel, buttons);
+                expand(titel);
             }
 
             case POSTFACH -> {
-                H2 titel = new H2("Postfach");
+                H1 titel = new H1("Postfach");
 
                 Button aktualisieren = new Button("Aktualisieren");
                 Button neueNachricht = new Button("Neue Nachricht");
@@ -55,6 +57,8 @@ public class Kopfzeile extends HorizontalLayout {
             }
 
             case NEUE_NACHRICHT -> {
+                H1 titel = new H1("Neue Nachricht");
+
                 Button abbrechen = new Button("Abbrechen");
                 Button abmelden = new Button("Abmelden");
 
@@ -65,7 +69,8 @@ public class Kopfzeile extends HorizontalLayout {
 
                 buttons.setSpacing(true);
 
-                add(buttons);
+                add(titel, buttons);
+                expand(titel);
             }
         }
     }

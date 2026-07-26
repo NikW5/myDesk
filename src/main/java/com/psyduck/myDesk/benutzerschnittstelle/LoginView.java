@@ -20,36 +20,54 @@ import com.vaadin.flow.router.Route;
 public class LoginView extends VerticalLayout {
 
     public LoginView() {
-
         setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
+        setPadding(true);
 
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.LOGIN);
+        kopfzeile.setWidthFull();
+
+        VerticalLayout loginBereich = new VerticalLayout();
+        loginBereich.setSizeFull();
+        loginBereich.setAlignItems(Alignment.CENTER);
+        loginBereich.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        loginBereich.add(erstelleLoginbereich());
+
+        add(kopfzeile, loginBereich);
+
+        add(erstelleGIFBereich());
+    }
+
+    private Component erstelleLoginbereich() {
         VerticalLayout loginContainer = new VerticalLayout();
+
         loginContainer.setWidth("400px");
         loginContainer.setAlignItems(Alignment.CENTER);
         loginContainer.setSpacing(true);
 
-        loginContainer.getStyle().set("border", "1px solid lightgray");
-        loginContainer.getStyle().set("padding", "20px");
-        loginContainer.getStyle().set("background-color", "#f8f8f8");
+        loginContainer.getStyle()
+                .set("border", "1px solid lightgray")
+                .set("padding", "20px")
+                .set("background-color", "#f8f8f8");
 
         LoginForm loginForm = new LoginForm();
 
-        loginContainer.add(
-                loginForm
-        );
-        
-        Image logo = new Image("images/psyduck.gif", "Psyduck");
+        loginContainer.add(loginForm);
 
-        logo.setWidth("220px");
+        return loginContainer;
+    }
 
-        logo.getStyle()
-            .set("position", "fixed")
-            .set("bottom", "40px")
-            .set("left", "40px");
+    private Component erstelleGIFBereich() {
+        Image gif = new Image("images/psyduck.gif", "Psyduck");
 
-        add(loginContainer, logo);
+        gif.setWidth("220px");
 
+        gif.getStyle()
+                .set("position", "fixed")
+                .set("bottom", "40px")
+                .set("left", "40px")
+                .set("z-index", "1000");
+
+        return gif;
     }
 }

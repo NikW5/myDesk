@@ -23,7 +23,7 @@ public class NachrichtView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setPadding(true);
 
-        add(new Kopfzeile(true, true));
+        add(new Kopfzeile(Kopfzeile.Typ.NEUE_NACHRICHT));
         add(erstelleRegestrierungsbereich());
     }
     
@@ -51,8 +51,6 @@ public class NachrichtView extends VerticalLayout {
     	 VerticalLayout layout = new VerticalLayout();
          layout.setPadding(false);
 
-         H3 titel = new H3("Neue Nachricht");
-
          FormLayout formular = new FormLayout();
 
          ComboBox<String> empfaenger = new ComboBox<>("An");
@@ -73,7 +71,6 @@ public class NachrichtView extends VerticalLayout {
          nachricht.setHeight("250px");
 
          layout.add(
-                 titel,
                  formular,
                  nachricht
          );
