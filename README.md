@@ -28,7 +28,7 @@ cd myDesk
 
 ### Anwendung starten
 ```bash
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 Die Anwendung ist dann verfügbar unter: http://localhost:8080
