@@ -1,6 +1,7 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -38,17 +39,19 @@ public class DashboardView extends VerticalLayout {
         HorizontalLayout obereButtons = new HorizontalLayout();
         HorizontalLayout untereButtons = new HorizontalLayout();
 
-        Button nachrichtenButton = new Button("Nachrichten(2)");
+        Button postfachButton = new Button("Postfach (2)");
         Button chatButton = new Button("Chat");
         Button kalenderButton = new Button("Kalender");
         Button toDoButton = new Button("To-Dos");
 
-        nachrichtenButton.setWidth("200px");
+        postfachButton.setWidth("200px");
         chatButton.setWidth("200px");
         kalenderButton.setWidth("200px");
         toDoButton.setWidth("200px");
+        
+        postfachButton.addClickListener(event -> UI.getCurrent().navigate(PostfachView.class));
 
-        obereButtons.add(nachrichtenButton, chatButton);
+        obereButtons.add(postfachButton, chatButton);
         untereButtons.add(kalenderButton, toDoButton);
 
         obereButtons.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
