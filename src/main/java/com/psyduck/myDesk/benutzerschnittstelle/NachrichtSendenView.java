@@ -55,8 +55,6 @@ public class NachrichtSendenView extends VerticalLayout {
     	 VerticalLayout layout = new VerticalLayout();
          layout.setPadding(false);
 
-         H3 titel = new H3("Neue Nachricht");
-
          FormLayout formular = new FormLayout();
 
          ComboBox<String> empfaenger = new ComboBox<>("An");
@@ -77,7 +75,6 @@ public class NachrichtSendenView extends VerticalLayout {
          nachricht.setHeight("250px");
 
          layout.add(
-                 titel,
                  formular,
                  nachricht
          );
