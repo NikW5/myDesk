@@ -15,16 +15,20 @@ import com.vaadin.flow.router.Route;
 
 @Route("neue_nachricht")
 @PageTitle("Neue Nachricht")
-public class NachrichtView extends VerticalLayout {
+public class NachrichtSendenView extends VerticalLayout {
 
-    public NachrichtView() {
+    public NachrichtSendenView() {
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setPadding(true);
 
-        add(new Kopfzeile(true, true));
-        add(erstelleRegestrierungsbereich());
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.NACHRICHT_SENDEN);
+        
+        
+        add(kopfzeile,
+                erstelleRegestrierungsbereich());
+        expand(erstelleRegestrierungsbereich());
     }
     
 

@@ -10,7 +10,7 @@ public class Kopfzeile extends HorizontalLayout {
         LOGIN,
         DASHBOARD,
         POSTFACH,
-        NEUE_NACHRICHT
+        NACHRICHT_SENDEN
     }
 
     public Kopfzeile(Typ typ) {
@@ -54,7 +54,7 @@ public class Kopfzeile extends HorizontalLayout {
                 expand(titel);
             }
 
-            case NEUE_NACHRICHT -> {
+            case NACHRICHT_SENDEN -> {
                 Button abbrechen = new Button("Abbrechen");
                 Button abmelden = new Button("Abmelden");
 

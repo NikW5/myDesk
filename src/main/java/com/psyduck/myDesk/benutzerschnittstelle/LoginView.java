@@ -24,6 +24,8 @@ public class LoginView extends VerticalLayout {
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
+        
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.LOGIN);
 
         VerticalLayout loginContainer = new VerticalLayout();
         loginContainer.setWidth("400px");
@@ -49,7 +51,7 @@ public class LoginView extends VerticalLayout {
             .set("bottom", "40px")
             .set("left", "40px");
 
-        add(loginContainer, logo);
+        add(kopfzeile, loginContainer, logo);
 
     }
 }
