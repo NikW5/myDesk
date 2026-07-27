@@ -49,4 +49,4 @@ myDesk/
 
 - Benutzerfreundliche Web-Oberfläche mit Vaadin
 - Spring Boot Backend für schnelle Entwicklung
-- Responsive Design für verschiedene Geräte
+- Responsive Design
