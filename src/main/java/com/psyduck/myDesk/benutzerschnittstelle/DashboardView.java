@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -39,7 +40,10 @@ public class DashboardView extends VerticalLayout {
         HorizontalLayout obereButtons = new HorizontalLayout();
         HorizontalLayout untereButtons = new HorizontalLayout();
 
-        Button postfachButton = new Button("Postfach (2)");
+        Button postfachButton = new Button(
+        	    "Postfach (" + NachrichtService.getAnzahlNachrichten() + ")"
+        	);
+
         Button chatButton = new Button("Chat");
         Button kalenderButton = new Button("Kalender");
         Button toDoButton = new Button("To-Dos");
