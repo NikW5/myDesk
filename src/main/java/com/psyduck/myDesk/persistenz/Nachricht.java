@@ -12,7 +12,10 @@ public class Nachricht {
 
     public Nachricht() {
     	
+    	
     }
+    
+    
     
     public String getBenutzer() {
     	return benutzer;
