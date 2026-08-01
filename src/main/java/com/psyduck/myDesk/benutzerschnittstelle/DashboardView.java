@@ -20,6 +20,7 @@ public class DashboardView extends VerticalLayout {
         setSizeFull();
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.DASHBOARD);
+        Fußzeile fußzeile = new Fußzeile();
 
         headerLayout.setPadding(true);
         headerLayout.setWidthFull();
@@ -31,7 +32,8 @@ public class DashboardView extends VerticalLayout {
 
         add(kopfzeile,
                 headerLayout,
-                erstelleDashboardNavigation());
+                erstelleDashboardNavigation(),
+                fußzeile);
         expand();
     }
 

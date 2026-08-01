@@ -16,6 +16,7 @@ public class LoginView extends VerticalLayout {
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.LOGIN);
         kopfzeile.setWidthFull();
+        Fußzeile fußzeile = new Fußzeile();
 
         VerticalLayout loginBereich = new VerticalLayout();
         loginBereich.setSizeFull();
@@ -24,7 +25,7 @@ public class LoginView extends VerticalLayout {
 
         loginBereich.add(erstelleLoginbereich());
 
-        add(kopfzeile, loginBereich);
+        add(kopfzeile, loginBereich, fußzeile);
 
         add(erstelleGIFBereich());
     }

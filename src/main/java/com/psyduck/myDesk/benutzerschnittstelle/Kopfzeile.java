@@ -2,10 +2,10 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
-public class Kopfzeile extends HorizontalLayout {
+public class Kopfzeile extends Header {
 
     public enum Typ {
         LOGIN,
@@ -15,14 +15,17 @@ public class Kopfzeile extends HorizontalLayout {
     }
 
     public Kopfzeile(Typ typ) {
-        setWidthFull();
-        setJustifyContentMode(JustifyContentMode.END);
+    	setWidthFull();
+    	
+    	HorizontalLayout layout = new HorizontalLayout();
+        layout.setWidthFull();
+        layout.setJustifyContentMode(HorizontalLayout.JustifyContentMode.END);
 
         switch (typ) {
 
             case LOGIN -> {
             	Button registrieren = new Button("Registrieren");
-                add(registrieren);
+                layout.add(registrieren);
             }
 
             case DASHBOARD -> {
@@ -34,8 +37,8 @@ public class Kopfzeile extends HorizontalLayout {
                 HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
 
-                add(titel, buttons);
-                expand(titel);
+                layout.add(titel, buttons);
+                layout.expand(titel);
             }
 
             case POSTFACH -> {
@@ -53,8 +56,8 @@ public class Kopfzeile extends HorizontalLayout {
 
                 buttons.setSpacing(true);
 
-                add(titel, buttons);
-                expand(titel);
+                layout.add(titel, buttons);
+                layout.expand(titel);
             }
 
             case NACHRICHT_SENDEN -> {
@@ -71,10 +74,12 @@ public class Kopfzeile extends HorizontalLayout {
 
                 buttons.setSpacing(true);
 
-                add(titel, buttons);
-                expand(titel);
+                layout.add(titel, buttons);
+                layout.expand(titel);
             }
         }
+        
+        add(layout);
     }
 }
 

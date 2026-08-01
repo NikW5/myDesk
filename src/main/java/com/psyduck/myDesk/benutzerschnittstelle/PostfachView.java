@@ -24,6 +24,7 @@ public class PostfachView extends VerticalLayout {
         setSpacing(true);
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.POSTFACH);
+        Fußzeile fußzeile = new Fußzeile();
 
         // Master Detail Layout -------------------------------------------------------------------------
         MasterDetailLayout layout = new MasterDetailLayout();
@@ -97,7 +98,7 @@ public class PostfachView extends VerticalLayout {
         layout.setWidthFull();
         layout.setHeightFull();
 
-        add(kopfzeile, layout);
+        add(kopfzeile, layout, fußzeile);
         expand(layout);
 
     }
