@@ -43,7 +43,6 @@ public class DashboardView extends VerticalLayout {
         Button postfachButton = new Button(
         	    "Postfach (" + NachrichtService.getAnzahlNachrichten() + ")"
         	);
-
         Button chatButton = new Button("Chat");
         Button kalenderButton = new Button("Kalender");
         Button toDoButton = new Button("To-Dos");
@@ -54,6 +53,9 @@ public class DashboardView extends VerticalLayout {
         toDoButton.setWidth("200px");
         
         postfachButton.addClickListener(event -> UI.getCurrent().navigate(PostfachView.class));
+        chatButton.addClickListener(event -> UI.getCurrent().navigate(ChatView.class));
+        kalenderButton.addClickListener(event -> UI.getCurrent().navigate(KalenderView.class));
+        toDoButton.addClickListener(event -> UI.getCurrent().navigate(ToDoView.class));
 
         obereButtons.add(postfachButton, chatButton);
         untereButtons.add(kalenderButton, toDoButton);
