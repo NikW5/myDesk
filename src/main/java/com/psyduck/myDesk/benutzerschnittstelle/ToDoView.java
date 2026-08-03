@@ -1,4 +1,5 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
@@ -12,7 +13,9 @@ public class ToDoView extends VerticalLayout {
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.TODO);
 		
-		add(kopfzeile);
+		DummyText dummyText = new DummyText("To-Do");
+        add(kopfzeile, dummyText);
+        expand(dummyText);
 	}
 
 }

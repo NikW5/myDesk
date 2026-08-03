@@ -1,4 +1,5 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
@@ -11,8 +12,12 @@ public class KalenderView extends VerticalLayout {
         setSpacing(true);
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.KALENDER);
+
+		DummyText dummyText = new DummyText("Kalender");
+        add(kopfzeile, dummyText);
+        expand(dummyText);
+
 		
-		add(kopfzeile);
 	}
 
 }
