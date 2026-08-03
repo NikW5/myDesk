@@ -27,6 +27,8 @@ public class RegistrierenView extends VerticalLayout {
     private final Button zurueckButton = new Button("Zurück");
 
     public RegistrierenView() {
+    	
+    	Fußzeile fußzeile = new Fußzeile();
         ansichtAufbauen();
         
         registrierenButton.addClickListener(event -> UI.getCurrent().navigate(DashboardView.class));

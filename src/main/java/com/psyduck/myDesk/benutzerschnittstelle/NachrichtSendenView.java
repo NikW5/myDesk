@@ -24,10 +24,11 @@ public class NachrichtSendenView extends VerticalLayout {
         setPadding(true);
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.NACHRICHT_SENDEN);
-        
+        Fußzeile fußzeile = new Fußzeile();
         
         add(kopfzeile,
-                erstelleRegestrierungsbereich());
+            erstelleRegestrierungsbereich(),
+            fußzeile);
         expand(erstelleRegestrierungsbereich());
     }
     

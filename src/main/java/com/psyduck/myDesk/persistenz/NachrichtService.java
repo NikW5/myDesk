@@ -9,8 +9,8 @@ public class NachrichtService {
 	private static final List<Nachricht> nachrichten = new ArrayList<>();
 	
 	static {
-		// Dummy-Daten Anfang -----------------------------------------------------------------------------
-        Nachricht dummy1 = new Nachricht();
+		
+		Nachricht dummy1 = new Nachricht();
         dummy1.setBenutzer("Max Mustermann");
         dummy1.setTitel("Willkommen bei myDesk");
         dummy1.setVorschau("Herzlich willkommen bei myDesk...");
@@ -56,8 +56,7 @@ public class NachrichtService {
                 Personalabteilung
                 """);
         dummy3.setEmpfangenAm(LocalDateTime.now().minusDays(5));
-        // Dummy-Daten Ende -----------------------------------------------------------------------------
-        
+            
         nachrichten.add(dummy1);
         nachrichten.add(dummy2);
         nachrichten.add(dummy3);
