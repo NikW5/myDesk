@@ -33,6 +33,7 @@ public class RegistrierenView extends VerticalLayout {
         
         registrierenButton.addClickListener(event -> UI.getCurrent().navigate(DashboardView.class));
         add(fußzeile);
+        zurueckButton.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
     }
 
     private void ansichtAufbauen() {
