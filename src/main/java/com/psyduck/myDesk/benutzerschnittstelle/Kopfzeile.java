@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
@@ -11,28 +12,33 @@ public class Kopfzeile extends Header {
         LOGIN,
         DASHBOARD,
         POSTFACH,
-        NACHRICHT_SENDEN
+        NACHRICHT_SENDEN,
+        CHAT,
+        KALENDER,
+        TODO
     }
 
     public Kopfzeile(Typ typ) {
-    	setWidthFull();
-    	
-    	HorizontalLayout layout = new HorizontalLayout();
-        layout.setWidthFull();
-        layout.setJustifyContentMode(HorizontalLayout.JustifyContentMode.END);
+        setWidthFull();
+        setJustifyContentMode(JustifyContentMode.END);
+        
+        Button abmelden = new Button("Abmelden");
+        abmelden.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
+        Button dashboard = new Button("Dashboard");
+        dashboard.addClickListener(event -> UI.getCurrent().navigate(DashboardView.class));
 
         switch (typ) {
 
             case LOGIN -> {
             	Button registrieren = new Button("Registrieren");
-                layout.add(registrieren);
+            	registrieren.addClickListener(event -> UI.getCurrent().navigate(RegistrierenView.class));
+
+                add(registrieren);
             }
 
             case DASHBOARD -> {
             	
             	H1 titel = new H1("Dashboard");
-            	
-                Button abmelden = new Button("Abmelden");
 
                 HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
@@ -46,10 +52,11 @@ public class Kopfzeile extends Header {
 
                 Button aktualisieren = new Button("Aktualisieren");
                 Button neueNachricht = new Button("Neue Nachricht");
-                Button abmelden = new Button("Abmelden");
+                neueNachricht.addClickListener(event -> UI.getCurrent().navigate(NachrichtSendenView.class));
 
                 HorizontalLayout buttons = new HorizontalLayout(
-                        aktualisieren,
+                		dashboard,
+                		aktualisieren,
                         neueNachricht,
                         abmelden
                 );
@@ -65,7 +72,7 @@ public class Kopfzeile extends Header {
             	H1 titel = new H1("Neue Nachricht");
             	
                 Button abbrechen = new Button("Abbrechen");
-                Button abmelden = new Button("Abmelden");
+                abbrechen.addClickListener(event -> UI.getCurrent().navigate(PostfachView.class));
 
                 HorizontalLayout buttons = new HorizontalLayout(
                         abbrechen,
@@ -77,6 +84,39 @@ public class Kopfzeile extends Header {
                 layout.add(titel, buttons);
                 layout.expand(titel);
             }
+            
+            case CHAT -> {
+            	
+            	H1 titel = new H1("Chat");
+
+                HorizontalLayout buttons = new HorizontalLayout(dashboard, abmelden);
+                buttons.setSpacing(true);
+
+                add(titel, buttons);
+                expand(titel);
+            }
+            
+            case KALENDER -> {
+            	
+            	H1 titel = new H1("Kalender");
+
+                HorizontalLayout buttons = new HorizontalLayout(dashboard, abmelden);
+                buttons.setSpacing(true);
+
+                add(titel, buttons);
+                expand(titel);
+            }
+
+			case TODO -> {
+				
+				H1 titel = new H1("To-Do");
+			
+			    HorizontalLayout buttons = new HorizontalLayout(dashboard, abmelden);
+			    buttons.setSpacing(true);
+			
+			    add(titel, buttons);
+			    expand(titel);
+			}
         }
         
         add(layout);
