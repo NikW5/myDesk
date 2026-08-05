@@ -7,6 +7,7 @@ import com.vaadin.flow.router.Route;
 
 import java.time.LocalDateTime;
 
+import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.grid.Grid;
@@ -23,7 +24,7 @@ public class PostfachView extends VerticalLayout {
         setPadding(true);
         setSpacing(true);
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.POSTFACH);
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.POSTFACH);
         Fußzeile fußzeile = new Fußzeile();
 
         // Master Detail Layout -------------------------------------------------------------------------

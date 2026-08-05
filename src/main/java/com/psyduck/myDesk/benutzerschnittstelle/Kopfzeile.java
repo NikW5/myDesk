@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
@@ -8,19 +9,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class Kopfzeile extends Header {
 
-    public enum Typ {
-        LOGIN,
-        DASHBOARD,
-        POSTFACH,
-        NACHRICHT_SENDEN,
-        CHAT,
-        KALENDER,
-        TODO
-    }
-
-    public Kopfzeile(Typ typ) {
+    public Kopfzeile(Kopfzeilentyp typ) {
         setWidthFull();
-        setJustifyContentMode(JustifyContentMode.END);
         
         Button abmelden = new Button("Abmelden");
         abmelden.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
@@ -43,8 +33,7 @@ public class Kopfzeile extends Header {
                 HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
 
-                layout.add(titel, buttons);
-                layout.expand(titel);
+                add(titel, buttons);
             }
 
             case POSTFACH -> {
@@ -63,8 +52,7 @@ public class Kopfzeile extends Header {
 
                 buttons.setSpacing(true);
 
-                layout.add(titel, buttons);
-                layout.expand(titel);
+                add(titel, buttons);
             }
 
             case NACHRICHT_SENDEN -> {
@@ -81,8 +69,7 @@ public class Kopfzeile extends Header {
 
                 buttons.setSpacing(true);
 
-                layout.add(titel, buttons);
-                layout.expand(titel);
+                add(titel, buttons);
             }
             
             case CHAT -> {
@@ -93,7 +80,6 @@ public class Kopfzeile extends Header {
                 buttons.setSpacing(true);
 
                 add(titel, buttons);
-                expand(titel);
             }
             
             case KALENDER -> {
@@ -104,7 +90,6 @@ public class Kopfzeile extends Header {
                 buttons.setSpacing(true);
 
                 add(titel, buttons);
-                expand(titel);
             }
 
 			case TODO -> {
@@ -115,11 +100,9 @@ public class Kopfzeile extends Header {
 			    buttons.setSpacing(true);
 			
 			    add(titel, buttons);
-			    expand(titel);
 			}
         }
         
-        add(layout);
     }
 }
 

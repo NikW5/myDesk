@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -19,7 +20,7 @@ public class DashboardView extends VerticalLayout {
 
         setSizeFull();
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.DASHBOARD);
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.DASHBOARD);
         Fußzeile fußzeile = new Fußzeile();
 
         headerLayout.setPadding(true);
