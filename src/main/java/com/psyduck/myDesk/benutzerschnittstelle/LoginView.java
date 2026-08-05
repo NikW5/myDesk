@@ -1,6 +1,7 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.persistenz.BenutzerService;
+import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -14,7 +15,7 @@ public class LoginView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.LOGIN);
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.LOGIN);
         kopfzeile.setWidthFull();
         Fußzeile fußzeile = new Fußzeile();
 

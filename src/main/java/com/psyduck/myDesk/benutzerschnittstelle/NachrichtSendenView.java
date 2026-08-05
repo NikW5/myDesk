@@ -1,10 +1,11 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.persistenz.Anhang;
+import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,18 +13,25 @@ import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.component.upload.Upload;
+import com.vaadin.flow.server.streams.UploadHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 @Route("neue_nachricht")
 @PageTitle("Neue Nachricht")
 public class NachrichtSendenView extends VerticalLayout {
 
+	private final List<Anhang> anhaenge = new ArrayList<>();
+	private final VerticalLayout anhangListe = new VerticalLayout();
+	
     public NachrichtSendenView() {
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setPadding(true);
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeile.Typ.NACHRICHT_SENDEN);
+        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.NACHRICHT_SENDEN);
         Fußzeile fußzeile = new Fußzeile();
         
         add(kopfzeile,
@@ -91,52 +99,44 @@ public class NachrichtSendenView extends VerticalLayout {
 
          Span anhangLabel = new Span("Anhang:");
 
-         HorizontalLayout dateiauswahl = new HorizontalLayout();
-         dateiauswahl.setWidthFull();
+         Upload upload = new Upload(
+        		    UploadHandler.inMemory((metadata, bytes) -> {
 
-         TextField datei = new TextField();
-         datei.setPlaceholder("Keine Datei ausgewählt");
-         datei.setWidth("300px");
+        		        Anhang anhang = new Anhang(
+        		                metadata.fileName(),
+        		                bytes
+        		        );
 
-         Button durchsuchen = new Button("Durchsuchen");
+        		        anhaenge.add(anhang);
+        		        anhangListe.add(erstelleAnhang(anhang));
+        		    })
+        		);
 
-         dateiauswahl.add(datei, durchsuchen);
+        		upload.setMaxFiles(20);
 
-         VerticalLayout anhangListe = new VerticalLayout();
-         anhangListe.setPadding(false);
-         anhangListe.setSpacing(false);
-         anhangListe.setWidth("300px");
-         anhangListe.getStyle().set("border", "1px solid lightgray");
+        layout.add(anhangLabel, upload, anhangListe);
 
-         anhangListe.add(
-                 erstelleAnhang("Anhang 1"),
-                 erstelleAnhang("Anhang 2"),
-                 erstelleAnhang("Anhang 3")
-         );
-
-         layout.add(
-                 anhangLabel,
-                 dateiauswahl,
-                 anhangListe
-         );
-
-         return layout;
+        return layout;
     }
     
     
     
-    private Component erstelleAnhang(String name) {
+    private Component erstelleAnhang(Anhang anhang) {
 
-        HorizontalLayout layout = new HorizontalLayout();
+    	HorizontalLayout layout = new HorizontalLayout();
         layout.setWidthFull();
         layout.setAlignItems(Alignment.CENTER);
 
-        Span dateiname = new Span(name);
+        Span dateiname = new Span(anhang.getDateiname());
 
         Button loeschen = new Button("X");
 
-        layout.expand(dateiname);
+        loeschen.addClickListener(event -> {
+            anhaenge.remove(anhang);
+            anhangListe.remove(layout);
+        });
 
+        layout.expand(dateiname);
         layout.add(dateiname, loeschen);
 
         return layout;
