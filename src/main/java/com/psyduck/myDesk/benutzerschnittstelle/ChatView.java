@@ -1,7 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
