@@ -1,8 +1,7 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.Alignment;
-import com.vaadin.flow.component.orderedlayout.FlexComponent.JustifyContentMode;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class DummyText extends VerticalLayout {
@@ -12,8 +11,8 @@ public class DummyText extends VerticalLayout {
         setSizeFull();
         setPadding(false);
         setSpacing(false);
-        setAlignItems(Alignment.CENTER);
-        setJustifyContentMode(JustifyContentMode.CENTER);
+        setAlignItems(FlexComponent.Alignment.CENTER);
+        setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
 
         Span dummyText = new Span(
                 "Diese Seite dient derzeit lediglich als Platzhalter. "

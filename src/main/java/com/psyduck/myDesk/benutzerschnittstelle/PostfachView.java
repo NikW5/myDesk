@@ -1,11 +1,8 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import java.util.List;
 
 import com.vaadin.flow.router.Route;
-
-import java.time.LocalDateTime;
 
 import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.psyduck.myDesk.persistenz.Nachricht;
