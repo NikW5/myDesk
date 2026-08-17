@@ -23,4 +23,5 @@ public class Benutzer {
     public String getName() {
         return name;
     }
+
 }
