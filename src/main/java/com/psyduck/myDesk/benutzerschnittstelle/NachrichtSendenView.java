@@ -1,6 +1,8 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.persistenz.Anhang;
+import com.psyduck.myDesk.persistenz.Benutzer;
+import com.psyduck.myDesk.persistenz.BenutzerService;
 import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
@@ -24,6 +26,7 @@ public class NachrichtSendenView extends VerticalLayout {
 
 	private final List<Anhang> anhaenge = new ArrayList<>();
 	private final VerticalLayout anhangListe = new VerticalLayout();
+	private final ComboBox<Benutzer> empfaenger = new ComboBox<>("An");
 	
     public NachrichtSendenView() {
 
@@ -33,11 +36,12 @@ public class NachrichtSendenView extends VerticalLayout {
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.NACHRICHT_SENDEN);
         Fußzeile fußzeile = new Fußzeile();
+        Component registrierungsbereich = erstelleRegestrierungsbereich();
         
         add(kopfzeile,
-            erstelleRegestrierungsbereich(),
+        		registrierungsbereich,
             fußzeile);
-        expand(erstelleRegestrierungsbereich());
+        expand(registrierungsbereich);
     }
     
 
@@ -66,8 +70,8 @@ public class NachrichtSendenView extends VerticalLayout {
 
          FormLayout formular = new FormLayout();
 
-         ComboBox<String> empfaenger = new ComboBox<>("An");
-         empfaenger.setItems("Emil", "Max", "Lisa");
+         empfaenger.setItems(BenutzerService.getBenutzer());
+         empfaenger.setItemLabelGenerator(Benutzer::getName);
 
          TextField betreff = new TextField("Titel");
 
@@ -142,16 +146,15 @@ public class NachrichtSendenView extends VerticalLayout {
         return layout;
     }
     
-    private Component erstelleSendenbutton() {
-
-        HorizontalLayout layout = new HorizontalLayout();
-        layout.setWidthFull();
-        layout.setJustifyContentMode(JustifyContentMode.END);
-
-        Button senden = new Button("Senden");
-
-        layout.add(senden);
-
-        return layout;
-    }
+    private Component erstelleSendenbutton() { 
+    	
+    	HorizontalLayout layout = new HorizontalLayout(); 
+    	layout.setWidthFull(); 
+    	layout.setJustifyContentMode(JustifyContentMode.END); 
+    	
+    	Button senden = new Button("Senden"); 
+    	layout.add(senden); 
+    	
+    	return layout; 
+   	}
 }

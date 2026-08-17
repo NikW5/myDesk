@@ -17,12 +17,32 @@ public class BenutzerService {
                 "enton@test.de",
                 "abcd",
                 "Enton"));
+        
+        BENUTZER.add(new Benutzer(
+                "diddi@test.de",
+                "5678",
+                "Diddi"));
+
+        BENUTZER.add(new Benutzer(
+                "gans@test.de",
+                "efgh",
+                "Gans"));
+        
+        BENUTZER.add(new Benutzer(
+                "schneemann@test.de",
+                "4321",
+                "Schneemann"));
     }
 
-    public static boolean anmelden(String email, String passwort) {
+    public static boolean anmelden(String emailOderBenutzername, String passwort) {
         return BENUTZER.stream()
                 .anyMatch(benutzer ->
-                        benutzer.getEmail().equalsIgnoreCase(email)
-                                && benutzer.getPasswort().equals(passwort));
+                        (benutzer.getEmail().equalsIgnoreCase(emailOderBenutzername)
+                        || benutzer.getName().equalsIgnoreCase(emailOderBenutzername))
+                        && benutzer.getPasswort().equals(passwort));
+    }
+    
+    public static List<Benutzer> getBenutzer() {
+        return BENUTZER;
     }
 }
