@@ -19,23 +19,20 @@ public class DashboardView extends VerticalLayout {
     public DashboardView() {
 
         setSizeFull();
+        setPadding(false);
+        setSpacing(false);
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.DASHBOARD);
         Fußzeile fußzeile = new Fußzeile();
 
-        headerLayout.setPadding(true);
-        headerLayout.setWidthFull();
-
-        bodyLayout.setPadding(true);
         bodyLayout.setWidthFull();
         bodyLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         bodyLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-
+        erstelleDashboardNavigation();
         add(kopfzeile,
-                headerLayout,
-                erstelleDashboardNavigation(),
+                bodyLayout,
                 fußzeile);
-        expand();
+        expand(bodyLayout);
     }
 
     private Component erstelleDashboardNavigation() {

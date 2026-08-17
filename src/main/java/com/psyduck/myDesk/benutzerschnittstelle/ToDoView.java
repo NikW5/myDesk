@@ -12,9 +12,10 @@ public class ToDoView extends VerticalLayout {
         setSpacing(true);
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.TODO);
+		Fußzeile fußzeile = new Fußzeile();
 		
 		DummyText dummyText = new DummyText("To-Do");
-        add(kopfzeile, dummyText);
+        add(kopfzeile, fußzeile, dummyText);
         expand(dummyText);
 	}
 

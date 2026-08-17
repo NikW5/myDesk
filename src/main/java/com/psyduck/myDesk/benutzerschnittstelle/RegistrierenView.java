@@ -28,7 +28,6 @@ public class RegistrierenView extends VerticalLayout {
 
     public RegistrierenView() {
     	
-    	Fußzeile fußzeile = new Fußzeile();
         ansichtAufbauen();
         
         registrierenButton.addClickListener(event -> UI.getCurrent().navigate(DashboardView.class));
@@ -82,7 +81,9 @@ public class RegistrierenView extends VerticalLayout {
                 zurueckButton
         );
 
-        add(formularContainer);
+        Fußzeile fußzeile = new Fußzeile();
+        
+        add(formularContainer, fußzeile);
 
         formularContainer.add(
                 ueberschrift,

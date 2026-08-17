@@ -13,9 +13,10 @@ public class ChatView extends VerticalLayout {
         setSpacing(true);
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.CHAT);
+		Fußzeile fußzeile = new Fußzeile();
 		
 		DummyText dummyText = new DummyText("Chat");
-        add(kopfzeile, dummyText);
+        add(kopfzeile, dummyText, fußzeile);
         expand(dummyText);
     }
 }

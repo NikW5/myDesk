@@ -13,9 +13,12 @@ public class Fußzeile extends Footer {
         Span copyright = new Span("© " + aktuellesJahr);
 
         setWidthFull();
-        getStyle().set("display", "flex");
-        getStyle().set("justify-content", "center");
-        getStyle().set("padding", "1rem");
+        getStyle()
+        .set("bottom", "0")
+        .set("z-index", "1000")
+        .set("background", "white")
+        .set("display", "flex")
+        .set("justify-content", "center");
 
         add(copyright);
     }

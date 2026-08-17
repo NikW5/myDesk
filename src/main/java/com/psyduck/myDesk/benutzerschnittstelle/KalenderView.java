@@ -12,9 +12,10 @@ public class KalenderView extends VerticalLayout {
         setSpacing(true);
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.KALENDER);
+		Fußzeile fußzeile = new Fußzeile();
 
 		DummyText dummyText = new DummyText("Kalender");
-        add(kopfzeile, dummyText);
+        add(kopfzeile, dummyText, fußzeile);
         expand(dummyText);
 
 		
