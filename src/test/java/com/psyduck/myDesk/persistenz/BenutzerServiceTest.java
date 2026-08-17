@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BenutzerServiceTest {
 
-	
     @Test
     void anmelden_gibtTrueBeiBestehendemBenutzerIAahZurueck() { 
         boolean ergebnis = BenutzerService.anmelden(
