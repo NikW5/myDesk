@@ -1,4 +1,4 @@
-package com.psyduck.myDesk.benutzerschnittstelle;
+package com.psyduck.myDesk.benutzerschnittstelle.layout;
 
 import java.time.Year;
 

@@ -1,9 +1,9 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Anhang;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerService;
-import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -20,7 +20,10 @@ import com.vaadin.flow.server.streams.UploadHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Route("neue_nachricht")
+@Route(
+	    value = "neue_nachricht",
+	    layout = MainLayout.class
+	)
 @PageTitle("Neue Nachricht")
 public class NachrichtSendenView extends VerticalLayout {
 
@@ -34,13 +37,9 @@ public class NachrichtSendenView extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setPadding(true);
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.NACHRICHT_SENDEN);
-        Fußzeile fußzeile = new Fußzeile();
         Component registrierungsbereich = erstelleRegestrierungsbereich();
         
-        add(kopfzeile,
-        		registrierungsbereich,
-            fußzeile);
+        add(registrierungsbereich);
         expand(registrierungsbereich);
     }
     

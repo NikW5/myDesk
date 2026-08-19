@@ -1,23 +1,22 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.BenutzerService;
-import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.html.Image;
 
-@Route("login")
+@Route(
+	    value = "login",
+	    layout = MainLayout.class
+	)
 public class LoginView extends VerticalLayout {
 
     public LoginView() {
         setSizeFull();
         setPadding(true);
-
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.LOGIN);
-        kopfzeile.setWidthFull();
-        Fußzeile fußzeile = new Fußzeile();
 
         VerticalLayout loginBereich = new VerticalLayout();
         loginBereich.setSizeFull();
@@ -26,7 +25,7 @@ public class LoginView extends VerticalLayout {
 
         loginBereich.add(erstelleLoginbereich());
 
-        add(kopfzeile, loginBereich, fußzeile);
+        add(loginBereich);
 
         add(erstelleGIFBereich());
     }
