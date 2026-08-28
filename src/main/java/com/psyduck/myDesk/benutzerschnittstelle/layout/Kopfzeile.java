@@ -4,7 +4,6 @@ import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
 import com.psyduck.myDesk.benutzerschnittstelle.LoginView;
 import com.psyduck.myDesk.benutzerschnittstelle.NachrichtSendenView;
 import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
-import com.psyduck.myDesk.benutzerschnittstelle.RegistrierenView;
 import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
