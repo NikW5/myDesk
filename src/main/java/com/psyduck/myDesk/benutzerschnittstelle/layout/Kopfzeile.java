@@ -1,5 +1,9 @@
-package com.psyduck.myDesk.benutzerschnittstelle;
+package com.psyduck.myDesk.benutzerschnittstelle.layout;
 
+import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
+import com.psyduck.myDesk.benutzerschnittstelle.LoginView;
+import com.psyduck.myDesk.benutzerschnittstelle.NachrichtSendenView;
+import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
 import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -34,15 +38,14 @@ public class Kopfzeile extends Header {
         switch (typ) {
 
             case LOGIN -> {
-                Button registrieren = new Button("Registrieren");
-                registrieren.addClickListener(
-                        event -> UI.getCurrent().navigate(RegistrierenView.class)
-                );
+            	H1 titel = new H1(":)");
+            	
+            	HorizontalLayout layout = new HorizontalLayout(titel);
+                layout.setWidthFull();
+                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.expand(titel);
 
-                HorizontalLayout buttons = new HorizontalLayout(registrieren);
-                buttons.setSpacing(true);
-
-                add(buttons);
+                add(titel);
             }
 
             case DASHBOARD -> {
@@ -161,7 +164,7 @@ public class Kopfzeile extends Header {
                 layout.expand(titel);
 
                 add(layout);
-            }
+            }    
         }
     }
 }

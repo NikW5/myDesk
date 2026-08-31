@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -12,7 +13,10 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@Route("registrieren")
+@Route(
+	    value = "registrieren",
+	    layout = MainLayout.class
+	)
 @PageTitle("Registrieren")
 public class RegistrierenView extends VerticalLayout {
 
@@ -80,10 +84,8 @@ public class RegistrierenView extends VerticalLayout {
                 registrierenButton,
                 zurueckButton
         );
-
-        Fußzeile fußzeile = new Fußzeile();
         
-        add(formularContainer, fußzeile);
+        add(formularContainer);
 
         formularContainer.add(
                 ueberschrift,
