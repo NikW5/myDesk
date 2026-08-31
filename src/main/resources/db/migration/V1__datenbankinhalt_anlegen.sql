@@ -45,3 +45,4 @@ CREATE TABLE IF NOT EXISTS anhang
         FOREIGN KEY (nachrichten_id)
         REFERENCES nachricht (id)
 );
+
