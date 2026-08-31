@@ -27,8 +27,10 @@ public class NachrichtSendenView extends VerticalLayout {
 	private final List<Anhang> anhaenge = new ArrayList<>();
 	private final VerticalLayout anhangListe = new VerticalLayout();
 	private final ComboBox<Benutzer> empfaenger = new ComboBox<>("An");
-	
-    public NachrichtSendenView() {
+	private final BenutzerService benutzerService;
+
+	public NachrichtSendenView(BenutzerService benutzerService) {
+	    this.benutzerService = benutzerService;
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
@@ -70,7 +72,7 @@ public class NachrichtSendenView extends VerticalLayout {
 
          FormLayout formular = new FormLayout();
 
-         empfaenger.setItems(BenutzerService.getBenutzer());
+         empfaenger.setItems(benutzerService.getBenutzer());
          empfaenger.setItemLabelGenerator(Benutzer::getName);
 
          TextField betreff = new TextField("Titel");

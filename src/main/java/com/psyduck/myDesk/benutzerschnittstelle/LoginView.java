@@ -11,25 +11,30 @@ import com.vaadin.flow.component.html.Image;
 @Route("login")
 public class LoginView extends VerticalLayout {
 
-    public LoginView() {
-        setSizeFull();
-        setPadding(true);
+	private final BenutzerService benutzerService;
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.LOGIN);
-        kopfzeile.setWidthFull();
-        Fußzeile fußzeile = new Fußzeile();
+	public LoginView(BenutzerService benutzerService) {
+	    this.benutzerService = benutzerService;
 
-        VerticalLayout loginBereich = new VerticalLayout();
-        loginBereich.setSizeFull();
-        loginBereich.setAlignItems(Alignment.CENTER);
-        loginBereich.setJustifyContentMode(JustifyContentMode.CENTER);
+	    setSizeFull();
+	    setPadding(true);
 
-        loginBereich.add(erstelleLoginbereich());
+	    Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.LOGIN);
+	    kopfzeile.setWidthFull();
 
-        add(kopfzeile, loginBereich, fußzeile);
+	    Fußzeile fußzeile = new Fußzeile();
 
-        add(erstelleGIFBereich());
-    }
+	    VerticalLayout loginBereich = new VerticalLayout();
+	    loginBereich.setSizeFull();
+	    loginBereich.setAlignItems(Alignment.CENTER);
+	    loginBereich.setJustifyContentMode(JustifyContentMode.CENTER);
+
+	    loginBereich.add(erstelleLoginbereich());
+
+	    add(kopfzeile, loginBereich, fußzeile);
+
+	    add(erstelleGIFBereich());
+	}
 
     private Component erstelleLoginbereich() {
         VerticalLayout loginContainer = new VerticalLayout();
@@ -47,7 +52,7 @@ public class LoginView extends VerticalLayout {
         
         loginForm.addLoginListener(event -> {
 
-            boolean erfolgreich = BenutzerService.anmelden(
+            boolean erfolgreich = benutzerService.anmelden(
                     event.getUsername(),
                     event.getPassword());
 
