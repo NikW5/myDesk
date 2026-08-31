@@ -1,0 +1,48 @@
+CREATE TABLE IF NOT EXISTS benutzer
+(
+    id integer NOT NULL,
+    email varchar(255) NOT NULL,
+    passwort varchar(255) NOT NULL,
+    benutzername varchar(255) NOT NULL,
+
+    CONSTRAINT benutzer_primarykey
+        PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS nachricht
+(
+    id integer NOT NULL,
+    absender_id integer NOT NULL,
+    empfaenger_id integer NOT NULL,
+    titel varchar(255) NOT NULL,
+    inhalt text NOT NULL,
+    empfangen_am timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT nachricht_primarykey
+        PRIMARY KEY (id),
+
+    CONSTRAINT nachricht_foreignkey_absender
+        FOREIGN KEY (absender_id)
+        REFERENCES benutzer (id),
+
+    CONSTRAINT nachricht_foreignkey_empfaenger
+        FOREIGN KEY (empfaenger_id)
+        REFERENCES benutzer (id)
+);
+
+CREATE TABLE IF NOT EXISTS anhang
+(
+    id integer NOT NULL,
+    nachrichten_id integer NOT NULL,
+    dateiname varchar NOT NULL,
+    dateityp varchar,
+    daten bytea,
+
+    CONSTRAINT anhang_primarykey
+        PRIMARY KEY (id),
+
+    CONSTRAINT anhang_foreignkey_nachricht
+        FOREIGN KEY (nachrichten_id)
+        REFERENCES nachricht (id)
+);
+
