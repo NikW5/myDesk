@@ -17,7 +17,8 @@ public class LoginView extends VerticalLayout {
 	    this.benutzerService = benutzerService;
 
 	    setSizeFull();
-	    setPadding(true);
+	    setPadding(false);
+	    setSpacing(false);
 
 	    Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.LOGIN);
 	    kopfzeile.setWidthFull();
@@ -25,7 +26,7 @@ public class LoginView extends VerticalLayout {
 	    Fußzeile fußzeile = new Fußzeile();
 
 	    VerticalLayout loginBereich = new VerticalLayout();
-	    loginBereich.setSizeFull();
+	    loginBereich.setWidthFull();
 	    loginBereich.setAlignItems(Alignment.CENTER);
 	    loginBereich.setJustifyContentMode(JustifyContentMode.CENTER);
 
@@ -33,7 +34,10 @@ public class LoginView extends VerticalLayout {
 
 	    add(kopfzeile, loginBereich, fußzeile);
 
+	    expand(loginBereich);
+	    
 	    add(erstelleGIFBereich());
+	    
 	}
 
     private Component erstelleLoginbereich() {

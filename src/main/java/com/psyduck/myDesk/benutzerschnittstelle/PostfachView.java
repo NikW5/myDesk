@@ -17,9 +17,9 @@ public class PostfachView extends VerticalLayout {
 
     public PostfachView() {
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+    	setSizeFull();
+    	setPadding(false);
+    	setSpacing(false);
 
         Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.POSTFACH);
         Fußzeile fußzeile = new Fußzeile();

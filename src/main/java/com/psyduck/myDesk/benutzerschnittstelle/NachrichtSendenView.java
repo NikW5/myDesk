@@ -32,20 +32,28 @@ public class NachrichtSendenView extends VerticalLayout {
 	public NachrichtSendenView(BenutzerService benutzerService) {
 	    this.benutzerService = benutzerService;
 
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setPadding(true);
+	    setSizeFull();
+	    setAlignItems(Alignment.CENTER);
+	    setPadding(false);
+	    setSpacing(false);
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.NACHRICHT_SENDEN);
-        Fußzeile fußzeile = new Fußzeile();
-        Component registrierungsbereich = erstelleRegestrierungsbereich();
-        
-        add(kopfzeile,
-        		registrierungsbereich,
-            fußzeile);
-        expand(registrierungsbereich);
-    }
-    
+	    Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.NACHRICHT_SENDEN);
+	    Fußzeile fußzeile = new Fußzeile();
+
+	    // Abstand zwischen Kopfzeile und Formular
+	    kopfzeile.getStyle().set("margin-bottom", "20px");
+
+	    Component registrierungsbereich = erstelleRegestrierungsbereich();
+
+	    add(
+	        kopfzeile,
+	        registrierungsbereich,
+	        fußzeile
+	    );
+
+	    expand(registrierungsbereich);
+	}
+
 
     private Component erstelleRegestrierungsbereich() {
 

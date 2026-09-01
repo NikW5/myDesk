@@ -40,6 +40,8 @@ public class Kopfzeile extends Header {
                 );
 
                 HorizontalLayout buttons = new HorizontalLayout(registrieren);
+                buttons.setWidthFull();
+                buttons.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
                 buttons.setSpacing(true);
 
                 add(buttons);

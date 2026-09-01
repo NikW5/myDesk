@@ -9,8 +9,8 @@ public class ChatView extends VerticalLayout {
 
 	public ChatView() {
 		setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setPadding(false);
+		setSpacing(false);
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.CHAT);
 		Fußzeile fußzeile = new Fußzeile();

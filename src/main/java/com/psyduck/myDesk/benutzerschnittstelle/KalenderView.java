@@ -8,8 +8,8 @@ public class KalenderView extends VerticalLayout {
 
 	public KalenderView() {
 		setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setPadding(false);
+		setSpacing(false);
         
 		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.KALENDER);
 		Fußzeile fußzeile = new Fußzeile();
