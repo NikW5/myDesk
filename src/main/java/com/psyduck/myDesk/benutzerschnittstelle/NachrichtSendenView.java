@@ -40,7 +40,6 @@ public class NachrichtSendenView extends VerticalLayout {
 	    Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.NACHRICHT_SENDEN);
 	    Fußzeile fußzeile = new Fußzeile();
 
-	    // Abstand zwischen Kopfzeile und Formular
 	    kopfzeile.getStyle().set("margin-bottom", "20px");
 
 	    Component registrierungsbereich = erstelleRegestrierungsbereich();
