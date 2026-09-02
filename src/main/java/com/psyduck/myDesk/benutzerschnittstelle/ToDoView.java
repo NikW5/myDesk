@@ -1,21 +1,22 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
-import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
+
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
-@Route("todo")
+@Route(
+	    value = "todo",
+	    layout = MainLayout.class
+	)
 public class ToDoView extends VerticalLayout {
 
 	public ToDoView() {
 		setSizeFull();
-        setPadding(false);
-        setSpacing(false);
-        
-		Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.TODO);
-		Fußzeile fußzeile = new Fußzeile();
+        setPadding(true);
+        setSpacing(true);
 		
 		DummyText dummyText = new DummyText("To-Do");
-        add(kopfzeile, dummyText, fußzeile);
+        add(dummyText);
         expand(dummyText);
 	}
 

@@ -1,6 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
-import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -10,28 +10,25 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
-@Route("dashboard")
+@Route(
+	    value = "dashboard",
+	    layout = MainLayout.class
+	)
 public class DashboardView extends VerticalLayout {
 
-    private HorizontalLayout headerLayout = new HorizontalLayout();
     private VerticalLayout bodyLayout = new VerticalLayout();
 
     public DashboardView() {
 
         setSizeFull();
-        setPadding(false);
-        setSpacing(false);
-
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.DASHBOARD);
-        Fußzeile fußzeile = new Fußzeile();
+        setPadding(true);
+        setSpacing(true);
 
         bodyLayout.setWidthFull();
         bodyLayout.setAlignItems(FlexComponent.Alignment.CENTER);
         bodyLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         erstelleDashboardNavigation();
-        add(kopfzeile,
-                bodyLayout,
-                fußzeile);
+        add(bodyLayout);
         expand(bodyLayout);
     }
 

@@ -2,6 +2,7 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerService;
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -14,19 +15,20 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
-@Route("registrieren")
+
+@Route(
+	    value = "registrieren",
+	    layout = MainLayout.class
+	)
 @PageTitle("Registrieren")
 public class RegistrierenView extends VerticalLayout {
 
 private final TextField benutzernameFeld = new TextField("Benutzername");
 private final EmailField emailFeld = new EmailField("E-Mail");
 private final PasswordField passwortFeld = new PasswordField("Passwort");
-private final PasswordField passwortBestaetigenFeld =
-        new PasswordField("Passwort bestätigen");
-
+private final PasswordField passwortBestaetigenFeld = new PasswordField("Passwort bestätigen");
 private final Button registrierenButton = new Button("Registrieren");
 private final Button zurueckButton = new Button("Zurück");
-
 private final BenutzerService benutzerService;
 
 public RegistrierenView(BenutzerService benutzerService) {
@@ -36,10 +38,7 @@ public RegistrierenView(BenutzerService benutzerService) {
     ansichtAufbauen();
 
     registrierenButton.addClickListener(event -> registrieren());
-
-    zurueckButton.addClickListener(
-            event -> UI.getCurrent().navigate(LoginView.class)
-    );
+    zurueckButton.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
 }
 
 private void registrieren() {
@@ -71,6 +70,7 @@ private void registrieren() {
         );
 
         return;
+
     }
 
     passwortBestaetigenFeld.setInvalid(false);
@@ -111,7 +111,7 @@ private void ansichtAufbauen() {
     setJustifyContentMode(JustifyContentMode.CENTER);
 
     VerticalLayout layout = new VerticalLayout();
-    layout.setWidth("700px");
+    layout.setWidth("442px");
 
     layout.getStyle()
             .set("border", "1px solid lightgray")

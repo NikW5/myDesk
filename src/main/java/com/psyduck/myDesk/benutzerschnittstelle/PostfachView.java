@@ -1,10 +1,9 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import com.vaadin.flow.router.Route;
-
-import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.grid.Grid;
@@ -12,19 +11,18 @@ import com.vaadin.flow.component.masterdetaillayout.MasterDetailLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 
-@Route("postfach")
+@Route(
+	    value = "postfach",
+	    layout = MainLayout.class
+	)
 public class PostfachView extends VerticalLayout {
 
     public PostfachView() {
 
     	setSizeFull();
-    	setPadding(false);
-    	setSpacing(false);
+    	setPadding(true);
+    	setSpacing(true);
 
-        Kopfzeile kopfzeile = new Kopfzeile(Kopfzeilentyp.POSTFACH);
-        Fußzeile fußzeile = new Fußzeile();
-
-        // Master Detail Layout -------------------------------------------------------------------------
         MasterDetailLayout layout = new MasterDetailLayout();
         layout.setExpandDetail(true);
         layout.setDetailSize("250px");
@@ -33,8 +31,7 @@ public class PostfachView extends VerticalLayout {
         Grid<Nachricht> grid = new Grid<>(Nachricht.class, false);
         
         layout.setMaster(grid);
-        layout.setDetail(null); // Detailbereich zunächst geschlossen
-
+        layout.setDetail(null);
 
         grid.addColumn(Nachricht::getBenutzer)
                 .setHeader("Absender")
@@ -96,7 +93,7 @@ public class PostfachView extends VerticalLayout {
         layout.setWidthFull();
         layout.setHeightFull();
 
-        add(kopfzeile, layout, fußzeile);
+        add(layout);
         expand(layout);
 
     }
