@@ -21,20 +21,13 @@ public class MainLayout extends VerticalLayout implements RouterLayout {
         content = new Div();
         fußzeile = new Fußzeile();
 
-        // MainLayout nimmt die gesamte verfügbare Höhe ein
         setSizeFull();
-
-        // Kein zusätzlicher Abstand zwischen den Bereichen
         setPadding(false);
         setSpacing(false);
-
-        // Der Content-Bereich nimmt die gesamte verfügbare Breite ein
+        
         content.setWidthFull();
 
-        // Header, Content und Footer
         add(kopfzeile, content, fußzeile);
-
-        // Content nimmt den übrigen Platz ein
         expand(content);
     }
     
@@ -53,7 +46,7 @@ public class MainLayout extends VerticalLayout implements RouterLayout {
             case "chat" -> Kopfzeilentyp.CHAT;
             case "kalender" -> Kopfzeilentyp.KALENDER;
             case "todo" -> Kopfzeilentyp.TODO;
-            default -> Kopfzeilentyp.DASHBOARD;
+            default -> Kopfzeilentyp.LOGIN;
         };
     }
     

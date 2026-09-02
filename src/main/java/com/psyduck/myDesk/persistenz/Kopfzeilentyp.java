@@ -9,5 +9,4 @@ public enum Kopfzeilentyp {
         CHAT,
         KALENDER,
         TODO
-
 }

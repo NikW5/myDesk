@@ -12,8 +12,8 @@ public class ChatView extends VerticalLayout {
 
 	public ChatView() {
 		setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setPadding(true);
+		setSpacing(true);
 		
 		DummyText dummyText = new DummyText("Chat");
         add(dummyText);

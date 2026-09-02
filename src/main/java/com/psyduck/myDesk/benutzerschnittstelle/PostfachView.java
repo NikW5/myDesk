@@ -19,11 +19,10 @@ public class PostfachView extends VerticalLayout {
 
     public PostfachView() {
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+    	setSizeFull();
+    	setPadding(true);
+    	setSpacing(true);
 
-        // Master Detail Layout -------------------------------------------------------------------------
         MasterDetailLayout layout = new MasterDetailLayout();
         layout.setExpandDetail(true);
         layout.setDetailSize("250px");
@@ -32,8 +31,7 @@ public class PostfachView extends VerticalLayout {
         Grid<Nachricht> grid = new Grid<>(Nachricht.class, false);
         
         layout.setMaster(grid);
-        layout.setDetail(null); // Detailbereich zunächst geschlossen
-
+        layout.setDetail(null);
 
         grid.addColumn(Nachricht::getBenutzer)
                 .setHeader("Absender")

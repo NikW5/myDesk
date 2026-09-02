@@ -30,19 +30,21 @@ public class NachrichtSendenView extends VerticalLayout {
 	private final List<Anhang> anhaenge = new ArrayList<>();
 	private final VerticalLayout anhangListe = new VerticalLayout();
 	private final ComboBox<Benutzer> empfaenger = new ComboBox<>("An");
-	
-    public NachrichtSendenView() {
+	private final BenutzerService benutzerService;
 
-        setSizeFull();
-        setAlignItems(Alignment.CENTER);
-        setPadding(true);
+	public NachrichtSendenView(BenutzerService benutzerService) {
+	    this.benutzerService = benutzerService;
 
-        Component registrierungsbereich = erstelleRegestrierungsbereich();
-        
-        add(registrierungsbereich);
-        expand(registrierungsbereich);
-    }
-    
+	    setSizeFull();
+	    setAlignItems(Alignment.CENTER);
+	    setPadding(true);
+	    setSpacing(true);
+
+	    Component registrierungsbereich = erstelleRegestrierungsbereich();
+
+	    add(registrierungsbereich);
+	    expand(registrierungsbereich);
+	}
 
     private Component erstelleRegestrierungsbereich() {
 
@@ -69,7 +71,7 @@ public class NachrichtSendenView extends VerticalLayout {
 
          FormLayout formular = new FormLayout();
 
-         empfaenger.setItems(BenutzerService.getBenutzer());
+         empfaenger.setItems(benutzerService.getBenutzer());
          empfaenger.setItemLabelGenerator(Benutzer::getName);
 
          TextField betreff = new TextField("Titel");

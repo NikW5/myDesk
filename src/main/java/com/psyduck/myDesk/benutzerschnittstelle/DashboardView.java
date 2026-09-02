@@ -21,8 +21,8 @@ public class DashboardView extends VerticalLayout {
     public DashboardView() {
 
         setSizeFull();
-        setPadding(false);
-        setSpacing(false);
+        setPadding(true);
+        setSpacing(true);
 
         bodyLayout.setWidthFull();
         bodyLayout.setAlignItems(FlexComponent.Alignment.CENTER);

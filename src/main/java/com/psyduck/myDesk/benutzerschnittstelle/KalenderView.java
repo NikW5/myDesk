@@ -11,8 +11,8 @@ public class KalenderView extends VerticalLayout {
 
 	public KalenderView() {
 		setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+		setPadding(true);
+		setSpacing(true);
 
 		DummyText dummyText = new DummyText("Kalender");
         add(dummyText);
