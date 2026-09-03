@@ -1,7 +1,11 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import java.util.Optional;
+
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
+import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerService;
+import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.login.LoginForm;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -53,15 +57,25 @@ public class LoginView extends VerticalLayout {
         
         loginForm.addLoginListener(event -> {
 
-            boolean erfolgreich = benutzerService.anmelden(
-                    event.getUsername(),
-                    event.getPassword());
+        	Optional<Benutzer> benutzer = benutzerService.anmelden(
+        	        event.getUsername(),
+        	        event.getPassword());
 
-            if (erfolgreich) {
-                getUI().ifPresent(ui -> ui.navigate(DashboardView.class));
-            } else {
-                loginForm.setError(true);
-            }
+        	if (benutzer.isPresent()) {
+
+        	    BenutzerSession.setAktuellerBenutzer(
+        	            benutzer.get()
+        	    );
+
+        	    getUI().ifPresent(ui ->
+        	            ui.navigate(DashboardView.class)
+        	    );
+
+        	} else {
+
+        	    loginForm.setError(true);
+        	}
+
         });
 
         loginContainer.add(loginForm);

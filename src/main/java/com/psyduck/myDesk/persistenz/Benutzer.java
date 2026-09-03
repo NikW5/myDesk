@@ -21,7 +21,7 @@ private String email;
 @Column(nullable = false)
 private String passwort;
 
-@Column(name = "benutzername", nullable = false)
+@Column(name = "benutzername", nullable = false, unique = true)
 private String name;
 
 protected Benutzer() {

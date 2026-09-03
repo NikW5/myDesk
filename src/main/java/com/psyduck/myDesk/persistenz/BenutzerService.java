@@ -3,43 +3,50 @@ package com.psyduck.myDesk.persistenz;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class BenutzerService {
 
-private final BenutzerRepository benutzerRepository;
+    private final BenutzerRepository benutzerRepository;
+    private final PasswordEncoder passwordEncoder;
 
-public BenutzerService(BenutzerRepository benutzerRepository) {
-    this.benutzerRepository = benutzerRepository;
-}
 
-public boolean anmelden(String emailOderBenutzername, String passwort) {
+    public BenutzerService(BenutzerRepository benutzerRepository, PasswordEncoder passwordEncoder) {
 
-    Optional<Benutzer> benutzer = benutzerRepository
-            .findByEmailIgnoreCase(emailOderBenutzername);
-
-    if (benutzer.isEmpty()) {
-        benutzer = benutzerRepository
-                .findByNameIgnoreCase(emailOderBenutzername);
+        this.benutzerRepository = benutzerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    return benutzer
-            .map(b -> b.getPasswort().equals(passwort))
-            .orElse(false);
-}
 
-public List<Benutzer> getBenutzer() {
-    return benutzerRepository.findAll();
-}
+    public Optional<Benutzer> anmelden(String benutzername, String passwort) {
 
-public Optional<Benutzer> findeNachEmail(String email) {
-    return benutzerRepository.findByEmailIgnoreCase(email);
-}
+        Optional<Benutzer> benutzer =
+                benutzerRepository.findByNameIgnoreCase(benutzername);
 
-public Benutzer speichern(Benutzer benutzer) {
-    return benutzerRepository.save(benutzer);
-}
+        if (benutzer.isPresent() && passwordEncoder.matches(passwort, benutzer.get().getPasswort())) {
+            return benutzer;
+        }
+
+        return Optional.empty();
+    }
 
 
+    public Optional<Benutzer> findeNachBenutzername(String name) {
+        return benutzerRepository.findByNameIgnoreCase(name);
+    }
+
+    public Optional<Benutzer> findeNachEmail(String email) {
+        return benutzerRepository.findByEmailIgnoreCase(email);
+    }
+
+    public List<Benutzer> getBenutzer() {
+        return benutzerRepository.findAll();
+    }
+
+    public Benutzer speichern(Benutzer benutzer) {
+    	benutzer.setPasswort(passwordEncoder.encode(benutzer.getPasswort()));
+        return benutzerRepository.save(benutzer);
+    }
 }
