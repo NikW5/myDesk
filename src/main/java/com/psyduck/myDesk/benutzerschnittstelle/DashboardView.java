@@ -1,6 +1,8 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
+import com.psyduck.myDesk.persistenz.Benutzer;
+import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
@@ -17,8 +19,11 @@ import com.vaadin.flow.router.Route;
 public class DashboardView extends VerticalLayout {
 
     private VerticalLayout bodyLayout = new VerticalLayout();
+    private final NachrichtService nachrichtService;
 
-    public DashboardView() {
+    public DashboardView(NachrichtService nachrichtService) {
+
+        this.nachrichtService = nachrichtService;
 
         setSizeFull();
         setPadding(true);
@@ -37,9 +42,13 @@ public class DashboardView extends VerticalLayout {
         HorizontalLayout obereButtons = new HorizontalLayout();
         HorizontalLayout untereButtons = new HorizontalLayout();
 
+        Benutzer aktuellerBenutzer = BenutzerSession.getAktuellerBenutzer();
+
+        long anzahlNachrichten = nachrichtService.getAnzahlNachrichten(aktuellerBenutzer);
+        
         Button postfachButton = new Button(
-        	    "Postfach (" + NachrichtService.getAnzahlNachrichten() + ")"
-        	);
+                "Postfach (" + anzahlNachrichten + ")"
+        	    );
         Button chatButton = new Button("Chat");
         Button kalenderButton = new Button("Kalender");
         Button toDoButton = new Button("To-Dos");

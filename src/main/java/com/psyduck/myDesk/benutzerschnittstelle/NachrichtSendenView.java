@@ -4,6 +4,9 @@ import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Anhang;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerService;
+import com.psyduck.myDesk.persistenz.BenutzerSession;
+import com.psyduck.myDesk.persistenz.Nachricht;
+import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -30,10 +33,16 @@ public class NachrichtSendenView extends VerticalLayout {
 	private final List<Anhang> anhaenge = new ArrayList<>();
 	private final VerticalLayout anhangListe = new VerticalLayout();
 	private final ComboBox<Benutzer> empfaenger = new ComboBox<>("An");
-	private final BenutzerService benutzerService;
+	private final TextField betreff = new TextField("Titel");
+	private final TextArea nachricht = new TextArea("Neue Nachricht");
 
-	public NachrichtSendenView(BenutzerService benutzerService) {
+	private final BenutzerService benutzerService;
+	private final NachrichtService nachrichtService;
+
+	public NachrichtSendenView(BenutzerService benutzerService, NachrichtService nachrichtService) {
+
 	    this.benutzerService = benutzerService;
+	    this.nachrichtService = nachrichtService;
 
 	    setSizeFull();
 	    setAlignItems(Alignment.CENTER);
@@ -60,10 +69,8 @@ public class NachrichtSendenView extends VerticalLayout {
         );
 
         return layout;
-
     }
 
-    
     private Component erstelleNachrichtenbereich() {
     	
     	 VerticalLayout layout = new VerticalLayout();
@@ -73,9 +80,6 @@ public class NachrichtSendenView extends VerticalLayout {
 
          empfaenger.setItems(benutzerService.getBenutzer());
          empfaenger.setItemLabelGenerator(Benutzer::getName);
-
-         TextField betreff = new TextField("Titel");
-
          empfaenger.setWidthFull();
          betreff.setWidthFull();
 
@@ -84,7 +88,6 @@ public class NachrichtSendenView extends VerticalLayout {
                  new FormLayout.ResponsiveStep("0", 1)
          );
 
-         TextArea nachricht = new TextArea("Neue Nachricht");
          nachricht.setWidthFull();
          nachricht.setHeight("250px");
 
@@ -124,8 +127,6 @@ public class NachrichtSendenView extends VerticalLayout {
         return layout;
     }
     
-    
-    
     private Component erstelleAnhang(Anhang anhang) {
 
     	HorizontalLayout layout = new HorizontalLayout();
@@ -147,15 +148,72 @@ public class NachrichtSendenView extends VerticalLayout {
         return layout;
     }
     
-    private Component erstelleSendenbutton() { 
-    	
-    	HorizontalLayout layout = new HorizontalLayout(); 
-    	layout.setWidthFull(); 
-    	layout.setJustifyContentMode(JustifyContentMode.END); 
-    	
-    	Button senden = new Button("Senden"); 
-    	layout.add(senden); 
-    	
-    	return layout; 
-   	}
+    private Component erstelleSendenbutton() {
+
+        HorizontalLayout layout = new HorizontalLayout();
+
+        layout.setWidthFull();
+        layout.setJustifyContentMode(JustifyContentMode.END);
+
+        Button senden = new Button("Senden");
+
+        senden.addClickListener(event -> {
+        	Benutzer absender = BenutzerSession.getAktuellerBenutzer();
+        	Benutzer empfaengerBenutzer = empfaenger.getValue();
+
+        	if (absender == null) {
+        	    getUI().ifPresent(ui ->
+        	        ui.getPage().executeJs(
+        	            "alert('Kein Benutzer ist eingeloggt.')"
+        	        )
+        	    );
+        	    return;
+        	}
+
+
+            if (empfaengerBenutzer == null) {
+                empfaenger.setInvalid(true);
+                empfaenger.setErrorMessage(
+                        "Bitte wählen Sie einen Empfänger aus."
+                );
+                return;
+            }
+
+            if (betreff.getValue().trim().isEmpty()) {
+                betreff.setInvalid(true);
+                betreff.setErrorMessage(
+                        "Bitte geben Sie einen Titel ein."
+                );
+                return;
+            }
+
+            if (nachricht.getValue().trim().isEmpty()) {
+                nachricht.setInvalid(true);
+                nachricht.setErrorMessage(
+                        "Bitte geben Sie eine Nachricht ein."
+                );
+                return;
+            }
+
+            betreff.setInvalid(false);
+            nachricht.setInvalid(false);
+
+            nachrichtService.speichern(
+                    absender,
+                    empfaengerBenutzer,
+                    betreff.getValue().trim(),
+                    nachricht.getValue()
+            );
+
+            betreff.clear();
+            nachricht.clear();
+            empfaenger.clear();
+
+        });
+
+        layout.add(senden);
+
+        return layout;
+    }
+
 }
