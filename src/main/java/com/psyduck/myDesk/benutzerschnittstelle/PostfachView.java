@@ -4,6 +4,8 @@ import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import com.vaadin.flow.router.Route;
+import com.psyduck.myDesk.persistenz.Benutzer;
+import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.grid.Grid;
@@ -16,8 +18,12 @@ import com.vaadin.flow.component.textfield.TextField;
 	    layout = MainLayout.class
 	)
 public class PostfachView extends VerticalLayout {
+	
+	private final NachrichtService nachrichtService;
 
-    public PostfachView() {
+	public PostfachView(NachrichtService nachrichtService) {
+
+	    this.nachrichtService = nachrichtService;
 
     	setSizeFull();
     	setPadding(true);
@@ -33,9 +39,9 @@ public class PostfachView extends VerticalLayout {
         layout.setMaster(grid);
         layout.setDetail(null);
 
-        grid.addColumn(Nachricht::getBenutzer)
-                .setHeader("Absender")
-                .setFlexGrow(1);
+        grid.addColumn(nachricht -> nachricht.getAbsender().getName())
+        		.setHeader("Absender")
+        		.setFlexGrow(1);
 
         grid.addColumn(Nachricht::getTitel)
                 .setHeader("Titel")
@@ -51,7 +57,9 @@ public class PostfachView extends VerticalLayout {
 
         grid.setSizeFull();  
         
-        grid.setItems(NachrichtService.getNachrichten());
+        grid.setItems(
+        		nachrichtService.getNachrichten(BenutzerSession.getAktuellerBenutzer())
+        		);
 
         VerticalLayout details = new VerticalLayout();
         details.setPadding(false);
@@ -71,7 +79,6 @@ public class PostfachView extends VerticalLayout {
         
         details.add(titel, von, nachricht);
         
-        // Beim Klick Detailbereich öffnen: -----------------------------------------------------------
         grid.asSingleSelect().addValueChangeListener(event -> {
         	
         	Nachricht ausgewählt = event.getValue();

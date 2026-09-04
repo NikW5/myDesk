@@ -15,4 +15,4 @@ public class BenutzerSession {
     public static void abmelden() {
         aktuellerBenutzer = null;
     }
-}
+} // Vorübergehende Lösung -> später eine Session-basierte Lösung/Spring Security
