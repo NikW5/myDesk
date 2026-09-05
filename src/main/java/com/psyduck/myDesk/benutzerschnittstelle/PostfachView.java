@@ -8,11 +8,12 @@ import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.masterdetaillayout.MasterDetailLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-
+@StyleSheet("styles.css")
 @Route(
 	    value = "postfach",
 	    layout = MainLayout.class
@@ -60,6 +61,8 @@ public class PostfachView extends VerticalLayout {
         grid.setItems(
         		nachrichtService.getNachrichten(BenutzerSession.getAktuellerBenutzer())
         		);
+        
+        grid.addClassName("postfach-grid");
 
         VerticalLayout details = new VerticalLayout();
         details.setPadding(false);
