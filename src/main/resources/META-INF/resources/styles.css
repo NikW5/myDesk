@@ -1,0 +1,11 @@
+.postfach-grid::part(body-cell) {
+	cursor: pointer;
+}
+
+.postfach-grid::part(row):hover {
+    --row-hover-bg: #E6E6FA;
+}
+
+.postfach-grid::part(body-cell) {
+    background-color: var(--row-hover-bg, var(--vaadin-grid-cell-background, var(--lumo-base-color))) !important;
+}

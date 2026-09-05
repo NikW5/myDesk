@@ -1,6 +1,8 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import com.vaadin.flow.router.Route;
@@ -8,11 +10,16 @@ import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.masterdetaillayout.MasterDetailLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
-
+@StyleSheet("styles.css")
 @Route(
 	    value = "postfach",
 	    layout = MainLayout.class
@@ -60,9 +67,25 @@ public class PostfachView extends VerticalLayout {
         grid.setItems(
         		nachrichtService.getNachrichten(BenutzerSession.getAktuellerBenutzer())
         		);
+        
+        grid.addClassName("postfach-grid");
 
         VerticalLayout details = new VerticalLayout();
         details.setPadding(false);
+        
+        Button schliessenButton = new Button(VaadinIcon.CLOSE.create());
+        schliessenButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        schliessenButton.getElement().setAttribute("aria-label", "Vorschau schließen");
+        
+        schliessenButton.addClickListener(event -> {
+        	grid.asSingleSelect().clear();
+        	layout.setDetail(null);
+        });
+        
+        HorizontalLayout headerLayout = new HorizontalLayout(new H2("Details"), schliessenButton);
+        headerLayout.setWidthFull();
+        headerLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        headerLayout.setAlignItems(FlexComponent.Alignment.CENTER);
 
         TextField titel = new TextField("Titel");
         titel.setWidthFull();
@@ -77,7 +100,7 @@ public class PostfachView extends VerticalLayout {
         nachricht.setHeight("350px");
         nachricht.setReadOnly(true);
         
-        details.add(titel, von, nachricht);
+        details.add(headerLayout, titel, von, nachricht);
         
         grid.asSingleSelect().addValueChangeListener(event -> {
         	
