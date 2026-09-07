@@ -4,11 +4,14 @@ import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
 import com.psyduck.myDesk.benutzerschnittstelle.LoginView;
 import com.psyduck.myDesk.benutzerschnittstelle.NachrichtSendenView;
 import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
+import com.psyduck.myDesk.persistenz.Benutzer;
+import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Header;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 
@@ -49,12 +52,20 @@ public class Kopfzeile extends Header {
             }
 
             case DASHBOARD -> {
+            	Benutzer benutzer = BenutzerSession.getAktuellerBenutzer();
+            	
+            	if (benutzer == null) {
+                    UI.getCurrent().navigate(LoginView.class);
+                    return;
+                }
+            	
                 H1 titel = new H1("Dashboard");
+                Span benutzername = new Span("Hallo " + benutzer.getName());
 
                 HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, buttons);
+                HorizontalLayout layout = new HorizontalLayout(titel, benutzername, buttons);
                 layout.setWidthFull();
                 layout.setAlignItems(FlexComponent.Alignment.CENTER);
                 layout.expand(titel);
