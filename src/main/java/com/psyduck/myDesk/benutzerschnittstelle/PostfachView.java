@@ -1,5 +1,10 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -15,6 +20,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.masterdetaillayout.MasterDetailLayout;
 import com.vaadin.flow.component.textfield.TextArea;
@@ -58,9 +64,10 @@ public class PostfachView extends VerticalLayout {
                 .setHeader("Vorschau")
                 .setFlexGrow(3);
 
-        grid.addColumn(Nachricht::getEmpfangenAm)
-                .setHeader("Empfangen am")
-                .setFlexGrow(2);
+        grid.addComponentColumn(nachricht ->
+	        formatiereDatumUndUhrzeit(nachricht.getEmpfangenAm()))
+	        .setHeader("Empfangen am")
+	        .setFlexGrow(2);
 
         grid.setSizeFull();  
         
@@ -127,4 +134,38 @@ public class PostfachView extends VerticalLayout {
         expand(layout);
 
     }
+	
+	private HorizontalLayout formatiereDatumUndUhrzeit(LocalDateTime datum) {
+
+	    LocalDate heute = LocalDate.now();
+
+	    String tag;
+	    String uhrzeit = datum.format(
+	            DateTimeFormatter.ofPattern("HH:mm", Locale.GERMAN)
+	    );
+
+	    if (datum.toLocalDate().equals(heute)) {
+	        tag = "heute";
+	    } else if (datum.toLocalDate().equals(heute.minusDays(1))) {
+	        tag = "gestern";
+	    } else {
+	        tag = datum.format(
+	                DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN)
+	        );
+	    }
+
+	    Span tagSpan = new Span(tag);
+	    tagSpan.setWidth("90px");
+
+	    Span uhrzeitSpan = new Span(uhrzeit);
+
+	    HorizontalLayout datumLayout =
+	            new HorizontalLayout(tagSpan, uhrzeitSpan);
+
+	    datumLayout.setSpacing(false);
+	    datumLayout.setPadding(false);
+	    datumLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+	    return datumLayout;
+	}
 }
