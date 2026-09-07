@@ -60,7 +60,7 @@ public class Kopfzeile extends Header {
                 }
             	
                 H1 titel = new H1("Dashboard");
-                Span benutzername = new Span("Hallo, " + benutzer.getName());
+                Span benutzername = new Span("Hallo " + benutzer.getName());
 
                 HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
