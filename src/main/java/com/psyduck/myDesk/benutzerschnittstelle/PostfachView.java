@@ -3,6 +3,7 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.Locale;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
@@ -46,36 +47,11 @@ public class PostfachView extends VerticalLayout {
         layout.setExpandDetail(true);
         layout.setDetailSize("250px");
         layout.setExpandMaster(true);
-
-        Grid<Nachricht> grid = new Grid<>(Nachricht.class, false);
         
+        Grid<Nachricht> grid = erstelleNachrichtentabelle();
+
         layout.setMaster(grid);
         layout.setDetail(null);
-
-        grid.addColumn(nachricht -> nachricht.getAbsender().getName())
-        		.setHeader("Absender")
-        		.setFlexGrow(1);
-
-        grid.addColumn(Nachricht::getTitel)
-                .setHeader("Titel")
-                .setFlexGrow(2);
-
-        grid.addColumn(Nachricht::getVorschau)
-                .setHeader("Vorschau")
-                .setFlexGrow(3);
-
-        grid.addComponentColumn(nachricht ->
-	        formatiereDatumUndUhrzeit(nachricht.getEmpfangenAm()))
-	        .setHeader("Empfangen am")
-	        .setFlexGrow(2);
-
-        grid.setSizeFull();  
-        
-        grid.setItems(
-        		nachrichtService.getNachrichten(BenutzerSession.getAktuellerBenutzer())
-        		);
-        
-        grid.addClassName("postfach-grid");
 
         VerticalLayout details = new VerticalLayout();
         details.setPadding(false);
@@ -83,11 +59,7 @@ public class PostfachView extends VerticalLayout {
         Button schliessenButton = new Button(VaadinIcon.CLOSE.create());
         schliessenButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
         schliessenButton.getElement().setAttribute("aria-label", "Vorschau schließen");
-        
-        schliessenButton.addClickListener(event -> {
-        	grid.asSingleSelect().clear();
-        	layout.setDetail(null);
-        });
+        schliessenButton.addClickListener(event -> {grid.asSingleSelect().clear();layout.setDetail(null);});
         
         HorizontalLayout headerLayout = new HorizontalLayout(new H2("Details"), schliessenButton);
         headerLayout.setWidthFull();
@@ -125,8 +97,7 @@ public class PostfachView extends VerticalLayout {
         	layout.setDetail(details);
         });
         
-        // ----------------------------------------------------------------------------------------------
-
+        
         layout.setWidthFull();
         layout.setHeightFull();
 
@@ -134,6 +105,43 @@ public class PostfachView extends VerticalLayout {
         expand(layout);
 
     }
+	
+	private Grid<Nachricht> erstelleNachrichtentabelle() {
+		
+		Grid<Nachricht> grid = new Grid<>(Nachricht.class, false);
+        
+        grid.addColumn(nachricht -> nachricht.getAbsender().getName())
+        		.setHeader("Absender")
+        		.setSortable(true)
+                .setComparator(nachricht -> nachricht.getAbsender().getName())
+        		.setFlexGrow(1);
+
+        grid.addColumn(Nachricht::getTitel)
+        		.setHeader("Titel")
+                .setSortable(true)
+                .setFlexGrow(2);
+
+        grid.addColumn(Nachricht::getVorschau)
+        		.setHeader("Vorschau")
+                .setSortable(true)
+                .setFlexGrow(3);
+
+        grid.addComponentColumn(nachricht ->
+	        formatiereDatumUndUhrzeit(nachricht.getEmpfangenAm()))
+        	.setHeader("Empfangen am")
+	        .setSortable(true)
+	        .setComparator(Nachricht::getEmpfangenAm)
+	        .setFlexGrow(2);
+
+        grid.setSizeFull();  
+        
+        grid.setItems(nachrichtService.getNachrichten(BenutzerSession.getAktuellerBenutzer()).stream().sorted(Comparator.comparing(Nachricht::getEmpfangenAm).reversed()).toList()
+        		);
+        
+        grid.addClassName("postfach-grid");
+        
+        return grid;
+	}
 	
 	private HorizontalLayout formatiereDatumUndUhrzeit(LocalDateTime datum) {
 
