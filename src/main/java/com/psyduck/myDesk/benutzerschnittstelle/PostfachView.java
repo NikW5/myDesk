@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +13,9 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.streams.DownloadHandler;
+import com.vaadin.flow.server.streams.DownloadResponse;
+import com.psyduck.myDesk.persistenz.Anhang;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerSession;
 import com.psyduck.myDesk.persistenz.Nachricht;
@@ -20,6 +24,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -79,7 +84,15 @@ public class PostfachView extends VerticalLayout {
         nachricht.setHeight("350px");
         nachricht.setReadOnly(true);
         
-        details.add(headerLayout, titel, von, nachricht);
+        VerticalLayout anhangBereich = new VerticalLayout();
+        anhangBereich.setPadding(false);
+        anhangBereich.setSpacing(true);
+
+        Span anhangUeberschrift = new Span("Anhänge:");
+
+        anhangBereich.add(anhangUeberschrift);
+        
+        details.add(headerLayout, titel, von, nachricht, anhangBereich);
         
         grid.asSingleSelect().addValueChangeListener(event -> {
         	
@@ -93,6 +106,37 @@ public class PostfachView extends VerticalLayout {
         	titel.setValue(ausgewählt.getTitel());
         	von.setValue(ausgewählt.getBenutzer());
         	nachricht.setValue(ausgewählt.getInhalt());
+        	
+        	anhangBereich.removeAll();
+        	anhangBereich.add(anhangUeberschrift);
+
+        	for (Anhang anhang : ausgewählt.getAnhaenge()) {
+
+        	    HorizontalLayout anhangZeile = new HorizontalLayout();
+
+        	    Span icon = new Span(VaadinIcon.PAPERCLIP.create());
+
+        	    DownloadHandler downloadHandler = DownloadHandler.fromInputStream(
+        	            downloadEvent -> new DownloadResponse(
+        	                new ByteArrayInputStream(
+        	                    anhang.getInhalt()
+        	                ),
+        	                anhang.getDateiname(),
+        	                anhang.getDateityp(),
+        	                anhang.getInhalt().length
+        	            )
+        	        );
+
+        	    Anchor download = new Anchor(downloadHandler, anhang.getDateiname());
+
+        	    anhangZeile.add(icon, download);
+
+        	    anhangBereich.add(anhangZeile);
+        	}
+
+
+
+
         	
         	layout.setDetail(details);
         });

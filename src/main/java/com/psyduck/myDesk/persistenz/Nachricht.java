@@ -2,6 +2,8 @@ package com.psyduck.myDesk.persistenz;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "nachricht")
@@ -18,6 +20,14 @@ public class Nachricht {
     @ManyToOne
     @JoinColumn(name = "empfaenger_id", nullable = false)
     private Benutzer empfaenger;
+    
+    @OneToMany(
+    	    mappedBy = "nachricht",
+    	    cascade = CascadeType.ALL,
+    	    orphanRemoval = true,
+    	    fetch = FetchType.EAGER
+    	)
+    	private List<Anhang> anhaenge = new ArrayList<>();
 
     @Column(nullable = false)
     private String titel;
@@ -83,5 +93,19 @@ public class Nachricht {
         }
 
         return inhalt.substring(0, 50) + "...";
+    }
+    
+    public List<Anhang> getAnhaenge() {
+        return anhaenge;
+    }
+
+    public void addAnhang(Anhang anhang) {
+        anhaenge.add(anhang);
+        anhang.setNachricht(this);
+    }
+
+    public void removeAnhang(Anhang anhang) {
+        anhaenge.remove(anhang);
+        anhang.setNachricht(null);
     }
 }

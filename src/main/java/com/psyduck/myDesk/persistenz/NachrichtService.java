@@ -10,6 +10,7 @@ public class NachrichtService {
 
     private final NachrichtRepository nachrichtRepository;
 
+
     public NachrichtService(NachrichtRepository nachrichtRepository) {
         this.nachrichtRepository = nachrichtRepository;
     }

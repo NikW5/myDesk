@@ -2,6 +2,7 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Anhang;
+import com.psyduck.myDesk.persistenz.AnhangRepository;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerService;
 import com.psyduck.myDesk.persistenz.BenutzerSession;
@@ -38,11 +39,13 @@ public class NachrichtSendenView extends VerticalLayout {
 
 	private final BenutzerService benutzerService;
 	private final NachrichtService nachrichtService;
+	private final AnhangRepository anhangRepository;
 
-	public NachrichtSendenView(BenutzerService benutzerService, NachrichtService nachrichtService) {
+	public NachrichtSendenView(BenutzerService benutzerService, NachrichtService nachrichtService, AnhangRepository anhangRepository) {
 
 	    this.benutzerService = benutzerService;
 	    this.nachrichtService = nachrichtService;
+	    this.anhangRepository = anhangRepository;
 
 	    setSizeFull();
 	    setAlignItems(Alignment.CENTER);
@@ -110,10 +113,12 @@ public class NachrichtSendenView extends VerticalLayout {
          Upload upload = new Upload(
         		    UploadHandler.inMemory((metadata, bytes) -> {
 
-        		        Anhang anhang = new Anhang(
-        		                metadata.fileName(),
-        		                bytes
-        		        );
+        		    	Anhang anhang = new Anhang(
+        		    		    metadata.fileName(),
+        		    		    metadata.contentType(),
+        		    		    bytes
+        		    		);
+
 
         		        anhaenge.add(anhang);
         		        anhangListe.add(erstelleAnhang(anhang));
@@ -198,16 +203,24 @@ public class NachrichtSendenView extends VerticalLayout {
             betreff.setInvalid(false);
             nachricht.setInvalid(false);
 
+            Nachricht gespeicherteNachricht =
             nachrichtService.speichern(
                     absender,
                     empfaengerBenutzer,
                     betreff.getValue().trim(),
                     nachricht.getValue()
             );
+            
+            for (Anhang anhang : anhaenge) {
+                anhang.setNachricht(gespeicherteNachricht);
+                anhangRepository.save(anhang);
+            }
 
             betreff.clear();
             nachricht.clear();
             empfaenger.clear();
+            anhaenge.clear();
+            anhangListe.removeAll();
 
         });
 
