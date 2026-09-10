@@ -3,11 +3,14 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import org.vaadin.stefan.fullcalendar.Entry;
 import org.vaadin.stefan.fullcalendar.FullCalendar;
 import org.vaadin.stefan.fullcalendar.FullCalendar.Option;
 import org.vaadin.stefan.fullcalendar.FullCalendarBuilder;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
+import com.psyduck.myDesk.persistenz.ToDo;
+import com.psyduck.myDesk.persistenz.ToDoRepository;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
@@ -21,8 +24,12 @@ import com.vaadin.flow.router.Route;
 	    layout = MainLayout.class
 	)
 public class KalenderView extends VerticalLayout {
+	
+	private final ToDoRepository toDoRepository;
 
-	public KalenderView() {
+	public KalenderView(ToDoRepository toDoRepository) {
+		this.toDoRepository = toDoRepository;
+		
 		setSizeFull();
 		setPadding(true);
 		setSpacing(true);
@@ -47,8 +54,44 @@ public class KalenderView extends VerticalLayout {
 	        FullCalendar.Option.HEADER_TOOLBAR,
 	        "prev,next today title"
 	    );
+	    
+	    fuegeTodosZumKalenderHinzu(kalender);
 
 	    return kalender;
+	}
+	
+	private void fuegeTodosZumKalenderHinzu(FullCalendar kalender) {
+
+	    for (ToDo aufgabe : toDoRepository.findAll()) {
+
+	        if (aufgabe.getFaelligAm() == null) {
+	            continue;
+	        }
+
+	        String titel = aufgabe.isErledigt()
+	            ? "✓ " + aufgabe.getText()
+	            : aufgabe.getText();
+
+	        Entry eintrag = new Entry(
+	            aufgabe.getId().toString()
+	        );
+
+	        eintrag.setTitle(titel);
+	        eintrag.setStart(aufgabe.getFaelligAm());
+	        eintrag.setAllDay(true);
+
+	        if (aufgabe.isErledigt()) {
+	            eintrag.setColor("#43A047");
+	            eintrag.setTextColor("#FFFFFF");
+	        } else {
+	            eintrag.setColor("#1976D2");
+	            eintrag.setTextColor("#FFFFFF");
+	        }
+
+	        kalender.getEntryProvider()
+	            .asInMemory()
+	            .addEntry(eintrag);
+	    }
 	}
 
 	private HorizontalLayout erstelleKalenderheader(FullCalendar kalender) {
@@ -113,9 +156,18 @@ public class KalenderView extends VerticalLayout {
 
 	    HorizontalLayout kalenderHeader = erstelleKalenderheader(kalender);
 
-	    add(kalenderHeader, kalender);
+	    VerticalLayout kalenderbereich = new VerticalLayout(
+	            kalenderHeader,
+	            kalender
+	        );
 
-	    return kalender;
+	        kalenderbereich.setSizeFull();
+	        kalenderbereich.setPadding(false);
+	        kalenderbereich.setSpacing(false);
+
+	        kalenderbereich.expand(kalender);
+
+	        return kalenderbereich;
 	}
 
 }
