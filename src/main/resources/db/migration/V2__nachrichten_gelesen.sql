@@ -1,0 +1,2 @@
+ALTER TABLE nachricht
+ADD COLUMN gelesen boolean NOT NULL DEFAULT FALSE;
