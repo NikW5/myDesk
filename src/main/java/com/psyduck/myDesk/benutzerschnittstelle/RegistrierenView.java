@@ -75,27 +75,27 @@ private void registrieren() {
 
     passwortBestaetigenFeld.setInvalid(false);
     
-    if (benutzerService.findeNachBenutzername(benutzername).isPresent()) {
-
-        benutzernameFeld.setInvalid(true);
-        benutzernameFeld.setErrorMessage(
-                "Dieser Benutzername ist bereits vergeben."
-        );
-
-        return;
-    }
-
-    benutzernameFeld.setInvalid(false);
-
-    if (benutzerService.findeNachEmail(email).isPresent()) {
-
-        emailFeld.setInvalid(true);
-        emailFeld.setErrorMessage(
-                "Diese E-Mail-Adresse ist bereits registriert."
-        );
-
-        return;
-    }
+//    if (benutzerService.findeNachBenutzername(benutzername).isPresent()) {
+//
+//        benutzernameFeld.setInvalid(true);
+//        benutzernameFeld.setErrorMessage(
+//                "Dieser Benutzername ist bereits vergeben."
+//        );
+//
+//        return;
+//    }
+//
+//    benutzernameFeld.setInvalid(false);
+//
+//    if (benutzerService.findeNachEmail(email).isPresent()) {
+//
+//        emailFeld.setInvalid(true);
+//        emailFeld.setErrorMessage(
+//                "Diese E-Mail-Adresse ist bereits registriert."
+//        );
+//
+//        return;
+//    }
 
     emailFeld.setInvalid(false);
 
@@ -105,7 +105,7 @@ private void registrieren() {
             benutzername
     );
 
-    benutzerService.speichern(benutzer);
+//    benutzerService.speichern(benutzer);
 
     getUI().ifPresent(ui ->
             ui.getPage().executeJs(

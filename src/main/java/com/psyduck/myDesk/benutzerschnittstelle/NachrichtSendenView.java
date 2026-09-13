@@ -81,7 +81,7 @@ public class NachrichtSendenView extends VerticalLayout {
 
          FormLayout formular = new FormLayout();
 
-         empfaenger.setItems(benutzerService.getBenutzer());
+//         empfaenger.setItems(benutzerService.getBenutzer());
          empfaenger.setItemLabelGenerator(Benutzer::getName);
          empfaenger.setWidthFull();
          betreff.setWidthFull();
