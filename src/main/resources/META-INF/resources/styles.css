@@ -1,3 +1,23 @@
+html {
+  --vaadin-app-layout-drawer-width: 200px;
+  --vaadin-app-layout-drawer-background: #f9f9f4;
+  --vaadin-app-layout-navbar-background: #f9f9f4;
+}
+
+vaadin-app-layout {
+	padding-bottom: 0 !important;
+	padding-inline-end: 0 !important;
+	--_app-layout-radius: 0 !important;
+}
+
+vaadin-app-layout:is([overlay], :not([drawer-opened])), vaadin-app-layout:not([has-drawer]) {
+	padding-inline-start: 0 !important;
+}
+
+:where(:root) {
+	--aura-app-layout-radius: 0 !important;
+}
+
 .dashboard-background {
     background-image: url("images/dashboard-bg.png");
     background-size: cover;
@@ -25,7 +45,6 @@
   	height: 250px;
   	cursor: pointer;
 	--vaadin-card-border-radius: 16px;
-	--vaadin-card-gap: 1rem;
 	--vaadin-card-title-line-height: 3;
 	--vaadin-card-subtitle-font-size: 3rem;
 	--vaadin-card-subtitle-line-height: 1;
