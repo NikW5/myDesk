@@ -3,224 +3,133 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerSession;
-import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.card.Card;
+import com.vaadin.flow.component.card.CardVariant;
+import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
+@StyleSheet("styles.css")
 @Route(
     value = "dashboard",
     layout = MainLayout.class
 )
 public class DashboardView extends VerticalLayout {
 
-    private final NachrichtService nachrichtService;
+    public DashboardView() {
+    	
+    	// Hintergrund
+    	setSizeFull();
+        addClassName("dashboard-background");
+        
+        // Kopfzeile
+        Benutzer benutzer = BenutzerSession.getAktuellerBenutzer();
+        String name = benutzer != null ? benutzer.getName() : "";
+    	
+        H2 begruessung = new H2(name.isEmpty() ? "Willkommen bei myDesk" : "Willkommen zurück, " + name + "!");
+        begruessung.addClassName("dashboard-title");
+    	
+        Span untertitel = new Span("Was möchtest du heute erledigen?");
+        untertitel.addClassName("dashboard-subtitle");
+    	
+        VerticalLayout textLayout = new VerticalLayout(begruessung, untertitel);
+        textLayout.setPadding(true);
+        textLayout.setSpacing(false);
+        textLayout.setAlignItems(Alignment.START);
+        
+        add(textLayout);
 
-    public DashboardView(NachrichtService nachrichtService) {
-
-        this.nachrichtService = nachrichtService;
-
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
-
-        Benutzer benutzer =
-            BenutzerSession.getAktuellerBenutzer();
-
-        String name = benutzer != null
-            ? benutzer.getName()
-            : "";
-
-        H2 begruessung = new H2(
-            name.isEmpty()
-                ? "Willkommen bei myDesk"
-                : "Willkommen zurück, " + name + "!"
-        );
-
-        Span untertitel = new Span(
-            "Was möchtest du heute erledigen?"
-        );
-
-        VerticalLayout titel = new VerticalLayout(
-            begruessung,
-            untertitel
-        );
-
-        titel.setPadding(false);
-        titel.setSpacing(false);
-
-        long anzahlUngeleseneNachrichten =
-            benutzer != null
-                ? nachrichtService
-                    .getAnzahlUngeleseneNachrichten(benutzer)
-                : 0;
-
-        String postfachBeschreibung;
-
-        if (anzahlUngeleseneNachrichten == 0) {
-
-            postfachBeschreibung =
-                "Keine neuen Nachrichten";
-
-        } else if (anzahlUngeleseneNachrichten == 1) {
-
-            postfachBeschreibung =
-                "1 neue Nachricht";
-
-        } else {
-
-            postfachBeschreibung =
-                anzahlUngeleseneNachrichten
-                    + " neue Nachrichten";
-        }
-
-        HorizontalLayout karten =
-            new HorizontalLayout();
-
-        karten.setWidthFull();
-
-        karten.setJustifyContentMode(
-            FlexComponent.JustifyContentMode.CENTER
-        );
-
-        karten.setAlignItems(
-            FlexComponent.Alignment.START
-        );
-
-        karten.add(
-
-            erstelleKarte(
-                VaadinIcon.ENVELOPE,
+        // Karten
+        Card kartePostfach = erstelleKarte(
+                "card-postfach",
+                "mail",
                 "Postfach",
-                postfachBeschreibung,
+                "3",
+                "neue Nachrichten",
                 () -> UI.getCurrent()
-                    .navigate(PostfachView.class)
-            ),
+                .navigate(PostfachView.class)
+        );
 
-            erstelleKarte(
-                VaadinIcon.COMMENTS,
+        Card karteChat = erstelleKarte(
+                "card-chat",
+                "chat",
                 "Chat",
-                "Nachrichten und Gespräche",
+                "2",
+                "ungelesene Nachrichten",
                 () -> UI.getCurrent()
-                    .navigate(ChatView.class)
-            ),
+                .navigate(ChatView.class)
+        );
 
-            erstelleKarte(
-                VaadinIcon.CALENDAR,
+        Card karteKalender = erstelleKarte(
+                "card-kalender",
+                "calendar_month",
                 "Kalender",
-                "Termine und Aufgaben",
+                "5",
+                "heutige Einträge",
                 () -> UI.getCurrent()
-                    .navigate(KalenderView.class)
-            ),
+                .navigate(KalenderView.class)
+        );
 
-            erstelleKarte(
-                VaadinIcon.CHECK,
+        Card karteTodos = erstelleKarte(
+                "card-todos",
+                "check_box",
                 "To-Dos",
-                "Deine Aufgaben",
+                "3",
+                "offene Aufgaben",
                 () -> UI.getCurrent()
-                    .navigate(ToDoView.class)
-            )
+                .navigate(ToDoView.class)
         );
 
-        add(
-            titel,
-            karten
+        HorizontalLayout karten = new HorizontalLayout(
+        	kartePostfach,
+            karteChat,
+            karteKalender,
+            karteTodos	
         );
-
-        expand(karten);
+        karten.setSpacing(true);
+        karten.setPadding(true);
+        karten.setWidthFull();
+        karten.setJustifyContentMode(JustifyContentMode.CENTER);
+        karten.setAlignItems(Alignment.START);
+        
+        add(karten);
     }
-
+    
     private Card erstelleKarte(
-        VaadinIcon icon,
-        String titel,
-        String beschreibung,
-        Runnable aktion
+            String farbKlasse,
+            String iconName,
+            String titelText,
+            String subtitleText,
+            String contentText,
+            Runnable aktion
     ) {
+        Card karte = new Card();
+        karte.addThemeVariants(CardVariant.HORIZONTAL);
+        karte.addClassNames("dashboard-card", farbKlasse);
 
-        Span iconSpan =
-            new Span(icon.create());
+        Span icon = new Span(iconName);
+        icon.getElement().getClassList().add("material-symbols-rounded");
+        icon.addClassNames("card-icon-circle", "card-icon-circle-" + iconName);
+        karte.setMedia(icon);
 
-        iconSpan.getStyle()
-            .set(
-                "font-size",
-                "48px"
-            )
-            .set(
-                "color",
-                "var(--lumo-primary-color)"
-            );
+        Div title = new Div(titelText);
+        karte.setTitle(title);
 
-        Span titelSpan =
-            new Span(titel);
+        Div subtitle = new Div(subtitleText);
+        karte.setSubtitle(subtitle);
 
-        titelSpan.getStyle()
-            .set(
-                "font-size",
-                "var(--lumo-font-size-l)"
-            )
-            .set(
-                "font-weight",
-                "600"
-            );
-
-        Span beschreibungSpan =
-            new Span(beschreibung);
-
-        beschreibungSpan.getStyle()
-            .set(
-                "color",
-                "var(--lumo-secondary-text-color)"
-            );
-
-        VerticalLayout inhalt =
-            new VerticalLayout(
-                iconSpan,
-                titelSpan,
-                beschreibungSpan
-            );
-
-        inhalt.setPadding(true);
-        inhalt.setSpacing(false);
-
-        inhalt.setAlignItems(
-            FlexComponent.Alignment.CENTER
-        );
-
-        inhalt.setJustifyContentMode(
-            FlexComponent.JustifyContentMode.CENTER
-        );
-
-        Card karte =
-            new Card();
-
-        karte.add(
-            inhalt
-        );
-
-        karte.setWidth("220px");
-        karte.setHeight("180px");
-
-        karte.getStyle()
-            .set(
-                "cursor",
-                "pointer"
-            )
-            .set(
-                "transition",
-                "transform 0.15s, box-shadow 0.15s"
-            );
-
+        Div content = new Div(contentText);
+        karte.add(content);
+        
         karte.getElement().addEventListener(
         	    "click",
         	    event -> aktion.run()
         	);
-
 
         return karte;
     }
