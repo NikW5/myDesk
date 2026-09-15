@@ -2,7 +2,7 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Benutzer;
-import com.psyduck.myDesk.persistenz.BenutzerSession;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.card.Card;
 import com.vaadin.flow.component.card.CardVariant;
@@ -14,23 +14,33 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.security.PermitAll;
+
 @StyleSheet("styles.css")
 @Route(
     value = "dashboard",
     layout = MainLayout.class
 )
+@PermitAll
 public class DashboardView extends VerticalLayout {
 
-    public DashboardView() {
+	private final AktuellerBenutzerService aktuellerBenutzerService;
+
+	public DashboardView(AktuellerBenutzerService aktuellerBenutzerService) {
+
+	    this.aktuellerBenutzerService = aktuellerBenutzerService;
     	
-    	// Hintergrund
     	setSizeFull();
         addClassName("dashboard-background");
         
-        // Kopfzeile
-        Benutzer benutzer = BenutzerSession.getAktuellerBenutzer();
-        String name = benutzer != null ? benutzer.getName() : "";
-    	
+        Benutzer benutzer =
+                aktuellerBenutzerService.getAktuellerBenutzer();
+
+        String name =
+                benutzer != null
+                        ? benutzer.getName()
+                        : "";
+
         H2 begruessung = new H2(name.isEmpty() ? "Willkommen bei myDesk" : "Willkommen zurück, " + name + "!");
         begruessung.addClassName("dashboard-title");
     	
@@ -44,7 +54,6 @@ public class DashboardView extends VerticalLayout {
         
         add(textLayout);
 
-        // Karten
         Card kartePostfach = erstelleKarte(
                 "card-postfach",
                 "mail",

@@ -18,50 +18,57 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.RouterLink;
+
+import jakarta.annotation.security.PermitAll;
+
 import com.psyduck.myDesk.persistenz.Benutzer;
-import com.psyduck.myDesk.persistenz.BenutzerSession;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.psyduck.myDesk.benutzerschnittstelle.FokusView;
 
 @StyleSheet("styles.css")
+@PermitAll
 public class MainLayout extends AppLayout {
+	
+	private final AktuellerBenutzerService aktuellerBenutzerService;
 
-    public MainLayout() {
+	public MainLayout(
+	        AktuellerBenutzerService aktuellerBenutzerService) {
 
-        erstelleHeader();
-        erstelleNavigation();
-    }
+	    this.aktuellerBenutzerService =
+	            aktuellerBenutzerService;
 
-    private void erstelleHeader() {
+	    erstelleHeader();
+	    erstelleNavigation();
+	}
 
-        DrawerToggle drawerToggle = new DrawerToggle();
+	private void erstelleHeader() {
 
-        H1 titel = new H1("myDesk");
+	    DrawerToggle drawerToggle = new DrawerToggle();
 
-        titel.getStyle()
-                .set("font-size", "var(--lumo-font-size-xl)")
-                .set("margin", "0");
+	    H1 titel = new H1("myDesk");
 
-        Benutzer benutzer =
-                BenutzerSession.getAktuellerBenutzer();
+	    titel.getStyle()
+	            .set("font-size", "var(--lumo-font-size-xl)")
+	            .set("margin", "0");
 
-        String name = benutzer != null
-                ? benutzer.getName()
-                : "";
+	    Benutzer benutzer =
+	            aktuellerBenutzerService.getAktuellerBenutzer();
 
-        Span begruessung = new Span(
-                name.isEmpty()
-                        ? ""
-                        : "Hallo " + name
-        );
+	    String name = benutzer != null
+	            ? benutzer.getName()
+	            : "";
 
-        Button abmelden = new Button(
-                "Abmelden",
-                VaadinIcon.SIGN_OUT.create(),
-                event -> {
-                    BenutzerSession.abmelden();
-                    UI.getCurrent().navigate(LoginView.class);
-                }
-        );
+	    Span begruessung = new Span(
+	            name.isEmpty()
+	                    ? ""
+	                    : "Hallo " + name
+	    );
+
+	    Button abmelden = new Button(
+	            "Abmelden",
+	            VaadinIcon.SIGN_OUT.create(),
+	            event -> aktuellerBenutzerService.abmelden()
+	    );
 
         HorizontalLayout header =
                 new HorizontalLayout(

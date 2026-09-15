@@ -18,10 +18,13 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.security.PermitAll;
+
 @Route(
     value = "fokus",
     layout = MainLayout.class
 )
+@PermitAll
 public class FokusView extends VerticalLayout {
 
     private static final int FOKUS_DAUER = 25 * 60;
