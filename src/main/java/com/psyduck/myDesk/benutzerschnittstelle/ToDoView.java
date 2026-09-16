@@ -31,7 +31,10 @@ public class ToDoView extends VerticalLayout {
     private final AktuellerBenutzerService aktuellerBenutzerService;
     private final VerticalLayout aufgabenListe = new VerticalLayout();
 
-    public ToDoView(ToDoRepository toDoRepository, AktuellerBenutzerService aktuellerBenutzerService) {
+    public ToDoView(
+            ToDoRepository toDoRepository,
+            AktuellerBenutzerService aktuellerBenutzerService) {
+
         this.toDoRepository = toDoRepository;
         this.aktuellerBenutzerService = aktuellerBenutzerService;
 
@@ -40,16 +43,25 @@ public class ToDoView extends VerticalLayout {
         setSpacing(true);
 
         H2 ueberschrift = new H2("Meine Aufgaben");
+
         Button aufgabeHinzufuegen = new Button(
-            "Aufgabe hinzufügen",
-            event -> zeigeAufgabeDialog()
+                "Aufgabe hinzufügen",
+                event -> zeigeAufgabeDialog()
         );
-        aufgabeHinzufuegen.addThemeVariants(ButtonVariant.PRIMARY);
+
+        aufgabeHinzufuegen.addThemeVariants(
+                ButtonVariant.PRIMARY
+        );
 
         aufgabenListe.setPadding(false);
         aufgabenListe.setSpacing(true);
 
-        add(ueberschrift, aufgabeHinzufuegen, aufgabenListe);
+        add(
+                ueberschrift,
+                aufgabeHinzufuegen,
+                aufgabenListe
+        );
+
         expand(aufgabenListe);
 
         aktualisiereListe();
@@ -62,32 +74,57 @@ public class ToDoView extends VerticalLayout {
         eingabe.setWidthFull();
         eingabe.setRequired(true);
 
-        DatePicker faelligkeitsdatum = new DatePicker("Fälligkeitsdatum");
+        DatePicker faelligkeitsdatum =
+                new DatePicker("Fälligkeitsdatum");
+
         faelligkeitsdatum.setLocale(Locale.GERMAN);
 
-        Button abbrechen = new Button("Abbrechen", event -> dialog.close());
+        Button abbrechen = new Button(
+                "Abbrechen",
+                event -> dialog.close()
+        );
 
-        Button hinzufuegen = new Button("Hinzufügen", event -> {
-            String text = eingabe.getValue().trim();
-            Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
+        Button hinzufuegen = new Button(
+                "Hinzufügen",
+                event -> {
+                    String text = eingabe.getValue().trim();
+                    Benutzer benutzer =
+                            aktuellerBenutzerService
+                                    .getAktuellerBenutzer();
 
-            if (text.isEmpty() || benutzer == null) return;
+                    if (text.isEmpty() || benutzer == null) {
+                        return;
+                    }
 
-            ToDo aufgabe = new ToDo(text);
-            aufgabe.setFaelligAm(faelligkeitsdatum.getValue());
-            aufgabe.setBenutzer(benutzer);
+                    ToDo aufgabe = new ToDo(text);
+                    aufgabe.setFaelligAm(
+                            faelligkeitsdatum.getValue()
+                    );
+                    aufgabe.setBenutzer(benutzer);
 
-            toDoRepository.save(aufgabe);
-            aktualisiereListe();
-            dialog.close();
-        });
-        hinzufuegen.addThemeVariants(ButtonVariant.PRIMARY);
+                    toDoRepository.save(aufgabe);
+                    aktualisiereListe();
+                    dialog.close();
+                }
+        );
 
-        dialog.add(new VerticalLayout(
-            eingabe,
-            faelligkeitsdatum,
-            new HorizontalLayout(hinzufuegen, abbrechen)
-        ));
+        hinzufuegen.addThemeVariants(
+                ButtonVariant.PRIMARY
+        );
+
+        HorizontalLayout buttons = new HorizontalLayout(
+                hinzufuegen,
+                abbrechen
+        );
+
+        dialog.add(
+                new VerticalLayout(
+                        eingabe,
+                        faelligkeitsdatum,
+                        buttons
+                )
+        );
+
         dialog.open();
     }
 
@@ -99,31 +136,54 @@ public class ToDoView extends VerticalLayout {
         eingabe.setRequired(true);
         eingabe.setValue(aufgabe.getText());
 
-        DatePicker faelligkeitsdatum = new DatePicker("Fälligkeitsdatum");
+        DatePicker faelligkeitsdatum =
+                new DatePicker("Fälligkeitsdatum");
+
         faelligkeitsdatum.setLocale(Locale.GERMAN);
         faelligkeitsdatum.setValue(aufgabe.getFaelligAm());
 
-        Button abbrechen = new Button("Abbrechen", event -> dialog.close());
+        Button abbrechen = new Button(
+                "Abbrechen",
+                event -> dialog.close()
+        );
 
-        Button speichern = new Button("Speichern", event -> {
-            String text = eingabe.getValue().trim();
+        Button speichern = new Button(
+                "Speichern",
+                event -> {
+                    String text = eingabe.getValue().trim();
 
-            if (text.isEmpty()) return;
+                    if (text.isEmpty()) {
+                        return;
+                    }
 
-            aufgabe.setText(text);
-            aufgabe.setFaelligAm(faelligkeitsdatum.getValue());
+                    aufgabe.setText(text);
+                    aufgabe.setFaelligAm(
+                            faelligkeitsdatum.getValue()
+                    );
 
-            toDoRepository.save(aufgabe);
-            aktualisiereListe();
-            dialog.close();
-        });
-        speichern.addThemeVariants(ButtonVariant.PRIMARY);
+                    toDoRepository.save(aufgabe);
+                    aktualisiereListe();
+                    dialog.close();
+                }
+        );
 
-        dialog.add(new VerticalLayout(
-            eingabe,
-            faelligkeitsdatum,
-            new HorizontalLayout(speichern, abbrechen)
-        ));
+        speichern.addThemeVariants(
+                ButtonVariant.PRIMARY
+        );
+
+        HorizontalLayout buttons = new HorizontalLayout(
+                speichern,
+                abbrechen
+        );
+
+        dialog.add(
+                new VerticalLayout(
+                        eingabe,
+                        faelligkeitsdatum,
+                        buttons
+                )
+        );
+
         dialog.open();
     }
 
@@ -135,17 +195,26 @@ public class ToDoView extends VerticalLayout {
     private void aktualisiereListe() {
         aufgabenListe.removeAll();
 
-        Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
-        if (benutzer == null) return;
+        Benutzer benutzer =
+                aktuellerBenutzerService.getAktuellerBenutzer();
 
-        DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        if (benutzer == null) {
+            return;
+        }
+
+        DateTimeFormatter format =
+                DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
         for (ToDo aufgabe : toDoRepository.findByBenutzer(benutzer)) {
-            Checkbox checkbox = new Checkbox(aufgabe.getText());
+
+            Checkbox checkbox =
+                    new Checkbox(aufgabe.getText());
+
             checkbox.setValue(aufgabe.isErledigt());
 
             if (aufgabe.isErledigt()) {
-                checkbox.getStyle().set("text-decoration", "line-through");
+                checkbox.getStyle()
+                        .set("text-decoration", "line-through");
             }
 
             checkbox.addValueChangeListener(event -> {
@@ -153,42 +222,54 @@ public class ToDoView extends VerticalLayout {
                 toDoRepository.save(aufgabe);
 
                 if (event.getValue()) {
-                    checkbox.getStyle().set("text-decoration", "line-through");
+                    checkbox.getStyle()
+                            .set("text-decoration", "line-through");
                 } else {
-                    checkbox.getStyle().remove("text-decoration");
+                    checkbox.getStyle()
+                            .remove("text-decoration");
                 }
             });
 
             Span faelligkeit = new Span(
-                aufgabe.getFaelligAm() != null
-                    ? "Fällig am: " + aufgabe.getFaelligAm().format(format)
-                    : "Kein Fälligkeitsdatum"
+                    aufgabe.getFaelligAm() != null
+                            ? "Fällig am: "
+                                    + aufgabe.getFaelligAm()
+                                            .format(format)
+                            : "Kein Fälligkeitsdatum"
             );
 
             Button bearbeiten = new Button(
-                VaadinIcon.EDIT.create(),
-                event -> zeigeBearbeitenDialog(aufgabe)
+                    VaadinIcon.EDIT.create(),
+                    event -> zeigeBearbeitenDialog(aufgabe)
             );
-            bearbeiten.setTooltipText("Aufgabe bearbeiten, quack!");
+
+            bearbeiten.setTooltipText(
+                    "Aufgabe bearbeiten, quack!"
+            );
 
             Button loeschen = new Button(
-                VaadinIcon.TRASH.create(),
-                event -> loescheAufgabe(aufgabe)
+                    VaadinIcon.TRASH.create(),
+                    event -> loescheAufgabe(aufgabe)
             );
-            loeschen.setTooltipText("Aufgabe löschen, quack!");
+
+            loeschen.setTooltipText(
+                    "Aufgabe löschen, quack!"
+            );
 
             HorizontalLayout verwaltung = new HorizontalLayout(
-                faelligkeit,
-                bearbeiten,
-                loeschen
+                    faelligkeit,
+                    bearbeiten,
+                    loeschen
             );
+
             verwaltung.setWidthFull();
             verwaltung.setAlignItems(Alignment.CENTER);
 
             VerticalLayout aufgabenBlock = new VerticalLayout(
-                checkbox,
-                verwaltung
+                    checkbox,
+                    verwaltung
             );
+
             aufgabenBlock.setPadding(true);
             aufgabenBlock.setSpacing(false);
             aufgabenBlock.setWidthFull();
