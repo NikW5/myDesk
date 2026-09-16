@@ -1,11 +1,14 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
-
+ 
 @Route("login")
 public class LoginView extends VerticalLayout {
 
@@ -14,6 +17,29 @@ public class LoginView extends VerticalLayout {
         setSizeFull();
         setPadding(true);
         setSpacing(true);
+
+        HorizontalLayout obereLeiste =
+            new HorizontalLayout();
+
+        obereLeiste.setWidthFull();
+        obereLeiste.setJustifyContentMode(
+            JustifyContentMode.END
+        );
+
+        Button registrierenButton =
+            new Button(
+                "Registrieren",
+                event ->
+                    UI.getCurrent().navigate(
+                        RegistrierenView.class
+                    )
+            );
+
+        obereLeiste.add(
+            registrierenButton
+        );
+
+        add(obereLeiste);
 
         VerticalLayout loginBereich =
             new VerticalLayout();
@@ -36,6 +62,7 @@ public class LoginView extends VerticalLayout {
 
         expand(loginBereich);
 
+        // GIF
         add(
             erstelleGIFBereich()
         );

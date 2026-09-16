@@ -17,14 +17,11 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 
-@Route(
-	    value = "registrieren",
-	    layout = MainLayout.class
-	)
+@Route("Registrieren")
 @PageTitle("Registrieren")
 @AnonymousAllowed
 public class RegistrierenView extends VerticalLayout {
-
+ 
 private final TextField benutzernameFeld = new TextField("Benutzername");
 private final EmailField emailFeld = new EmailField("E-Mail");
 private final PasswordField passwortFeld = new PasswordField("Passwort");
