@@ -1,22 +1,79 @@
+/* =========================================================
+   Globale Variablen
+   ========================================================= */
+
 html {
-  --vaadin-app-layout-drawer-width: 200px;
-  --vaadin-app-layout-drawer-background: #f9f9f4;
-  --vaadin-app-layout-navbar-background: #f9f9f4;
+    --vaadin-app-layout-drawer-width: 200px;
+    --vaadin-app-layout-drawer-background: #f9f9f4;
+    --vaadin-app-layout-navbar-background: #f9f9f4;
+
+    --aura-accent-text: #122131;
+    --aura-accent-text-color: #35613a;
+
+    --_app-layout-radius: 0;
+    --aura-app-layout-radius: 0;
 }
+
+
+/* =========================================================
+   App Layout
+   ========================================================= */
 
 vaadin-app-layout {
-	padding-bottom: 0 !important;
-	padding-inline-end: 0 !important;
-	--_app-layout-radius: 0 !important;
+    padding-bottom: 0 !important;
+    padding-inline-end: 0 !important;
 }
 
-vaadin-app-layout:is([overlay], :not([drawer-opened])), vaadin-app-layout:not([has-drawer]) {
-	padding-inline-start: 0 !important;
+vaadin-app-layout:is([overlay], :not([drawer-opened])),
+vaadin-app-layout:not([has-drawer]) {
+    padding-inline-start: 0 !important;
 }
 
-:where(:root) {
-	--aura-app-layout-radius: 0 !important;
+
+/* =========================================================
+   Navigation / Drawer
+   ========================================================= */
+
+.main-drawer a {
+    color: var(--aura-text-color);
+    text-decoration: none;
+    border-radius: 12px !important;
+    padding: 0.5rem !important;
+    font-weight: 500;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
+
+.main-drawer a[highlight] {
+    background-color: #edf6e5;
+    color: var(--aura-accent-text-color);
+}
+
+.main-drawer a:hover,
+.main-drawer a:focus,
+.main-drawer a[highlight] {
+    color: var(--aura-accent-text-color);
+}
+
+.main-drawer .material-symbols-rounded {
+    font-size: 1.25rem;
+}
+
+
+/* =========================================================
+   Abmelden
+   ========================================================= */
+
+.abmelden-button {
+    color: #4e8f53;
+}
+
+
+/* =========================================================
+   Dashboard
+   ========================================================= */
 
 .dashboard-background {
     background-image: url("images/dashboard-bg.png");
@@ -28,71 +85,100 @@ vaadin-app-layout:is([overlay], :not([drawer-opened])), vaadin-app-layout:not([h
 .dashboard-title {
     color: black;
     margin-top: 1rem;
+    margin-bottom: 1rem;
     font-size: 2rem;
     font-weight: 600;
-	margin-bottom: 1rem;
 }
 
 .dashboard-subtitle {
     color: #636567;
     opacity: 0.9;
     font-size: 1.2rem;
-	text-align: left;
+    text-align: left;
 }
 
+
+/* =========================================================
+   Dashboard-Karten
+   ========================================================= */
+
 .dashboard-card {
-  	width: 275px;
-  	height: 250px;
-  	cursor: pointer;
-	--vaadin-card-border-radius: 16px;
-	--vaadin-card-title-line-height: 3;
-	--vaadin-card-subtitle-font-size: 3rem;
-	--vaadin-card-subtitle-line-height: 1;
-	background-size: contain;
-	background-position: bottom;
-	background-repeat: no-repeat;
-	border: none;
+    width: 275px;
+    height: 250px;
+    cursor: pointer;
+
+    --vaadin-card-border-radius: 16px;
+    --vaadin-card-title-line-height: 3;
+    --vaadin-card-subtitle-font-size: 3rem;
+    --vaadin-card-subtitle-line-height: 1;
+
+    background-size: contain;
+    background-position: bottom;
+    background-repeat: no-repeat;
+
+    border: none;
 }
 
 .dashboard-card:hover {
-	--vaadin-card-shadow: 10px 5px 10px rgba(0, 0, 0, 0.3);
-	transform: translateY(-2px);
-	transition: box-shadow 1s ease, transform 0.2s ease;
+    --vaadin-card-shadow:
+        10px 5px 10px rgba(0, 0, 0, 0.3);
+
+    transform: translateY(-2px);
+
+    transition:
+        box-shadow 1s ease,
+        transform 0.2s ease;
 }
 
+
+/* =========================================================
+   Einzelne Dashboard-Karten
+   ========================================================= */
+
 .card-postfach {
-	--vaadin-card-background: none;
-	background-image: url("images/postfach-bg.png");
-	background-color: #edf6e5;
+    --vaadin-card-background: none;
+
+    background-image: url("images/postfach-bg.png");
+    background-color: #edf6e5;
 }
 
 .card-chat {
-	--vaadin-card-background: none;
-	background-image: url("images/chat-bg.png");
-	background-color: #e2d1f4;
+    --vaadin-card-background: none;
+
+    background-image: url("images/chat-bg.png");
+    background-color: #e2d1f4;
 }
 
 .card-kalender {
-	--vaadin-card-background: none;
-	background-image: url("images/kalender-bg.png");
-	background-color: #f9dcb7;
+    --vaadin-card-background: none;
+
+    background-image: url("images/kalender-bg.png");
+    background-color: #f9dcb7;
 }
 
 .card-todos {
-	--vaadin-card-background: none;
-	background-image: url("images/todos-bg.png");
-	background-color: #d9e8f8;
+    --vaadin-card-background: none;
+
+    background-image: url("images/todos-bg.png");
+    background-color: #d9e8f8;
 }
 
+
+/* =========================================================
+   Dashboard-Karten – Icons
+   ========================================================= */
+
 .card-icon-circle {
-    font-size: 28px;
-    color: white;
-    line-height: 1;
-    border-radius: 50%;
-    padding: 12px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+    padding: 12px;
+    border-radius: 50%;
+
+    font-size: 28px;
+    line-height: 1;
+    color: white;
 }
 
 .card-icon-circle-mail {
@@ -100,7 +186,7 @@ vaadin-app-layout:is([overlay], :not([drawer-opened])), vaadin-app-layout:not([h
 }
 
 .card-icon-circle-chat {
-	background-color: #8f69ca;
+    background-color: #8f69ca;
 }
 
 .card-icon-circle-calendar_month {
@@ -111,12 +197,17 @@ vaadin-app-layout:is([overlay], :not([drawer-opened])), vaadin-app-layout:not([h
     background-color: #337bd2;
 }
 
+
+/* =========================================================
+   Postfach – Grid
+   ========================================================= */
+
 .postfach-grid::part(body-cell) {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 .postfach-grid::part(row):hover {
-    --row-hover-bg: #E6E6FA;
+    --row-hover-bg: #e6e6fa;
 }
 
 .postfach-grid::part(body-cell) {
