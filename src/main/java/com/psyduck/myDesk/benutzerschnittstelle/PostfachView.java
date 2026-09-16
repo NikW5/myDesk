@@ -10,9 +10,9 @@ import java.util.Locale;
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Anhang;
 import com.psyduck.myDesk.persistenz.Benutzer;
-import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -173,6 +173,9 @@ public class PostfachView extends VerticalLayout {
                         return;
                     }
 
+                    /*
+                     * Nachricht als gelesen markieren.
+                     */
                     if (!ausgewaehlt.isGelesen()) {
 
                         nachrichtService
@@ -193,7 +196,9 @@ public class PostfachView extends VerticalLayout {
                     );
 
                     von.setValue(
-                            ausgewaehlt.getBenutzer()
+                            ausgewaehlt
+                                    .getAbsender()
+                                    .getName()
                     );
 
                     nachricht.setValue(
@@ -308,7 +313,10 @@ public class PostfachView extends VerticalLayout {
 
         grid.setItems(
                 nachrichtService
-                        .getNachrichten(aktuellerBenutzerService.getAktuellerBenutzer()                        )
+                        .getNachrichten(
+                                aktuellerBenutzerService
+                                        .getAktuellerBenutzer()
+                        )
                         .stream()
                         .sorted(
                                 Comparator.comparing(
@@ -364,7 +372,9 @@ public class PostfachView extends VerticalLayout {
 
     private void aktualisiereNeueNachrichtHinweis() {
 
-        Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
+        Benutzer benutzer =
+                aktuellerBenutzerService
+                        .getAktuellerBenutzer();
 
         if (benutzer == null) {
             neueNachrichtHinweis.setVisible(false);
@@ -389,14 +399,68 @@ public class PostfachView extends VerticalLayout {
                         false
                 );
 
-        grid.addColumn(
-                nachricht ->
-                        nachricht
-                                .getAbsender()
-                                .getName()
-        )
+        /*
+         * Absender
+         *
+         * Ungelesene Nachrichten:
+         * - blauer Punkt
+         * - fette Schrift
+         * - primäre Textfarbe
+         */
+        grid.addComponentColumn(nachricht -> {
+
+            Span absender =
+                    new Span(
+                            nachricht
+                                    .getAbsender()
+                                    .getName()
+                    );
+
+            if (!nachricht.isGelesen()) {
+
+                absender.getStyle()
+                        .set(
+                                "font-weight",
+                                "700"
+                        )
+                        .set(
+                                "color",
+                                "var(--lumo-primary-text-color)"
+                        );
+
+                Span indikator =
+                        new Span("●");
+
+                indikator.getStyle()
+                        .set(
+                                "color",
+                                "var(--lumo-primary-color)"
+                        )
+                        .set(
+                                "font-size",
+                                "12px"
+                        );
+
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                indikator,
+                                absender
+                        );
+
+                layout.setSpacing(true);
+                layout.setPadding(false);
+
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
+
+                return layout;
+            }
+
+            return absender;
+
+        })
         .setHeader("Absender")
-        .setSortable(true)
         .setComparator(
                 nachricht ->
                         nachricht
@@ -405,13 +469,40 @@ public class PostfachView extends VerticalLayout {
         )
         .setFlexGrow(1);
 
-        grid.addColumn(
+        /*
+         * Betreff
+         *
+         * Ungelesene Nachrichten werden fett dargestellt.
+         */
+        grid.addComponentColumn(nachricht -> {
+
+            Span titel =
+                    new Span(
+                            nachricht.getTitel()
+                    );
+
+            if (!nachricht.isGelesen()) {
+
+                titel.getStyle()
+                        .set(
+                                "font-weight",
+                                "700"
+                        );
+
+            }
+
+            return titel;
+
+        })
+        .setHeader("Titel")
+        .setComparator(
                 Nachricht::getTitel
         )
-        .setHeader("Titel")
-        .setSortable(true)
         .setFlexGrow(2);
 
+        /*
+         * Vorschau
+         */
         grid.addColumn(
                 Nachricht::getVorschau
         )
@@ -419,6 +510,9 @@ public class PostfachView extends VerticalLayout {
         .setSortable(true)
         .setFlexGrow(3);
 
+        /*
+         * Empfangsdatum
+         */
         grid.addComponentColumn(
                 nachricht ->
                         formatiereDatumUndUhrzeit(
@@ -434,13 +528,25 @@ public class PostfachView extends VerticalLayout {
 
         grid.setSizeFull();
 
-        grid.setItems(nachrichtService
-                        .getNachrichten(aktuellerBenutzerService.getAktuellerBenutzer())
-                        .stream().sorted(Comparator.comparing(Nachricht::getEmpfangenAm).reversed())
-                        .toList());
+        grid.setItems(
+                nachrichtService
+                        .getNachrichten(
+                                aktuellerBenutzerService
+                                        .getAktuellerBenutzer()
+                        )
+                        .stream()
+                        .sorted(
+                                Comparator.comparing(
+                                        Nachricht::getEmpfangenAm
+                                ).reversed()
+                        )
+                        .toList()
+        );
 
-        grid.addClassName("postfach-grid");
-        
+        grid.addClassName(
+                "postfach-grid"
+        );
+
         return grid;
     }
 
@@ -449,32 +555,66 @@ public class PostfachView extends VerticalLayout {
             LocalDateTime datum
     ) {
 
-        LocalDate heute = LocalDate.now();
+        LocalDate heute =
+                LocalDate.now();
 
         String tag;
-        String uhrzeit = datum.format(DateTimeFormatter.ofPattern("HH:mm", Locale.GERMAN));
 
-        if (datum.toLocalDate().equals(heute)
-        ) {tag = "heute";
-        } else if (
-                datum.toLocalDate().equals(heute.minusDays(1))
+        String uhrzeit =
+                datum.format(
+                        DateTimeFormatter.ofPattern(
+                                "HH:mm",
+                                Locale.GERMAN
+                        )
+                );
+
+        if (
+                datum.toLocalDate()
+                        .equals(heute)
         ) {
+
+            tag = "heute";
+
+        } else if (
+                datum.toLocalDate()
+                        .equals(
+                                heute.minusDays(1)
+                        )
+        ) {
+
             tag = "gestern";
+
         } else {
-            tag =datum.format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN));
+
+            tag =
+                    datum.format(
+                            DateTimeFormatter.ofPattern(
+                                    "dd.MM.yyyy",
+                                    Locale.GERMAN
+                            )
+                    );
         }
 
-        Span tagSpan =  new Span(tag);
+        Span tagSpan =
+                new Span(tag);
+
         tagSpan.setWidth("90px");
 
-        Span uhrzeitSpan = new Span(uhrzeit);
+        Span uhrzeitSpan =
+                new Span(uhrzeit);
 
-        HorizontalLayout datumLayout = new HorizontalLayout(tagSpan, uhrzeitSpan);
+        HorizontalLayout datumLayout =
+                new HorizontalLayout(
+                        tagSpan,
+                        uhrzeitSpan
+                );
 
         datumLayout.setSpacing(false);
         datumLayout.setPadding(false);
 
-        datumLayout.setAlignItems(FlexComponent.Alignment.CENTER);
+        datumLayout.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
 
         return datumLayout;
     }
