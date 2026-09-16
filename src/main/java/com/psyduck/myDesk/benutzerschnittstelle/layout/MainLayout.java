@@ -9,12 +9,14 @@ import com.psyduck.myDesk.benutzerschnittstelle.ToDoView;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
@@ -43,11 +45,8 @@ public class MainLayout extends AppLayout {
     private void erstelleHeader() {
         DrawerToggle drawerToggle = new DrawerToggle();
 
-        H1 titel = new H1("myDesk");
-
-        titel.getStyle()
-                .set("font-size", "var(--lumo-font-size-xl)")
-                .set("margin", "0");
+        Image logo = new Image("/images/logo.png", "myDesk");
+        logo.setHeight("40px");
 
         Benutzer benutzer =
                 aktuellerBenutzerService.getAktuellerBenutzer();
@@ -56,20 +55,34 @@ public class MainLayout extends AppLayout {
                 ? benutzer.getName()
                 : "";
 
-        Span begruessung = new Span(
-                name.isEmpty() ? "" : "Hallo " + name
+        Avatar avatar = new Avatar(name);
+
+        Span benutzername = new Span(name);
+
+        HorizontalLayout benutzerBereich =
+                new HorizontalLayout(avatar, benutzername);
+
+        benutzerBereich.setAlignItems(
+                FlexComponent.Alignment.CENTER
         );
 
+        benutzerBereich.setSpacing(true);
+        
         Button abmelden = new Button(
                 "Abmelden",
                 VaadinIcon.SIGN_OUT.create(),
                 event -> aktuellerBenutzerService.abmelden()
         );
+        
+        abmelden.addClassName("abmelden-button");
+        
+        Div spacer = new Div();
 
         HorizontalLayout header = new HorizontalLayout(
                 drawerToggle,
-                titel,
-                begruessung,
+                logo,
+                spacer,
+                benutzerBereich,
                 abmelden
         );
 
@@ -77,7 +90,7 @@ public class MainLayout extends AppLayout {
         header.setAlignItems(
                 FlexComponent.Alignment.CENTER
         );
-        header.expand(titel);
+        header.expand(spacer);
 
         header.getStyle()
                 .set("padding", "0 var(--lumo-space-m)")
@@ -88,44 +101,46 @@ public class MainLayout extends AppLayout {
 
     private void erstelleNavigation() {
         VerticalLayout navigation = new VerticalLayout();
+        
+        navigation.addClassName("main-drawer");
 
         navigation.setPadding(true);
-        navigation.setSpacing(false);
+        navigation.setSpacing(true);
         navigation.setWidthFull();
 
         RouterLink dashboard = erstelleLink(
                 "Dashboard",
-                VaadinIcon.HOME,
+                "home",
                 DashboardView.class
         );
 
         RouterLink postfach = erstelleLink(
                 "Postfach",
-                VaadinIcon.ENVELOPE,
+                "mail",
                 PostfachView.class
         );
 
         RouterLink chat = erstelleLink(
                 "Chat",
-                VaadinIcon.COMMENTS,
+                "chat",
                 ChatView.class
         );
 
         RouterLink kalender = erstelleLink(
                 "Kalender",
-                VaadinIcon.CALENDAR,
+                "calendar_month",
                 KalenderView.class
         );
 
         RouterLink todo = erstelleLink(
                 "To-Do",
-                VaadinIcon.CHECK,
+                "check_box",
                 ToDoView.class
         );
 
         RouterLink fokus = erstelleLink(
                 "Fokus",
-                VaadinIcon.TIMER,
+                "timer",
                 FokusView.class
         );
 
@@ -143,16 +158,18 @@ public class MainLayout extends AppLayout {
 
     private RouterLink erstelleLink(
             String text,
-            VaadinIcon icon,
+            String iconName,
             Class<? extends Component> view) {
 
         RouterLink link = new RouterLink();
 
-        Span iconSpan = new Span(icon.create());
+        Span icon = new Span(iconName);
+        icon.addClassName("material-symbols-rounded");
+        
         Span textSpan = new Span(text);
 
         HorizontalLayout layout = new HorizontalLayout(
-                iconSpan,
+                icon,
                 textSpan
         );
 
