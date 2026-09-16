@@ -20,14 +20,14 @@ public class Nachricht {
     @ManyToOne
     @JoinColumn(name = "empfaenger_id", nullable = false)
     private Benutzer empfaenger;
-    
+
     @OneToMany(
-    	    mappedBy = "nachricht",
-    	    cascade = CascadeType.ALL,
-    	    orphanRemoval = true,
-    	    fetch = FetchType.EAGER
-    	)
-    	private List<Anhang> anhaenge = new ArrayList<>();
+        mappedBy = "nachricht",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
+    )
+    private List<Anhang> anhaenge = new ArrayList<>();
 
     @Column(nullable = false)
     private String titel;
@@ -37,6 +37,9 @@ public class Nachricht {
 
     @Column(name = "empfangen_am", nullable = false)
     private LocalDateTime empfangenAm;
+
+    @Column(nullable = false)
+    private boolean gelesen = false;
 
     protected Nachricht() {
     }
@@ -53,6 +56,7 @@ public class Nachricht {
         this.titel = titel;
         this.inhalt = inhalt;
         this.empfangenAm = empfangenAm;
+        this.gelesen = false;
     }
 
     public Integer getId() {
@@ -79,6 +83,14 @@ public class Nachricht {
         return empfangenAm;
     }
 
+    public boolean isGelesen() {
+        return gelesen;
+    }
+
+    public void setGelesen(boolean gelesen) {
+        this.gelesen = gelesen;
+    }
+
     public String getBenutzer() {
         return absender.getName();
     }
@@ -94,7 +106,7 @@ public class Nachricht {
 
         return inhalt.substring(0, 50) + "...";
     }
-    
+
     public List<Anhang> getAnhaenge() {
         return anhaenge;
     }

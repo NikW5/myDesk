@@ -14,6 +14,7 @@ import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.auth.AnonymousAllowed;
 
 
 @Route(
@@ -21,6 +22,7 @@ import com.vaadin.flow.router.Route;
 	    layout = MainLayout.class
 	)
 @PageTitle("Registrieren")
+@AnonymousAllowed
 public class RegistrierenView extends VerticalLayout {
 
 private final TextField benutzernameFeld = new TextField("Benutzername");

@@ -1,75 +1,191 @@
 package com.psyduck.myDesk.benutzerschnittstelle.layout;
 
-import com.psyduck.myDesk.persistenz.Kopfzeilentyp;
-import com.vaadin.flow.component.HasElement;
+import com.psyduck.myDesk.benutzerschnittstelle.ChatView;
+import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
+import com.psyduck.myDesk.benutzerschnittstelle.KalenderView;
+import com.psyduck.myDesk.benutzerschnittstelle.LoginView;
+import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
+import com.psyduck.myDesk.benutzerschnittstelle.ToDoView;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.applayout.AppLayout;
+import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.H1;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.Location;
-import com.vaadin.flow.router.RouterLayout;
+import com.vaadin.flow.router.RouterLink;
 
-public class MainLayout extends VerticalLayout implements RouterLayout {
+import jakarta.annotation.security.PermitAll;
 
-    private final Kopfzeile kopfzeile;
-    private final Div content;
-    private final Fußzeile fußzeile;
+import com.psyduck.myDesk.persistenz.Benutzer;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
+import com.psyduck.myDesk.benutzerschnittstelle.FokusView;
 
-    public MainLayout() {
+@StyleSheet("styles.css")
+@PermitAll
+public class MainLayout extends AppLayout {
+	
+	private final AktuellerBenutzerService aktuellerBenutzerService;
 
-        kopfzeile = new Kopfzeile();
-        content = new Div();
-        fußzeile = new Fußzeile();
+	public MainLayout(
+	        AktuellerBenutzerService aktuellerBenutzerService) {
 
-        setSizeFull();
-        setPadding(false);
-        setSpacing(false);
+	    this.aktuellerBenutzerService =
+	            aktuellerBenutzerService;
 
-        content.setWidthFull();
-        content.setSizeFull();
+	    erstelleHeader();
+	    erstelleNavigation();
+	}
 
-        add(kopfzeile, content, fußzeile);
+	private void erstelleHeader() {
 
-        expand(content);
+	    DrawerToggle drawerToggle = new DrawerToggle();
+
+	    H1 titel = new H1("myDesk");
+
+	    titel.getStyle()
+	            .set("font-size", "var(--lumo-font-size-xl)")
+	            .set("margin", "0");
+
+	    Benutzer benutzer =
+	            aktuellerBenutzerService.getAktuellerBenutzer();
+
+	    String name = benutzer != null
+	            ? benutzer.getName()
+	            : "";
+
+	    Span begruessung = new Span(
+	            name.isEmpty()
+	                    ? ""
+	                    : "Hallo " + name
+	    );
+
+	    Button abmelden = new Button(
+	            "Abmelden",
+	            VaadinIcon.SIGN_OUT.create(),
+	            event -> aktuellerBenutzerService.abmelden()
+	    );
+
+        HorizontalLayout header =
+                new HorizontalLayout(
+                        drawerToggle,
+                        titel,
+                        begruessung,
+                        abmelden
+                );
+
+        header.setWidthFull();
+
+        header.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
+        header.expand(titel);
+
+        header.getStyle()
+                .set("padding", "0 var(--lumo-space-m)")
+                .set("box-sizing", "border-box");
+
+        addToNavbar(header);
     }
 
-    private Kopfzeilentyp ermittleKopfzeilentyp() {
+    private void erstelleNavigation() {
 
-        Location location = UI.getCurrent()
-                .getInternals()
-                .getActiveViewLocation();
+        VerticalLayout navigation =
+                new VerticalLayout();
 
-        String pfad = location.getPath();
+        navigation.setPadding(true);
+        navigation.setSpacing(false);
+        navigation.setWidthFull();
 
-        return switch (pfad) {
-            case "login" -> Kopfzeilentyp.LOGIN;
-            case "dashboard" -> Kopfzeilentyp.DASHBOARD;
-            case "postfach" -> Kopfzeilentyp.POSTFACH;
-            case "neue_nachricht" -> Kopfzeilentyp.NACHRICHT_SENDEN;
-            case "chat" -> Kopfzeilentyp.CHAT;
-            case "kalender" -> Kopfzeilentyp.KALENDER;
-            case "todo" -> Kopfzeilentyp.TODO;
-            default -> Kopfzeilentyp.LOGIN;
-        };
+        RouterLink dashboard = erstelleLink(
+                "Dashboard",
+                VaadinIcon.HOME,
+                DashboardView.class
+        );
+
+        RouterLink postfach = erstelleLink(
+                "Postfach",
+                VaadinIcon.ENVELOPE,
+                PostfachView.class
+        );
+
+        RouterLink chat = erstelleLink(
+                "Chat",
+                VaadinIcon.COMMENTS,
+                ChatView.class
+        );
+
+        RouterLink kalender = erstelleLink(
+                "Kalender",
+                VaadinIcon.CALENDAR,
+                KalenderView.class
+        );
+
+        RouterLink todo = erstelleLink(
+                "To-Do",
+                VaadinIcon.CHECK,
+                ToDoView.class
+        );
+        
+        RouterLink fokus = erstelleLink(
+        	    "Fokus",
+        	    VaadinIcon.TIMER,
+        	    FokusView.class
+        	);
+
+
+        navigation.add(
+                dashboard,
+                postfach,
+                chat,
+                kalender,
+                todo,
+                fokus
+        );
+
+        addToDrawer(navigation);
     }
 
-    @Override
-    public void showRouterLayoutContent(HasElement view) {
+    private RouterLink erstelleLink(
+            String text,
+            VaadinIcon icon,
+            Class<? extends com.vaadin.flow.component.Component> view
+    ) {
 
-        // Kopfzeile an die aktuelle Route anpassen
-        kopfzeile.setTyp(ermittleKopfzeilentyp());
+        RouterLink link = new RouterLink();
 
-        // Neue View in den Hauptbereich einsetzen
-        content.getElement().appendChild(view.getElement());
-    }
+        Span iconSpan = new Span(
+                icon.create()
+        );
 
-    @Override
-    public void removeRouterLayoutContent(HasElement view) {
+        Span textSpan = new Span(text);
 
-        // Die alte View vollständig von ihrem Parent lösen.
-        //
-        // Das ist robuster als removeChild(), weil Vaadin selbst
-        // dafür sorgt, dass das Element aus seinem aktuellen Parent
-        // entfernt wird.
-        view.getElement().removeFromParent();
+        HorizontalLayout layout =
+                new HorizontalLayout(
+                        iconSpan,
+                        textSpan
+                );
+
+        layout.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
+        layout.setSpacing(true);
+
+        link.add(layout);
+        link.setRoute(view);
+
+        link.getStyle()
+                .set("padding", "var(--lumo-space-s)")
+                .set("border-radius", "var(--lumo-border-radius-m)")
+                .set("width", "100%")
+                .set("box-sizing", "border-box");
+
+        return link;
     }
 }

@@ -5,7 +5,7 @@ import com.psyduck.myDesk.persistenz.Anhang;
 import com.psyduck.myDesk.persistenz.AnhangRepository;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.BenutzerService;
-import com.psyduck.myDesk.persistenz.BenutzerSession;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.vaadin.flow.component.Component;
@@ -21,6 +21,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.server.streams.UploadHandler;
+
+import jakarta.annotation.security.PermitAll;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +32,7 @@ import java.util.List;
 	    layout = MainLayout.class
 	)
 @PageTitle("Neue Nachricht")
+@PermitAll
 public class NachrichtSendenView extends VerticalLayout {
 
 	private final List<Anhang> anhaenge = new ArrayList<>();
@@ -40,23 +44,31 @@ public class NachrichtSendenView extends VerticalLayout {
 	private final BenutzerService benutzerService;
 	private final NachrichtService nachrichtService;
 	private final AnhangRepository anhangRepository;
+	private final AktuellerBenutzerService aktuellerBenutzerService;
 
-	public NachrichtSendenView(BenutzerService benutzerService, NachrichtService nachrichtService, AnhangRepository anhangRepository) {
+	public NachrichtSendenView(
+	        BenutzerService benutzerService,
+	        NachrichtService nachrichtService,
+	        AnhangRepository anhangRepository,
+	        AktuellerBenutzerService aktuellerBenutzerService) {
 
 	    this.benutzerService = benutzerService;
 	    this.nachrichtService = nachrichtService;
 	    this.anhangRepository = anhangRepository;
+	    this.aktuellerBenutzerService = aktuellerBenutzerService;
 
 	    setSizeFull();
 	    setAlignItems(Alignment.CENTER);
 	    setPadding(true);
 	    setSpacing(true);
 
-	    Component registrierungsbereich = erstelleRegestrierungsbereich();
+	    Component registrierungsbereich =
+	            erstelleRegestrierungsbereich();
 
 	    add(registrierungsbereich);
 	    expand(registrierungsbereich);
 	}
+
 
     private Component erstelleRegestrierungsbereich() {
 
@@ -163,7 +175,7 @@ public class NachrichtSendenView extends VerticalLayout {
         Button senden = new Button("Senden");
 
         senden.addClickListener(event -> {
-        	Benutzer absender = BenutzerSession.getAktuellerBenutzer();
+        	Benutzer absender = aktuellerBenutzerService.getAktuellerBenutzer();
         	Benutzer empfaengerBenutzer = empfaenger.getValue();
 
         	if (absender == null) {

@@ -2,75 +2,144 @@ package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Benutzer;
-import com.psyduck.myDesk.persistenz.BenutzerSession;
-import com.psyduck.myDesk.persistenz.NachrichtService;
-import com.vaadin.flow.component.Component;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.card.Card;
+import com.vaadin.flow.component.card.CardVariant;
+import com.vaadin.flow.component.dependency.StyleSheet;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
+import jakarta.annotation.security.PermitAll;
+
+@StyleSheet("styles.css")
 @Route(
-	    value = "dashboard",
-	    layout = MainLayout.class
-	)
+    value = "dashboard",
+    layout = MainLayout.class
+)
+@PermitAll
 public class DashboardView extends VerticalLayout {
 
-    private VerticalLayout bodyLayout = new VerticalLayout();
-    private final NachrichtService nachrichtService;
+	private final AktuellerBenutzerService aktuellerBenutzerService;
 
-    public DashboardView(NachrichtService nachrichtService) {
+	public DashboardView(AktuellerBenutzerService aktuellerBenutzerService) {
 
-        this.nachrichtService = nachrichtService;
+	    this.aktuellerBenutzerService = aktuellerBenutzerService;
+    	
+    	setSizeFull();
+        addClassName("dashboard-background");
+        
+        Benutzer benutzer =
+                aktuellerBenutzerService.getAktuellerBenutzer();
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+        String name =
+                benutzer != null
+                        ? benutzer.getName()
+                        : "";
 
-        bodyLayout.setWidthFull();
-        bodyLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        bodyLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        erstelleDashboardNavigation();
-        add(bodyLayout);
-        expand(bodyLayout);
+        H2 begruessung = new H2(name.isEmpty() ? "Willkommen bei myDesk" : "Willkommen zurück, " + name + "!");
+        begruessung.addClassName("dashboard-title");
+    	
+        Span untertitel = new Span("Was möchtest du heute erledigen?");
+        untertitel.addClassName("dashboard-subtitle");
+    	
+        VerticalLayout textLayout = new VerticalLayout(begruessung, untertitel);
+        textLayout.setPadding(true);
+        textLayout.setSpacing(false);
+        textLayout.setAlignItems(Alignment.START);
+        
+        add(textLayout);
+
+        Card kartePostfach = erstelleKarte(
+                "card-postfach",
+                "mail",
+                "Postfach",
+                "3",
+                "neue Nachrichten",
+                () -> UI.getCurrent()
+                .navigate(PostfachView.class)
+        );
+
+        Card karteChat = erstelleKarte(
+                "card-chat",
+                "chat",
+                "Chat",
+                "2",
+                "ungelesene Nachrichten",
+                () -> UI.getCurrent()
+                .navigate(ChatView.class)
+        );
+
+        Card karteKalender = erstelleKarte(
+                "card-kalender",
+                "calendar_month",
+                "Kalender",
+                "5",
+                "heutige Einträge",
+                () -> UI.getCurrent()
+                .navigate(KalenderView.class)
+        );
+
+        Card karteTodos = erstelleKarte(
+                "card-todos",
+                "check_box",
+                "To-Dos",
+                "3",
+                "offene Aufgaben",
+                () -> UI.getCurrent()
+                .navigate(ToDoView.class)
+        );
+
+        HorizontalLayout karten = new HorizontalLayout(
+        	kartePostfach,
+            karteChat,
+            karteKalender,
+            karteTodos	
+        );
+        karten.setSpacing(true);
+        karten.setPadding(true);
+        karten.setWidthFull();
+        karten.setJustifyContentMode(JustifyContentMode.CENTER);
+        karten.setAlignItems(Alignment.START);
+        
+        add(karten);
     }
+    
+    private Card erstelleKarte(
+            String farbKlasse,
+            String iconName,
+            String titelText,
+            String subtitleText,
+            String contentText,
+            Runnable aktion
+    ) {
+        Card karte = new Card();
+        karte.addThemeVariants(CardVariant.HORIZONTAL);
+        karte.addClassNames("dashboard-card", farbKlasse);
 
-    private Component erstelleDashboardNavigation() {
+        Span icon = new Span(iconName);
+        icon.getElement().getClassList().add("material-symbols-rounded");
+        icon.addClassNames("card-icon-circle", "card-icon-circle-" + iconName);
+        karte.setMedia(icon);
 
-        HorizontalLayout obereButtons = new HorizontalLayout();
-        HorizontalLayout untereButtons = new HorizontalLayout();
+        Div title = new Div(titelText);
+        karte.setTitle(title);
 
-        Benutzer aktuellerBenutzer = BenutzerSession.getAktuellerBenutzer();
+        Div subtitle = new Div(subtitleText);
+        karte.setSubtitle(subtitle);
 
-        long anzahlNachrichten = nachrichtService.getAnzahlNachrichten(aktuellerBenutzer);
+        Div content = new Div(contentText);
+        karte.add(content);
         
-        Button postfachButton = new Button(
-                "Postfach (" + anzahlNachrichten + ")"
-        	    );
-        Button chatButton = new Button("Chat");
-        Button kalenderButton = new Button("Kalender");
-        Button toDoButton = new Button("To-Dos");
+        karte.getElement().addEventListener(
+        	    "click",
+        	    event -> aktion.run()
+        	);
 
-        postfachButton.setWidth("200px");
-        chatButton.setWidth("200px");
-        kalenderButton.setWidth("200px");
-        toDoButton.setWidth("200px");
-        
-        postfachButton.addClickListener(event -> UI.getCurrent().navigate(PostfachView.class));
-        chatButton.addClickListener(event -> UI.getCurrent().navigate(ChatView.class));
-        kalenderButton.addClickListener(event -> UI.getCurrent().navigate(KalenderView.class));
-        toDoButton.addClickListener(event -> UI.getCurrent().navigate(ToDoView.class));
-
-        obereButtons.add(postfachButton, chatButton);
-        untereButtons.add(kalenderButton, toDoButton);
-
-        obereButtons.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-        untereButtons.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-
-        bodyLayout.add(obereButtons, untereButtons);
-
-        return bodyLayout;
+        return karte;
     }
 }
