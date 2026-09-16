@@ -62,7 +62,6 @@ public class LoginView extends VerticalLayout {
 
         expand(loginBereich);
 
-        // GIF
         add(
             erstelleGIFBereich()
         );

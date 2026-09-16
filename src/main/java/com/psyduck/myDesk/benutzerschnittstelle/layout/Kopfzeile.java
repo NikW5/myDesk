@@ -18,7 +18,6 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 public class Kopfzeile extends Header {
 
     public Kopfzeile() {
-
         setWidthFull();
 
         getStyle()
@@ -31,166 +30,261 @@ public class Kopfzeile extends Header {
     }
 
     public void setTyp(Kopfzeilentyp typ) {
-
         removeAll();
 
         switch (typ) {
-
             case LOGIN -> {
-
                 H1 titel = new H1(":)");
 
-                HorizontalLayout layout = new HorizontalLayout(titel);
+                HorizontalLayout layout =
+                        new HorizontalLayout(titel);
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
 
                 add(layout);
             }
 
             case DASHBOARD -> {
+                Benutzer benutzer =
+                        BenutzerSession.getAktuellerBenutzer();
 
-                Benutzer benutzer = BenutzerSession.getAktuellerBenutzer();
-
-                String name = "";
-
-                if (benutzer != null) {
-                    name = benutzer.getName();
-                }
+                String name =
+                        benutzer != null
+                                ? benutzer.getName()
+                                : "";
 
                 H1 titel = new H1("Dashboard");
+                Span benutzername =
+                        new Span("Hallo " + name);
 
-                Span benutzername = new Span("Hallo " + name);
+                Button abmelden =
+                        erstelleAbmeldenButton();
 
-                Button abmelden = erstelleAbmeldenButton();
+                HorizontalLayout buttons =
+                        new HorizontalLayout(abmelden);
 
-                HorizontalLayout buttons = new HorizontalLayout(abmelden);
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, benutzername, buttons);
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                titel,
+                                benutzername,
+                                buttons
+                        );
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
                 layout.expand(titel);
 
                 add(layout);
             }
 
             case POSTFACH -> {
-
                 H1 titel = new H1("Postfach");
 
-                Button dashboard = erstelleDashboardButton();      
-                Button aktualisieren = new Button("Aktualisieren"); // Button macht noch nichts
-                Button neueNachricht = erstelleNeueNachrichtButton();
-                Button abmelden = erstelleAbmeldenButton();
+                Button dashboard =
+                        erstelleDashboardButton();
 
-                HorizontalLayout buttons = new HorizontalLayout(dashboard, aktualisieren, neueNachricht, abmelden);
+                Button aktualisieren =
+                        new Button("Aktualisieren");
+
+                Button neueNachricht =
+                        erstelleNeueNachrichtButton();
+
+                Button abmelden =
+                        erstelleAbmeldenButton();
+
+                HorizontalLayout buttons =
+                        new HorizontalLayout(
+                                dashboard,
+                                aktualisieren,
+                                neueNachricht,
+                                abmelden
+                        );
+
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, buttons);
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                titel,
+                                buttons
+                        );
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
                 layout.expand(titel);
 
                 add(layout);
             }
 
             case NACHRICHT_SENDEN -> {
-
                 H1 titel = new H1("Neue Nachricht");
 
-                Button abbrechen = erstelleAbbrechenButton();
-                Button abmelden = erstelleAbmeldenButton();
+                Button abbrechen =
+                        erstelleAbbrechenButton();
 
-                HorizontalLayout buttons = new HorizontalLayout(abbrechen, abmelden);
+                Button abmelden =
+                        erstelleAbmeldenButton();
+
+                HorizontalLayout buttons =
+                        new HorizontalLayout(
+                                abbrechen,
+                                abmelden
+                        );
+
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, buttons);
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                titel,
+                                buttons
+                        );
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
                 layout.expand(titel);
 
                 add(layout);
             }
 
             case CHAT -> {
-
                 H1 titel = new H1("Chat");
 
-                Button dashboard = erstelleDashboardButton();
-                Button abmelden = erstelleAbmeldenButton();
+                Button dashboard =
+                        erstelleDashboardButton();
 
-                HorizontalLayout buttons = new HorizontalLayout(dashboard, abmelden);
+                Button abmelden =
+                        erstelleAbmeldenButton();
+
+                HorizontalLayout buttons =
+                        new HorizontalLayout(
+                                dashboard,
+                                abmelden
+                        );
+
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, buttons);
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                titel,
+                                buttons
+                        );
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
                 layout.expand(titel);
 
                 add(layout);
             }
 
             case KALENDER -> {
-
                 H1 titel = new H1("Kalender");
 
-                Button dashboard = erstelleDashboardButton();
-                Button abmelden = erstelleAbmeldenButton();
+                Button dashboard =
+                        erstelleDashboardButton();
 
-                HorizontalLayout buttons = new HorizontalLayout(dashboard, abmelden);
+                Button abmelden =
+                        erstelleAbmeldenButton();
+
+                HorizontalLayout buttons =
+                        new HorizontalLayout(
+                                dashboard,
+                                abmelden
+                        );
+
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, buttons);
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                titel,
+                                buttons
+                        );
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
                 layout.expand(titel);
 
                 add(layout);
             }
 
             case TODO -> {
-
                 H1 titel = new H1("To-Do");
 
-                Button dashboard = erstelleDashboardButton();
-                Button abmelden = erstelleAbmeldenButton();
+                Button dashboard =
+                        erstelleDashboardButton();
 
-                HorizontalLayout buttons = new HorizontalLayout(dashboard, abmelden);
+                Button abmelden =
+                        erstelleAbmeldenButton();
+
+                HorizontalLayout buttons =
+                        new HorizontalLayout(
+                                dashboard,
+                                abmelden
+                        );
+
                 buttons.setSpacing(true);
 
-                HorizontalLayout layout = new HorizontalLayout(titel, buttons);
+                HorizontalLayout layout =
+                        new HorizontalLayout(
+                                titel,
+                                buttons
+                        );
+
                 layout.setWidthFull();
-                layout.setAlignItems(FlexComponent.Alignment.CENTER);
+                layout.setAlignItems(
+                        FlexComponent.Alignment.CENTER
+                );
                 layout.expand(titel);
 
                 add(layout);
             }
         }
     }
-    
+
     private Button erstelleAbmeldenButton() {
-        return new Button("Abmelden", event -> {
-        			BenutzerSession.abmelden(); 
-        			UI.getCurrent().navigate(LoginView.class);
+        return new Button(
+                "Abmelden",
+                event -> {
+                    BenutzerSession.abmelden();
+                    UI.getCurrent().navigate(LoginView.class);
                 }
         );
     }
-    
+
     private Button erstelleDashboardButton() {
-    	return new Button("Dashboard", event -> 
-    			UI.getCurrent().navigate(DashboardView.class)
-    	);
+        return new Button(
+                "Dashboard",
+                event -> UI.getCurrent()
+                        .navigate(DashboardView.class)
+        );
     }
-    
+
     private Button erstelleAbbrechenButton() {
-    	return new Button("Abbrechen", event -> 
-    		UI.getCurrent().navigate(PostfachView.class)
+        return new Button(
+                "Abbrechen",
+                event -> UI.getCurrent()
+                        .navigate(PostfachView.class)
         );
     }
 
     private Button erstelleNeueNachrichtButton() {
-    	return new Button("Neue Nachricht", event -> 
-    		UI.getCurrent().navigate(NachrichtSendenView.class)
+        return new Button(
+                "Neue Nachricht",
+                event -> UI.getCurrent()
+                        .navigate(NachrichtSendenView.class)
         );
     }
 }

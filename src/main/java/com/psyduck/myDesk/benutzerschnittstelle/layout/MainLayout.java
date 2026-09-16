@@ -2,10 +2,13 @@ package com.psyduck.myDesk.benutzerschnittstelle.layout;
 
 import com.psyduck.myDesk.benutzerschnittstelle.ChatView;
 import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
+import com.psyduck.myDesk.benutzerschnittstelle.FokusView;
 import com.psyduck.myDesk.benutzerschnittstelle.KalenderView;
-import com.psyduck.myDesk.benutzerschnittstelle.LoginView;
 import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
 import com.psyduck.myDesk.benutzerschnittstelle.ToDoView;
+import com.psyduck.myDesk.persistenz.Benutzer;
+import com.psyduck.myDesk.security.AktuellerBenutzerService;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -21,69 +24,59 @@ import com.vaadin.flow.router.RouterLink;
 
 import jakarta.annotation.security.PermitAll;
 
-import com.psyduck.myDesk.persistenz.Benutzer;
-import com.psyduck.myDesk.security.AktuellerBenutzerService;
-import com.psyduck.myDesk.benutzerschnittstelle.FokusView;
-
 @StyleSheet("styles.css")
 @PermitAll
 public class MainLayout extends AppLayout {
-	
-	private final AktuellerBenutzerService aktuellerBenutzerService;
 
-	public MainLayout(
-	        AktuellerBenutzerService aktuellerBenutzerService) {
+    private final AktuellerBenutzerService aktuellerBenutzerService;
 
-	    this.aktuellerBenutzerService =
-	            aktuellerBenutzerService;
+    public MainLayout(
+            AktuellerBenutzerService aktuellerBenutzerService) {
 
-	    erstelleHeader();
-	    erstelleNavigation();
-	}
+        this.aktuellerBenutzerService =
+                aktuellerBenutzerService;
 
-	private void erstelleHeader() {
+        erstelleHeader();
+        erstelleNavigation();
+    }
 
-	    DrawerToggle drawerToggle = new DrawerToggle();
+    private void erstelleHeader() {
+        DrawerToggle drawerToggle = new DrawerToggle();
 
-	    H1 titel = new H1("myDesk");
+        H1 titel = new H1("myDesk");
 
-	    titel.getStyle()
-	            .set("font-size", "var(--lumo-font-size-xl)")
-	            .set("margin", "0");
+        titel.getStyle()
+                .set("font-size", "var(--lumo-font-size-xl)")
+                .set("margin", "0");
 
-	    Benutzer benutzer =
-	            aktuellerBenutzerService.getAktuellerBenutzer();
+        Benutzer benutzer =
+                aktuellerBenutzerService.getAktuellerBenutzer();
 
-	    String name = benutzer != null
-	            ? benutzer.getName()
-	            : "";
+        String name = benutzer != null
+                ? benutzer.getName()
+                : "";
 
-	    Span begruessung = new Span(
-	            name.isEmpty()
-	                    ? ""
-	                    : "Hallo " + name
-	    );
+        Span begruessung = new Span(
+                name.isEmpty() ? "" : "Hallo " + name
+        );
 
-	    Button abmelden = new Button(
-	            "Abmelden",
-	            VaadinIcon.SIGN_OUT.create(),
-	            event -> aktuellerBenutzerService.abmelden()
-	    );
+        Button abmelden = new Button(
+                "Abmelden",
+                VaadinIcon.SIGN_OUT.create(),
+                event -> aktuellerBenutzerService.abmelden()
+        );
 
-        HorizontalLayout header =
-                new HorizontalLayout(
-                        drawerToggle,
-                        titel,
-                        begruessung,
-                        abmelden
-                );
+        HorizontalLayout header = new HorizontalLayout(
+                drawerToggle,
+                titel,
+                begruessung,
+                abmelden
+        );
 
         header.setWidthFull();
-
         header.setAlignItems(
                 FlexComponent.Alignment.CENTER
         );
-
         header.expand(titel);
 
         header.getStyle()
@@ -94,9 +87,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void erstelleNavigation() {
-
-        VerticalLayout navigation =
-                new VerticalLayout();
+        VerticalLayout navigation = new VerticalLayout();
 
         navigation.setPadding(true);
         navigation.setSpacing(false);
@@ -131,13 +122,12 @@ public class MainLayout extends AppLayout {
                 VaadinIcon.CHECK,
                 ToDoView.class
         );
-        
-        RouterLink fokus = erstelleLink(
-        	    "Fokus",
-        	    VaadinIcon.TIMER,
-        	    FokusView.class
-        	);
 
+        RouterLink fokus = erstelleLink(
+                "Fokus",
+                VaadinIcon.TIMER,
+                FokusView.class
+        );
 
         navigation.add(
                 dashboard,
@@ -154,27 +144,21 @@ public class MainLayout extends AppLayout {
     private RouterLink erstelleLink(
             String text,
             VaadinIcon icon,
-            Class<? extends com.vaadin.flow.component.Component> view
-    ) {
+            Class<? extends Component> view) {
 
         RouterLink link = new RouterLink();
 
-        Span iconSpan = new Span(
-                icon.create()
-        );
-
+        Span iconSpan = new Span(icon.create());
         Span textSpan = new Span(text);
 
-        HorizontalLayout layout =
-                new HorizontalLayout(
-                        iconSpan,
-                        textSpan
-                );
+        HorizontalLayout layout = new HorizontalLayout(
+                iconSpan,
+                textSpan
+        );
 
         layout.setAlignItems(
                 FlexComponent.Alignment.CENTER
         );
-
         layout.setSpacing(true);
 
         link.add(layout);
@@ -182,7 +166,10 @@ public class MainLayout extends AppLayout {
 
         link.getStyle()
                 .set("padding", "var(--lumo-space-s)")
-                .set("border-radius", "var(--lumo-border-radius-m)")
+                .set(
+                        "border-radius",
+                        "var(--lumo-border-radius-m)"
+                )
                 .set("width", "100%")
                 .set("box-sizing", "border-box");
 
