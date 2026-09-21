@@ -269,7 +269,7 @@ public class ToDoView extends VerticalLayout {
                     checkbox,
                     verwaltung
             );
-
+ 
             aufgabenBlock.setPadding(true);
             aufgabenBlock.setSpacing(false);
             aufgabenBlock.setWidthFull();

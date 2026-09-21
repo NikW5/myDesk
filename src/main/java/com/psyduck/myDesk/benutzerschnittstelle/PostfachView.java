@@ -344,7 +344,7 @@ public class PostfachView extends VerticalLayout {
         String tag;
         String uhrzeit = datum.format(
                 DateTimeFormatter.ofPattern("HH:mm", Locale.GERMAN));
-
+ 
         if (datum.toLocalDate().equals(heute)) {
             tag = "heute";
         } else if (datum.toLocalDate().equals(heute.minusDays(1))) {

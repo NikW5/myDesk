@@ -16,6 +16,10 @@ import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.PermitAll;
 
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Random;
+
 @StyleSheet("styles.css")
 @Route(
     value = "dashboard",
@@ -24,15 +28,26 @@ import jakarta.annotation.security.PermitAll;
 @PermitAll
 public class DashboardView extends VerticalLayout {
 
-	private final AktuellerBenutzerService aktuellerBenutzerService;
+    private final AktuellerBenutzerService aktuellerBenutzerService;
 
-	public DashboardView(AktuellerBenutzerService aktuellerBenutzerService) {
+    private static final List<String> UNTERTEXTE = List.of(
+        "Was möchtest du heute erledigen?",
+        "Womit möchtest du heute starten?",
+        "Was steht heute auf deiner Liste?",
+        "Bereit für deine nächsten Aufgaben?",
+        "Was möchtest du heute erreichen?",
+        "Welche Aufgabe möchtest du als Nächstes angehen?"
+    );
 
-	    this.aktuellerBenutzerService = aktuellerBenutzerService;
-    	
-    	setSizeFull();
+    private static final Random RANDOM = new Random();
+
+    public DashboardView(AktuellerBenutzerService aktuellerBenutzerService) {
+
+        this.aktuellerBenutzerService = aktuellerBenutzerService;
+
+        setSizeFull();
         addClassName("dashboard-background");
-        
+
         Benutzer benutzer =
                 aktuellerBenutzerService.getAktuellerBenutzer();
 
@@ -41,17 +56,24 @@ public class DashboardView extends VerticalLayout {
                         ? benutzer.getName()
                         : "";
 
-        H2 begruessung = new H2(name.isEmpty() ? "Willkommen bei myDesk" : "Willkommen zurück, " + name + "!");
+        H2 begruessung = new H2(
+                erstelleBegruessung(name)
+        );
         begruessung.addClassName("dashboard-title");
-    	
-        Span untertitel = new Span("Was möchtest du heute erledigen?");
+
+        Span untertitel = new Span(
+                waehleZufaelligenUntertext()
+        );
         untertitel.addClassName("dashboard-subtitle");
-    	
-        VerticalLayout textLayout = new VerticalLayout(begruessung, untertitel);
+
+        VerticalLayout textLayout = new VerticalLayout(
+                begruessung,
+                untertitel
+        );
         textLayout.setPadding(true);
         textLayout.setSpacing(false);
         textLayout.setAlignItems(Alignment.START);
-        
+
         add(textLayout);
 
         Card kartePostfach = erstelleKarte(
@@ -61,7 +83,7 @@ public class DashboardView extends VerticalLayout {
                 "3",
                 "neue Nachrichten",
                 () -> UI.getCurrent()
-                .navigate(PostfachView.class)
+                        .navigate(PostfachView.class)
         );
 
         Card karteChat = erstelleKarte(
@@ -71,7 +93,7 @@ public class DashboardView extends VerticalLayout {
                 "2",
                 "ungelesene Nachrichten",
                 () -> UI.getCurrent()
-                .navigate(ChatView.class)
+                        .navigate(ChatView.class)
         );
 
         Card karteKalender = erstelleKarte(
@@ -81,7 +103,7 @@ public class DashboardView extends VerticalLayout {
                 "5",
                 "heutige Einträge",
                 () -> UI.getCurrent()
-                .navigate(KalenderView.class)
+                        .navigate(KalenderView.class)
         );
 
         Card karteTodos = erstelleKarte(
@@ -91,24 +113,51 @@ public class DashboardView extends VerticalLayout {
                 "3",
                 "offene Aufgaben",
                 () -> UI.getCurrent()
-                .navigate(ToDoView.class)
+                        .navigate(ToDoView.class)
         );
 
         HorizontalLayout karten = new HorizontalLayout(
-        	kartePostfach,
-            karteChat,
-            karteKalender,
-            karteTodos	
+                kartePostfach,
+                karteChat,
+                karteKalender,
+                karteTodos
         );
+
         karten.setSpacing(true);
         karten.setPadding(true);
         karten.setWidthFull();
         karten.setJustifyContentMode(JustifyContentMode.CENTER);
         karten.setAlignItems(Alignment.START);
-        
+
         add(karten);
     }
-    
+
+    private String erstelleBegruessung(String name) {
+
+        LocalTime jetzt = LocalTime.now();
+        String begruessung;
+
+        if (jetzt.isBefore(LocalTime.NOON)) {
+            begruessung = "Guten Morgen";
+        } else if (jetzt.isBefore(LocalTime.of(18, 0))) {
+            begruessung = "Hallo";
+        } else {
+            begruessung = "Guten Abend";
+        }
+
+        if (name.isEmpty()) {
+            return begruessung;
+        }
+
+        return begruessung + ", " + name + "!";
+    }
+
+    private String waehleZufaelligenUntertext() {
+        return UNTERTEXTE.get(
+                RANDOM.nextInt(UNTERTEXTE.size())
+        );
+    }
+
     private Card erstelleKarte(
             String farbKlasse,
             String iconName,
@@ -123,7 +172,10 @@ public class DashboardView extends VerticalLayout {
 
         Span icon = new Span(iconName);
         icon.getElement().getClassList().add("material-symbols-rounded");
-        icon.addClassNames("card-icon-circle", "card-icon-circle-" + iconName);
+        icon.addClassNames(
+                "card-icon-circle",
+                "card-icon-circle-" + iconName
+        );
         karte.setMedia(icon);
 
         Div title = new Div(titelText);
@@ -134,11 +186,11 @@ public class DashboardView extends VerticalLayout {
 
         Div content = new Div(contentText);
         karte.add(content);
-        
+
         karte.getElement().addEventListener(
-        	    "click",
-        	    event -> aktion.run()
-        	);
+                "click",
+                event -> aktion.run()
+        );
 
         return karte;
     }
