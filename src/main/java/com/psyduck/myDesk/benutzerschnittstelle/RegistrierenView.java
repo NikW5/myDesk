@@ -161,7 +161,7 @@ private void ansichtAufbauen() {
             registrierenButton,
             zurueckButton
     );
-
+ 
     formularContainer.add(
             ueberschrift,
             formular,

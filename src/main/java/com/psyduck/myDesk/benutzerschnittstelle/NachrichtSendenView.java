@@ -227,7 +227,7 @@ public class NachrichtSendenView extends VerticalLayout {
                 anhang.setNachricht(gespeicherteNachricht);
                 anhangRepository.save(anhang);
             }
-
+ 
             betreff.clear();
             nachricht.clear();
             empfaenger.clear();

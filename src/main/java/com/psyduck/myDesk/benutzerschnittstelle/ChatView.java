@@ -21,5 +21,5 @@ public class ChatView extends VerticalLayout {
 		DummyText dummyText = new DummyText("Chat");
         add(dummyText);
         expand(dummyText);
-    }
+    } 
 }

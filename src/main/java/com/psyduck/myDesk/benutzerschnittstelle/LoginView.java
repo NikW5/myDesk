@@ -20,7 +20,7 @@ public class LoginView extends VerticalLayout {
 
         HorizontalLayout obereLeiste =
             new HorizontalLayout();
-
+ 
         obereLeiste.setWidthFull();
         obereLeiste.setJustifyContentMode(
             JustifyContentMode.END
