@@ -1,7 +1,3 @@
-/* =========================================================
-   Globale Variablen
-   ========================================================= */
-
 html {
     --vaadin-app-layout-drawer-width: 200px;
     --vaadin-app-layout-drawer-background: #f9f9f4;
@@ -14,11 +10,6 @@ html {
     --aura-app-layout-radius: 0;
 }
 
-
-/* =========================================================
-   App Layout
-   ========================================================= */
-
 vaadin-app-layout {
     padding-bottom: 0 !important;
     padding-inline-end: 0 !important;
@@ -29,21 +20,13 @@ vaadin-app-layout:not([has-drawer]) {
     padding-inline-start: 0 !important;
 }
 
-
-/* =========================================================
-   Navigation / Drawer
-   ========================================================= */
-
 .main-drawer a {
     color: var(--aura-text-color);
     text-decoration: none;
     border-radius: 12px !important;
     padding: 0.5rem !important;
     font-weight: 500;
-
-    transition:
-        background-color 0.2s ease,
-        color 0.2s ease;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .main-drawer a[highlight] {
@@ -61,19 +44,9 @@ vaadin-app-layout:not([has-drawer]) {
     font-size: 1.25rem;
 }
 
-
-/* =========================================================
-   Abmelden
-   ========================================================= */
-
 .abmelden-button {
     color: #4e8f53;
 }
-
-
-/* =========================================================
-   Dashboard
-   ========================================================= */
 
 .dashboard-background {
     background-image: url("images/dashboard-bg.png");
@@ -97,85 +70,56 @@ vaadin-app-layout:not([has-drawer]) {
     text-align: left;
 }
 
-
-/* =========================================================
-   Dashboard-Karten
-   ========================================================= */
-
 .dashboard-card {
     width: 275px;
     height: 250px;
     cursor: pointer;
-
     --vaadin-card-border-radius: 16px;
     --vaadin-card-title-line-height: 3;
     --vaadin-card-subtitle-font-size: 3rem;
     --vaadin-card-subtitle-line-height: 1;
-
     background-size: contain;
     background-position: bottom;
     background-repeat: no-repeat;
-
     border: none;
 }
 
 .dashboard-card:hover {
-    --vaadin-card-shadow:
-        10px 5px 10px rgba(0, 0, 0, 0.3);
-
+    --vaadin-card-shadow: 10px 5px 10px rgba(0, 0, 0, 0.3);
     transform: translateY(-2px);
-
-    transition:
-        box-shadow 1s ease,
-        transform 0.2s ease;
+    transition: box-shadow 1s ease, transform 0.2s ease;
 }
-
-
-/* =========================================================
-   Einzelne Dashboard-Karten
-   ========================================================= */
 
 .card-postfach {
     --vaadin-card-background: none;
-
     background-image: url("images/postfach-bg.png");
     background-color: #edf6e5;
 }
 
 .card-chat {
     --vaadin-card-background: none;
-
     background-image: url("images/chat-bg.png");
     background-color: #e2d1f4;
 }
 
 .card-kalender {
     --vaadin-card-background: none;
-
     background-image: url("images/kalender-bg.png");
     background-color: #f9dcb7;
 }
 
 .card-todos {
     --vaadin-card-background: none;
-
     background-image: url("images/todos-bg.png");
     background-color: #d9e8f8;
 }
-
-
-/* =========================================================
-   Dashboard-Karten – Icons
-   ========================================================= */
 
 .card-icon-circle {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-
     padding: 12px;
     border-radius: 50%;
-
     font-size: 28px;
     line-height: 1;
     color: white;
@@ -197,19 +141,231 @@ vaadin-app-layout:not([has-drawer]) {
     background-color: #337bd2;
 }
 
+.postfach-background {
+    min-height: 100%;
+    background-image: url("images/dashboard-bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
 
-/* =========================================================
-   Postfach – Grid
-   ========================================================= */
+.postfach-content {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+.postfach-title {
+    margin: 1rem 0 0.25rem;
+    color: black;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.postfach-subtitle {
+    color: #636567;
+    opacity: 0.9;
+    font-size: 1.1rem;
+}
+
+.postfach-toolbar {
+    min-height: 44px;
+}
+
+.postfach-toolbar vaadin-button[theme~="primary"] {
+    --lumo-primary-color: #4e8f53;
+    --lumo-primary-color-50pct: rgba(78, 143, 83, 0.5);
+    --lumo-primary-color-10pct: rgba(78, 143, 83, 0.1);
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.postfach-toolbar vaadin-button[theme~="tertiary"] {
+    border-radius: 12px;
+    color: #4e8f53;
+}
+
+.postfach-notification {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+    padding: 0.6rem 0.9rem;
+    border-radius: 12px;
+    background: #edf6e5;
+    color: #35613a;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.postfach-notification vaadin-icon {
+    color: #4e8f53;
+}
+
+.postfach-master-detail {
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 16px;
+    background: var(--lumo-base-color);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.postfach-grid {
+    border: none;
+    background: var(--lumo-base-color);
+}
+
+.postfach-grid::part(header-cell) {
+    background: #f9f9f4;
+    color: #636567;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border-bottom: 1px solid #e5e5df;
+}
 
 .postfach-grid::part(body-cell) {
     cursor: pointer;
+    border-bottom: 1px solid #eeeeea;
 }
 
 .postfach-grid::part(row):hover {
-    --row-hover-bg: #e6e6fa;
+    --row-hover-bg: #edf6e5;
 }
 
 .postfach-grid::part(body-cell) {
-    background-color: var(--row-hover-bg, var(--vaadin-grid-cell-background, var(--lumo-base-color))) !important;
+    background-color: var(
+        --row-hover-bg,
+        var(--vaadin-grid-cell-background, var(--lumo-base-color))
+    ) !important;
+}
+
+.postfach-grid::part(selected-row) {
+    background-color: #edf6e5;
+}
+
+.postfach-unread-text {
+    color: #35613a;
+    font-weight: 700;
+}
+
+.postfach-unread-indicator {
+    color: #4e8f53;
+    font-size: 10px;
+}
+
+.postfach-preview {
+    display: block;
+    overflow: hidden;
+    color: #636567;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.postfach-date {
+    width: 85px;
+    color: #3f4142;
+}
+
+.postfach-time {
+    color: #777978;
+}
+
+.postfach-detail {
+    box-sizing: border-box;
+    background: #fff;
+    border-left: 1px solid #e5e5df;
+}
+
+.postfach-detail-header {
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e5df;
+}
+
+.postfach-detail-title {
+    margin: 0;
+    color: #122131;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+.postfach-detail-field,
+.postfach-detail-message {
+    --vaadin-input-field-background: #f9f9f4;
+}
+
+.postfach-detail-field::part(input-field),
+.postfach-detail-message::part(input-field) {
+    border-radius: 12px;
+}
+
+.postfach-detail-message {
+    min-height: 250px;
+}
+
+.postfach-attachment-title {
+    margin-top: 0.5rem;
+    color: #636567;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.postfach-attachments {
+    padding: 0.5rem;
+    border-radius: 12px;
+    background: #f9f9f4;
+}
+
+.postfach-attachment {
+    padding: 0.65rem;
+    border-radius: 10px;
+    background: white;
+    transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.postfach-attachment:hover {
+    background: #edf6e5;
+    transform: translateX(2px);
+}
+
+.postfach-attachment-icon {
+    color: #4e8f53;
+}
+
+.postfach-attachment-link {
+    color: #35613a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.postfach-attachment-link:hover {
+    text-decoration: underline;
+}
+
+.postfach-no-attachments {
+    padding: 0.5rem;
+    color: #777978;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+    .postfach-content {
+        padding: 1rem;
+    }
+
+    .postfach-master-detail {
+        border-radius: 12px;
+    }
+
+    .postfach-detail {
+        border-top: 1px solid #e5e5df;
+        border-left: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .postfach-toolbar {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
 }
