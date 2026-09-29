@@ -28,6 +28,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.router.QueryParameters;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.streams.DownloadHandler;
 import com.vaadin.flow.server.streams.DownloadResponse;
@@ -174,11 +175,11 @@ public class PostfachView extends VerticalLayout {
         return layout;
     }
 
-    private VerticalLayout erstelleDetailbereich(
-            MasterDetailLayout masterDetail) {
+    private VerticalLayout erstelleDetailbereich(MasterDetailLayout masterDetail) {
 
         VerticalLayout details = new VerticalLayout();
         details.setSizeFull();
+        details.getStyle().set("overflow-y", "auto");
         details.setPadding(true);
         details.setSpacing(true);
         details.addClassName("postfach-detail");
@@ -227,9 +228,9 @@ public class PostfachView extends VerticalLayout {
             VerticalLayout details,
             Nachricht nachricht) {
 
-    	while (details.getComponentCount() > 1) {
-    	    details.remove(details.getComponentAt(1));
-    	}
+        while (details.getComponentCount() > 1) {
+            details.remove(details.getComponentAt(1));
+        }
 
         TextField titel = new TextField("Titel");
         titel.setWidthFull();
@@ -251,7 +252,9 @@ public class PostfachView extends VerticalLayout {
         inhalt.addClassName("postfach-detail-message");
 
         Span anhangTitel = new Span("Anhänge");
-        anhangTitel.addClassName("postfach-attachment-title");
+        anhangTitel.addClassName(
+                "postfach-attachment-title"
+        );
 
         VerticalLayout anhaenge = new VerticalLayout();
         anhaenge.setPadding(false);
@@ -259,23 +262,69 @@ public class PostfachView extends VerticalLayout {
         anhaenge.addClassName("postfach-attachments");
 
         if (nachricht.getAnhaenge().isEmpty()) {
-            Span leer = new Span("Keine Anhänge vorhanden.");
-            leer.addClassName("postfach-no-attachments");
+
+            Span leer = new Span(
+                    "Keine Anhänge vorhanden."
+            );
+
+            leer.addClassName(
+                    "postfach-no-attachments"
+            );
+
             anhaenge.add(leer);
+
         } else {
+
             for (Anhang anhang : nachricht.getAnhaenge()) {
-                anhaenge.add(erstelleAnhang(anhang));
+                anhaenge.add(
+                        erstelleAnhang(anhang)
+                );
             }
         }
+
+        Button antworten = new Button(
+                "Antworten",
+                VaadinIcon.REPLY.create()
+        );
+
+        antworten.addThemeVariants(
+                ButtonVariant.LUMO_PRIMARY
+        );
+
+        antworten.addClickListener(event -> {
+
+        	UI.getCurrent().navigate(
+        	        NachrichtSendenView.class,
+        	        new QueryParameters(
+        	                java.util.Map.of(
+        	                        "antwortAuf",
+        	                        java.util.List.of(
+        	                                String.valueOf(nachricht.getId())
+        	                        )
+        	                )
+        	        )
+        	);
+
+        });
+
+        HorizontalLayout antwortBereich =
+                new HorizontalLayout(antworten);
+
+        antwortBereich.setWidthFull();
+        antwortBereich.setJustifyContentMode(
+                FlexComponent.JustifyContentMode.END
+        );
 
         details.add(
                 titel,
                 von,
                 inhalt,
                 anhangTitel,
-                anhaenge
+                anhaenge,
+                antwortBereich
         );
     }
+
 
     private HorizontalLayout erstelleAnhang(Anhang anhang) {
         Span icon = new Span(VaadinIcon.PAPERCLIP.create());
