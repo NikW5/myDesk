@@ -348,6 +348,17 @@ vaadin-app-layout:not([has-drawer]) {
     font-size: 0.9rem;
 }
 
+.todo-abgelaufen {
+	border: 1px solid #C62828;
+	border-radius: 12px;
+	background-color: #FFF5F5;
+}
+
+.todo-datum-abgelaufen {
+    font-weight: bold;
+    color: #C62828;
+}
+
 @media (max-width: 900px) {
     .postfach-content {
         padding: 1rem;
