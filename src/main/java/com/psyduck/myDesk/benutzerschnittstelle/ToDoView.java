@@ -1,5 +1,6 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -216,6 +217,36 @@ public class ToDoView extends VerticalLayout {
                 checkbox.getStyle()
                         .set("text-decoration", "line-through");
             }
+            
+            Span faelligkeit = new Span();
+            
+            Button bearbeiten = new Button(
+                    VaadinIcon.EDIT.create(),
+                    event -> zeigeBearbeitenDialog(aufgabe)
+            );
+            
+            Button loeschen = new Button(
+                    VaadinIcon.TRASH.create(),
+                    event -> loescheAufgabe(aufgabe)
+            );
+            
+            HorizontalLayout verwaltung = new HorizontalLayout(
+                    faelligkeit,
+                    bearbeiten,
+                    loeschen
+            );
+            
+            VerticalLayout aufgabenBlock = new VerticalLayout(
+                    checkbox,
+                    verwaltung
+            );
+            
+            aktualisiereAbgelaufenStatus(
+                    aufgabe,
+                    aufgabenBlock,
+                    faelligkeit,
+                    format
+            );
 
             checkbox.addValueChangeListener(event -> {
                 aufgabe.setErledigt(event.getValue());
@@ -228,47 +259,25 @@ public class ToDoView extends VerticalLayout {
                     checkbox.getStyle()
                             .remove("text-decoration");
                 }
+                
+                aktualisiereAbgelaufenStatus(
+                        aufgabe,
+                        aufgabenBlock,
+                        faelligkeit,
+                        format
+                );
             });
-
-            Span faelligkeit = new Span(
-                    aufgabe.getFaelligAm() != null
-                            ? "Fällig am: "
-                                    + aufgabe.getFaelligAm()
-                                            .format(format)
-                            : "Kein Fälligkeitsdatum"
-            );
-
-            Button bearbeiten = new Button(
-                    VaadinIcon.EDIT.create(),
-                    event -> zeigeBearbeitenDialog(aufgabe)
-            );
 
             bearbeiten.setTooltipText(
                     "Aufgabe bearbeiten, quack!"
-            );
-
-            Button loeschen = new Button(
-                    VaadinIcon.TRASH.create(),
-                    event -> loescheAufgabe(aufgabe)
             );
 
             loeschen.setTooltipText(
                     "Aufgabe löschen, quack!"
             );
 
-            HorizontalLayout verwaltung = new HorizontalLayout(
-                    faelligkeit,
-                    bearbeiten,
-                    loeschen
-            );
-
             verwaltung.setWidthFull();
             verwaltung.setAlignItems(Alignment.CENTER);
-
-            VerticalLayout aufgabenBlock = new VerticalLayout(
-                    checkbox,
-                    verwaltung
-            );
  
             aufgabenBlock.setPadding(true);
             aufgabenBlock.setSpacing(false);
@@ -276,5 +285,34 @@ public class ToDoView extends VerticalLayout {
 
             aufgabenListe.add(aufgabenBlock);
         }
+    }
+    
+    private boolean isAbgelaufen(ToDo aufgabe) {
+    	return !aufgabe.isErledigt() 
+    			&& aufgabe.getFaelligAm() != null
+    			&& aufgabe.getFaelligAm().isBefore(LocalDate.now());
+    }
+    
+    private void aktualisiereAbgelaufenStatus(
+    	ToDo aufgabe,
+    	VerticalLayout aufgabenBlock,
+    	Span faelligkeit,
+    	DateTimeFormatter format) {
+    	
+    	if (isAbgelaufen(aufgabe)) {
+    		faelligkeit.setText(
+    				"Abgelaufen - Fällig am: " + aufgabe.getFaelligAm().format(format));
+    		
+    		aufgabenBlock.addClassName("todo-abgelaufen");
+    		faelligkeit.addClassName("todo-datum-abgelaufen");
+    	} else {
+    		faelligkeit.setText(
+    				aufgabe.getFaelligAm() != null
+    				? "Fällig am: " + aufgabe.getFaelligAm().format(format)
+    				: "Kein Fälligkeitsdatum");
+    		
+    		aufgabenBlock.removeClassName("todo-abgelaufen");
+    		faelligkeit.removeClassName("todo-datum-abgelaufen");
+    	}
     }
 }
