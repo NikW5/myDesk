@@ -49,5 +49,19 @@ public class NachrichtService {
         return nachrichtRepository
                 .countByEmpfaengerAndGelesenFalse(empfaenger);
     }
+    
+    public Nachricht getNachricht(Integer id) {
+        return nachrichtRepository.findById(id).orElse(null);
+    }
+
+    public Nachricht getNachrichtFürEmpfaenger(
+            Integer id,
+            Benutzer empfaenger) {
+
+        return nachrichtRepository
+                .findByIdAndEmpfaenger(id, empfaenger)
+                .orElse(null);
+    }
+
 
 }
