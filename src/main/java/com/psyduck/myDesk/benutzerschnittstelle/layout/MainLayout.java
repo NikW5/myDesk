@@ -4,6 +4,7 @@ import com.psyduck.myDesk.benutzerschnittstelle.ChatView;
 import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
 import com.psyduck.myDesk.benutzerschnittstelle.FokusView;
 import com.psyduck.myDesk.benutzerschnittstelle.KalenderView;
+import com.psyduck.myDesk.benutzerschnittstelle.NachObenButton;
 import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
 import com.psyduck.myDesk.benutzerschnittstelle.ToDoView;
 import com.psyduck.myDesk.persistenz.Benutzer;
@@ -15,22 +16,24 @@ import com.vaadin.flow.component.avatar.Avatar;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.AfterNavigationEvent;
+import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.RouterLink;
 
 import jakarta.annotation.security.PermitAll;
 
 @StyleSheet("styles.css")
 @PermitAll
-public class MainLayout extends AppLayout {
+public class MainLayout extends AppLayout implements AfterNavigationObserver {
 
     private final AktuellerBenutzerService aktuellerBenutzerService;
+    private NachObenButton nachObenButton;
 
     public MainLayout(
             AktuellerBenutzerService aktuellerBenutzerService) {
@@ -40,6 +43,7 @@ public class MainLayout extends AppLayout {
 
         erstelleHeader();
         erstelleNavigation();
+        erstelleNachObenButton();
     }
 
     private void erstelleHeader() {
@@ -191,5 +195,60 @@ public class MainLayout extends AppLayout {
                 .set("box-sizing", "border-box");
 
         return link;
+    }
+    
+    private void erstelleNachObenButton() {
+    	nachObenButton = new NachObenButton();
+    	
+    	getElement().appendChild(nachObenButton.getElement());
+    	
+    	initialisiereNachObenButton();
+    }
+    
+    private void initialisiereNachObenButton() {
+    	getElement().executeJs("""
+                const button = $0;
+                const content =
+                    this.shadowRoot.querySelector('[part="content"]');
+
+                const aktualisiereButton = () => {
+                    button.style.display =
+                        content.scrollTop > 300
+                            ? 'block'
+                            : 'none';
+                };
+
+                content.addEventListener(
+                    'scroll',
+                    aktualisiereButton
+                );
+
+                button.addEventListener('click', () => {
+                    content.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                aktualisiereButton();
+            """, nachObenButton.getElement());
+    }
+    
+    @Override
+    public void afterNavigation(
+            AfterNavigationEvent event) {
+
+        String pfad =
+                event.getLocation().getPath();
+
+        boolean buttonAnzeigen =
+                pfad.equals("todo")
+                || pfad.equals("neue_nachricht")
+                || pfad.equals("postfach");
+
+        nachObenButton.getElement().setProperty(
+        		"pageSupportsScrollTop", 
+        		buttonAnzeigen
+        );
     }
 }
