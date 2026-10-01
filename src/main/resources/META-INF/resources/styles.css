@@ -359,6 +359,14 @@ vaadin-app-layout:not([has-drawer]) {
     color: #C62828;
 }
 
+.nach-oben-button {
+	position: fixed !important;
+	right: 25px;
+	bottom: 50px;
+	z-index: 1000;
+	align-self: flex-end;
+}
+
 @media (max-width: 900px) {
     .postfach-content {
         padding: 1rem;
