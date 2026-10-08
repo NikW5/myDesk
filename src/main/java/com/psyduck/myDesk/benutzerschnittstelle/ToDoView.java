@@ -1,6 +1,5 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -13,10 +12,12 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -24,295 +25,236 @@ import com.vaadin.flow.router.Route;
 
 import jakarta.annotation.security.PermitAll;
 
+@StyleSheet("styles.css")
 @Route(value = "todo", layout = MainLayout.class)
 @PermitAll
 public class ToDoView extends VerticalLayout {
+	private final ToDoRepository toDoRepository;
+	private final AktuellerBenutzerService aktuellerBenutzerService;
+	private final VerticalLayout aufgabenListe = new VerticalLayout();
 
-    private final ToDoRepository toDoRepository;
-    private final AktuellerBenutzerService aktuellerBenutzerService;
-    private final VerticalLayout aufgabenListe = new VerticalLayout();
+	public ToDoView(ToDoRepository toDoRepository, AktuellerBenutzerService aktuellerBenutzerService) {
+	    this.toDoRepository = toDoRepository;
+	    this.aktuellerBenutzerService = aktuellerBenutzerService;
 
-    public ToDoView(
-            ToDoRepository toDoRepository,
-            AktuellerBenutzerService aktuellerBenutzerService) {
+	    setSizeFull();
+	    setPadding(false);
+	    setSpacing(false);
+	    addClassName("todo-background");
 
-        this.toDoRepository = toDoRepository;
-        this.aktuellerBenutzerService = aktuellerBenutzerService;
+	    VerticalLayout content = new VerticalLayout();
+	    content.setSizeFull();
+	    content.setPadding(true);
+	    content.setSpacing(true);
+	    content.addClassName("todo-content");
 
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+	    H2 titel = new H2("Meine Aufgaben");
+	    titel.addClassName("todo-title");
 
-        H2 ueberschrift = new H2("Meine Aufgaben");
+	    Span untertitel = new Span("Behalte deine Aufgaben im Blick und erledige sie Schritt für Schritt.");
+	    untertitel.addClassName("todo-subtitle");
 
-        Button aufgabeHinzufuegen = new Button(
-                "Aufgabe hinzufügen",
-                event -> zeigeAufgabeDialog()
-        );
+	    VerticalLayout kopfbereich = new VerticalLayout(titel, untertitel);
+	    kopfbereich.setPadding(false);
+	    kopfbereich.setSpacing(false);
 
-        aufgabeHinzufuegen.addThemeVariants(
-                ButtonVariant.PRIMARY
-        );
+	    Button aufgabeHinzufuegen = new Button("Aufgabe hinzufügen", VaadinIcon.PLUS.create(), event -> zeigeAufgabeDialog());
+	    aufgabeHinzufuegen.addThemeVariants(ButtonVariant.PRIMARY);
+	    aufgabeHinzufuegen.addClassName("todo-add-button");
 
-        aufgabenListe.setPadding(false);
-        aufgabenListe.setSpacing(true);
+	    HorizontalLayout toolbar = new HorizontalLayout(aufgabeHinzufuegen);
+	    toolbar.setWidthFull();
+	    toolbar.setPadding(false);
+	    toolbar.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
+	    toolbar.addClassName("todo-toolbar");
 
-        add(
-                ueberschrift,
-                aufgabeHinzufuegen,
-                aufgabenListe
-        );
+	    aufgabenListe.setPadding(false);
+	    aufgabenListe.setSpacing(true);
+	    aufgabenListe.setWidthFull();
 
-        expand(aufgabenListe);
+	    VerticalLayout aufgabenPanel = new VerticalLayout(aufgabenListe);
+	    aufgabenPanel.setSizeFull();
+	    aufgabenPanel.setPadding(true);
+	    aufgabenPanel.setSpacing(false);
+	    aufgabenPanel.addClassName("todo-task-panel");
 
-        aktualisiereListe();
-    }
+	    content.add(kopfbereich, toolbar, aufgabenPanel);
+	    content.expand(aufgabenPanel);
+	    add(content);
 
-    private void zeigeAufgabeDialog() {
-        Dialog dialog = new Dialog();
+	    aktualisiereListe();
+	}
 
-        TextField eingabe = new TextField("Aufgabe");
-        eingabe.setWidthFull();
-        eingabe.setRequired(true);
+	private void zeigeAufgabeDialog() {
+	    Dialog dialog = new Dialog();
+	    H2 titel = new H2("Neue Aufgabe");
+	    titel.addClassName("todo-dialog-title");
 
-        DatePicker faelligkeitsdatum =
-                new DatePicker("Fälligkeitsdatum");
+	    TextField eingabe = new TextField("Aufgabe");
+	    eingabe.setWidthFull();
+	    eingabe.setRequired(true);
 
-        faelligkeitsdatum.setLocale(Locale.GERMAN);
+	    DatePicker faelligkeitsdatum = new DatePicker("Fälligkeitsdatum");
+	    faelligkeitsdatum.setLocale(Locale.GERMAN);
+	    faelligkeitsdatum.setWidthFull();
 
-        Button abbrechen = new Button(
-                "Abbrechen",
-                event -> dialog.close()
-        );
+	    Button abbrechen = new Button("Abbrechen", event -> dialog.close());
 
-        Button hinzufuegen = new Button(
-                "Hinzufügen",
-                event -> {
-                    String text = eingabe.getValue().trim();
-                    Benutzer benutzer =
-                            aktuellerBenutzerService
-                                    .getAktuellerBenutzer();
+	    Button hinzufuegen = new Button("Hinzufügen", VaadinIcon.PLUS.create(), event -> {
+	        String text = eingabe.getValue().trim();
+	        Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
 
-                    if (text.isEmpty() || benutzer == null) {
-                        return;
-                    }
+	        if (text.isEmpty() || benutzer == null) return;
 
-                    ToDo aufgabe = new ToDo(text);
-                    aufgabe.setFaelligAm(
-                            faelligkeitsdatum.getValue()
-                    );
-                    aufgabe.setBenutzer(benutzer);
+	        ToDo aufgabe = new ToDo(text);
+	        aufgabe.setFaelligAm(faelligkeitsdatum.getValue());
+	        aufgabe.setBenutzer(benutzer);
+	        toDoRepository.save(aufgabe);
+	        aktualisiereListe();
+	        dialog.close();
+	    });
 
-                    toDoRepository.save(aufgabe);
-                    aktualisiereListe();
-                    dialog.close();
-                }
-        );
+	    hinzufuegen.addThemeVariants(ButtonVariant.PRIMARY);
 
-        hinzufuegen.addThemeVariants(
-                ButtonVariant.PRIMARY
-        );
+	    HorizontalLayout buttons = new HorizontalLayout(hinzufuegen, abbrechen);
+	    buttons.setWidthFull();
+	    buttons.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-        HorizontalLayout buttons = new HorizontalLayout(
-                hinzufuegen,
-                abbrechen
-        );
+	    VerticalLayout layout = new VerticalLayout(titel, eingabe, faelligkeitsdatum, buttons);
+	    layout.setPadding(true);
+	    layout.setSpacing(true);
+	    layout.setWidth("420px");
 
-        dialog.add(
-                new VerticalLayout(
-                        eingabe,
-                        faelligkeitsdatum,
-                        buttons
-                )
-        );
+	    dialog.add(layout);
+	    dialog.open();
+	}
 
-        dialog.open();
-    }
+	private void zeigeBearbeitenDialog(ToDo aufgabe) {
+	    Dialog dialog = new Dialog();
+	    H2 titel = new H2("Aufgabe bearbeiten");
+	    titel.addClassName("todo-dialog-title");
 
-    private void zeigeBearbeitenDialog(ToDo aufgabe) {
-        Dialog dialog = new Dialog();
+	    TextField eingabe = new TextField("Aufgabe");
+	    eingabe.setWidthFull();
+	    eingabe.setRequired(true);
+	    eingabe.setValue(aufgabe.getText());
 
-        TextField eingabe = new TextField("Aufgabe");
-        eingabe.setWidthFull();
-        eingabe.setRequired(true);
-        eingabe.setValue(aufgabe.getText());
+	    DatePicker faelligkeitsdatum = new DatePicker("Fälligkeitsdatum");
+	    faelligkeitsdatum.setLocale(Locale.GERMAN);
+	    faelligkeitsdatum.setValue(aufgabe.getFaelligAm());
+	    faelligkeitsdatum.setWidthFull();
 
-        DatePicker faelligkeitsdatum =
-                new DatePicker("Fälligkeitsdatum");
+	    Button abbrechen = new Button("Abbrechen", event -> dialog.close());
 
-        faelligkeitsdatum.setLocale(Locale.GERMAN);
-        faelligkeitsdatum.setValue(aufgabe.getFaelligAm());
+	    Button speichern = new Button("Speichern", VaadinIcon.CHECK.create(), event -> {
+	        String text = eingabe.getValue().trim();
+	        if (text.isEmpty()) return;
 
-        Button abbrechen = new Button(
-                "Abbrechen",
-                event -> dialog.close()
-        );
+	        aufgabe.setText(text);
+	        aufgabe.setFaelligAm(faelligkeitsdatum.getValue());
+	        toDoRepository.save(aufgabe);
+	        aktualisiereListe();
+	        dialog.close();
+	    });
 
-        Button speichern = new Button(
-                "Speichern",
-                event -> {
-                    String text = eingabe.getValue().trim();
+	    speichern.addThemeVariants(ButtonVariant.PRIMARY);
 
-                    if (text.isEmpty()) {
-                        return;
-                    }
+	    HorizontalLayout buttons = new HorizontalLayout(speichern, abbrechen);
+	    buttons.setWidthFull();
+	    buttons.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-                    aufgabe.setText(text);
-                    aufgabe.setFaelligAm(
-                            faelligkeitsdatum.getValue()
-                    );
+	    VerticalLayout layout = new VerticalLayout(titel, eingabe, faelligkeitsdatum, buttons);
+	    layout.setPadding(true);
+	    layout.setSpacing(true);
+	    layout.setWidth("420px");
 
-                    toDoRepository.save(aufgabe);
-                    aktualisiereListe();
-                    dialog.close();
-                }
-        );
+	    dialog.add(layout);
+	    dialog.open();
+	}
 
-        speichern.addThemeVariants(
-                ButtonVariant.PRIMARY
-        );
+	private void loescheAufgabe(ToDo aufgabe) {
+	    toDoRepository.delete(aufgabe);
+	    aktualisiereListe();
+	}
 
-        HorizontalLayout buttons = new HorizontalLayout(
-                speichern,
-                abbrechen
-        );
+	private void aktualisiereListe() {
+	    aufgabenListe.removeAll();
 
-        dialog.add(
-                new VerticalLayout(
-                        eingabe,
-                        faelligkeitsdatum,
-                        buttons
-                )
-        );
+	    Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
+	    if (benutzer == null) return;
 
-        dialog.open();
-    }
+	    DateTimeFormatter format = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	    var aufgaben = toDoRepository.findByBenutzer(benutzer);
 
-    private void loescheAufgabe(ToDo aufgabe) {
-        toDoRepository.delete(aufgabe);
-        aktualisiereListe();
-    }
+	    if (aufgaben.isEmpty()) {
+	        VerticalLayout leer = new VerticalLayout();
+	        leer.setWidthFull();
+	        leer.setAlignItems(FlexComponent.Alignment.CENTER);
+	        leer.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+	        leer.setPadding(true);
 
-    private void aktualisiereListe() {
-        aufgabenListe.removeAll();
+	        Span icon = new Span(VaadinIcon.CHECK_CIRCLE.create());
+	        icon.addClassName("todo-empty-icon");
 
-        Benutzer benutzer =
-                aktuellerBenutzerService.getAktuellerBenutzer();
+	        Span text = new Span("Keine Aufgaben vorhanden.");
+	        text.addClassName("todo-empty-text");
 
-        if (benutzer == null) {
-            return;
-        }
+	        Span hinweis = new Span("Zeit, etwas Neues anzugehen!");
+	        hinweis.addClassName("todo-empty-subtitle");
 
-        DateTimeFormatter format =
-                DateTimeFormatter.ofPattern("dd.MM.yyyy");
+	        leer.add(icon, text, hinweis);
+	        aufgabenListe.add(leer);
+	        return;
+	    }
 
-        for (ToDo aufgabe : toDoRepository.findByBenutzer(benutzer)) {
+	    for (ToDo aufgabe : aufgaben) {
+	        Checkbox checkbox = new Checkbox(aufgabe.getText());
+	        checkbox.setValue(aufgabe.isErledigt());
+	        checkbox.addClassName("todo-checkbox");
+	        aktualisiereErledigtDarstellung(checkbox, aufgabe.isErledigt());
 
-            Checkbox checkbox =
-                    new Checkbox(aufgabe.getText());
+	        checkbox.addValueChangeListener(event -> {
+	            aufgabe.setErledigt(event.getValue());
+	            toDoRepository.save(aufgabe);
+	            aktualisiereErledigtDarstellung(checkbox, event.getValue());
+	        });
 
-            checkbox.setValue(aufgabe.isErledigt());
+	        Span faelligkeit = new Span(aufgabe.getFaelligAm() != null
+	                ? "Fällig am: " + aufgabe.getFaelligAm().format(format)
+	                : "Kein Fälligkeitsdatum");
+	        faelligkeit.addClassName("todo-due-date");
 
-            if (aufgabe.isErledigt()) {
-                checkbox.getStyle()
-                        .set("text-decoration", "line-through");
-            }
-            
-            Span faelligkeit = new Span();
-            
-            Button bearbeiten = new Button(
-                    VaadinIcon.EDIT.create(),
-                    event -> zeigeBearbeitenDialog(aufgabe)
-            );
-            
-            Button loeschen = new Button(
-                    VaadinIcon.TRASH.create(),
-                    event -> loescheAufgabe(aufgabe)
-            );
-            
-            HorizontalLayout verwaltung = new HorizontalLayout(
-                    faelligkeit,
-                    bearbeiten,
-                    loeschen
-            );
-            
-            VerticalLayout aufgabenBlock = new VerticalLayout(
-                    checkbox,
-                    verwaltung
-            );
-            
-            aktualisiereAbgelaufenStatus(
-                    aufgabe,
-                    aufgabenBlock,
-                    faelligkeit,
-                    format
-            );
+	        Button bearbeiten = new Button(VaadinIcon.EDIT.create(), event -> zeigeBearbeitenDialog(aufgabe));
+	        bearbeiten.addClassName("todo-icon-button");
+	        bearbeiten.setTooltipText("Aufgabe bearbeiten, quack!");
 
-            checkbox.addValueChangeListener(event -> {
-                aufgabe.setErledigt(event.getValue());
-                toDoRepository.save(aufgabe);
+	        Button loeschen = new Button(VaadinIcon.TRASH.create(), event -> loescheAufgabe(aufgabe));
+	        loeschen.addClassName("todo-icon-button");
+	        loeschen.setTooltipText("Aufgabe löschen, quack!");
 
-                if (event.getValue()) {
-                    checkbox.getStyle()
-                            .set("text-decoration", "line-through");
-                } else {
-                    checkbox.getStyle()
-                            .remove("text-decoration");
-                }
-                
-                aktualisiereAbgelaufenStatus(
-                        aufgabe,
-                        aufgabenBlock,
-                        faelligkeit,
-                        format
-                );
-            });
+	        HorizontalLayout buttons = new HorizontalLayout(bearbeiten, loeschen);
+	        buttons.setSpacing(true);
 
-            bearbeiten.setTooltipText(
-                    "Aufgabe bearbeiten, quack!"
-            );
+	        HorizontalLayout verwaltung = new HorizontalLayout(faelligkeit, buttons);
+	        verwaltung.setWidthFull();
+	        verwaltung.setAlignItems(FlexComponent.Alignment.CENTER);
+	        verwaltung.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
 
-            loeschen.setTooltipText(
-                    "Aufgabe löschen, quack!"
-            );
+	        VerticalLayout aufgabenBlock = new VerticalLayout(checkbox, verwaltung);
+	        aufgabenBlock.setPadding(true);
+	        aufgabenBlock.setSpacing(true);
+	        aufgabenBlock.setWidthFull();
+	        aufgabenBlock.addClassName("todo-task");
 
-            verwaltung.setWidthFull();
-            verwaltung.setAlignItems(Alignment.CENTER);
- 
-            aufgabenBlock.setPadding(true);
-            aufgabenBlock.setSpacing(false);
-            aufgabenBlock.setWidthFull();
+	        if (aufgabe.isErledigt()) aufgabenBlock.addClassName("todo-task-completed");
 
-            aufgabenListe.add(aufgabenBlock);
-        }
-    }
-    
-    private boolean isAbgelaufen(ToDo aufgabe) {
-    	return !aufgabe.isErledigt() 
-    			&& aufgabe.getFaelligAm() != null
-    			&& aufgabe.getFaelligAm().isBefore(LocalDate.now());
-    }
-    
-    private void aktualisiereAbgelaufenStatus(
-    	ToDo aufgabe,
-    	VerticalLayout aufgabenBlock,
-    	Span faelligkeit,
-    	DateTimeFormatter format) {
-    	
-    	if (isAbgelaufen(aufgabe)) {
-    		faelligkeit.setText(
-    				"Abgelaufen - Fällig am: " + aufgabe.getFaelligAm().format(format));
-    		
-    		aufgabenBlock.addClassName("todo-abgelaufen");
-    		faelligkeit.addClassName("todo-datum-abgelaufen");
-    	} else {
-    		faelligkeit.setText(
-    				aufgabe.getFaelligAm() != null
-    				? "Fällig am: " + aufgabe.getFaelligAm().format(format)
-    				: "Kein Fälligkeitsdatum");
-    		
-    		aufgabenBlock.removeClassName("todo-abgelaufen");
-    		faelligkeit.removeClassName("todo-datum-abgelaufen");
-    	}
-    }
+	        aufgabenListe.add(aufgabenBlock);
+	    }
+	}
+
+	private void aktualisiereErledigtDarstellung(Checkbox checkbox, boolean erledigt) {
+	    if (erledigt) checkbox.addClassName("todo-checkbox-completed");
+	    else checkbox.removeClassName("todo-checkbox-completed");
+	}
+
 }
