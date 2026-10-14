@@ -38,3 +38,5 @@ build/
 src/main/frontend/generated/
 
 src/main/resources/application.properties
+
+.env
