@@ -106,7 +106,7 @@ public class NachrichtSendenView extends VerticalLayout
         String antwortAuf = event.getLocation()
                 .getQueryParameters()
                 .getParameters()
-                .get("antwortAuf")
+                .getOrDefault("antwortAuf", List.of())
                 .stream()
                 .findFirst()
                 .orElse(null);
