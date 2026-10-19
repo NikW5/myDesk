@@ -18,17 +18,18 @@ Die Anwendung vereint **Todos, Kalender, Nachrichten und weitere Produktivitäts
 
 ## 🛠️ Technologie-Stack
 
-| Bereich     | Technologie           |
-| ----------- | --------------------- |
-| Sprache     | Java 21               |
-| Backend     | Spring Boot 4.1.0     |
-| UI          | Vaadin 25.2.0         |
-| Datenbank   | PostgreSQL            |
-| Persistenz  | Spring Data JPA       |
-| Migrationen | Flyway                |
-| Sicherheit  | Spring Security       |
-| Kalender    | FullCalendar for Flow |
-| Build       | Maven                 |
+| Bereich           | Technologie           |
+| ----------------- | --------------------- |
+| Sprache           | Java 21               |
+| Backend           | Spring Boot 4.1.0     |
+| UI                | Vaadin 25.2.0         |
+| Datenbank         | PostgreSQL            |
+| Persistenz        | Spring Data JPA       |
+| Migrationen       | Flyway                |
+| Sicherheit        | Spring Security       |
+| Kalender          | FullCalendar for Flow |
+| Build             | Maven                 |
+|Containerisierung  | Docker                 |
 
 ## 🚀 Installation
 
