@@ -42,16 +42,9 @@ public class NachrichtSendenView extends VerticalLayout
 
     private final List<Anhang> anhaenge = new ArrayList<>();
     private final VerticalLayout anhangListe = new VerticalLayout();
-
-    private final ComboBox<Benutzer> empfaenger =
-            new ComboBox<>("An");
-
-    private final TextField betreff =
-            new TextField("Titel");
-
-    private final TextArea nachricht =
-            new TextArea("Neue Nachricht");
-
+    private final ComboBox<Benutzer> empfaenger = new ComboBox<>("An");
+    private final TextField betreff = new TextField("Titel");
+    private final TextArea nachricht = new TextArea("Neue Nachricht");
     private final BenutzerService benutzerService;
     private final NachrichtService nachrichtService;
     private final AnhangRepository anhangRepository;
@@ -68,34 +61,45 @@ public class NachrichtSendenView extends VerticalLayout
         this.anhangRepository = anhangRepository;
         this.aktuellerBenutzerService = aktuellerBenutzerService;
 
+        initialisiereLayout();
+
+        VerticalLayout nachrichtenPanel =
+                erstelleNachrichtenPanel();
+
+        baueOberflaeche(nachrichtenPanel);
+    }
+    
+    private void initialisiereLayout() {
         setSizeFull();
         setPadding(false);
         setSpacing(false);
         addClassName("nachricht-background");
+    }
+    
+    private VerticalLayout erstelleKopfbereich() {
+        H2 titel = new H2("Neue Nachricht");
+        titel.addClassName("nachricht-title");
+
+        Span untertitel = new Span("Verfasse eine Nachricht und sende sie an einen anderen Benutzer.");
+        untertitel.addClassName("nachricht-subtitle");
+
+        VerticalLayout kopfbereich =
+                new VerticalLayout(titel, untertitel);
+
+        kopfbereich.setPadding(false);
+        kopfbereich.setSpacing(false);
+
+        return kopfbereich;
+    }
+    
+    private void baueOberflaeche(VerticalLayout nachrichtenPanel) {
 
         VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
         content.setPadding(true);
         content.setSpacing(true);
         content.addClassName("nachricht-content");
-
-        H2 titel = new H2("Neue Nachricht");
-        titel.addClassName("nachricht-title");
-
-        Span untertitel = new Span(
-                "Verfasse eine Nachricht und sende sie an einen anderen Benutzer."
-        );
-        untertitel.addClassName("nachricht-subtitle");
-
-        VerticalLayout kopfbereich =
-                new VerticalLayout(titel, untertitel);
-        kopfbereich.setPadding(false);
-        kopfbereich.setSpacing(false);
-
-        VerticalLayout nachrichtenPanel =
-                erstelleNachrichtenPanel();
-
-        content.add(kopfbereich, nachrichtenPanel);
+        content.add(erstelleKopfbereich(), nachrichtenPanel);
         content.expand(nachrichtenPanel);
 
         add(content);
@@ -148,7 +152,6 @@ public class NachrichtSendenView extends VerticalLayout
             nachricht.setValue(zitierterInhalt);
 
         } catch (NumberFormatException ignored) {
-            // Ungültige Nachrichten-ID -> normale neue Nachricht
         }
     }
 
