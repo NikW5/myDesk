@@ -1,0 +1,17 @@
+
+services:
+  mydesk:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+
+    volumes:
+      - .:/app
+      - ./target/classes:/app/target/classes
+
+    ports:
+      - "8080:8080"
+      - "35729:35729"
+
+    environment:
+      SPRING_DEVTOOLS_RESTART_ENABLED: "true"

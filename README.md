@@ -68,6 +68,22 @@ Docker Desktop starten und im Projektverzeichnis folgenden Befehl ausführen:
 ```bash
 docker compose up --build -d
 ```
+##### Entwicklungsmodus
+
+Für die Entwicklung stehen separate Dateien zur Verfügung:
+
+- `Dockerfile.dev`
+- `compose.dev.yaml`
+
+Damit können Entwicklungsfunktionen wie Spring Boot DevTools verwendet werden, ohne die Standardkonfiguration zu verändern.
+
+**Wichtig für Eclipse:** Unter `Project → Build Automatically` muss das automatische Bauen aktiviert sein, damit Änderungen an Java-Dateien automatisch kompiliert werden.
+
+Der Entwicklungsmodus wird mit folgendem Befehl gestartet:
+
+```bash
+docker compose -f compose.yaml -f compose.dev.yaml up --build -d
+```
 
 Die Anwendung ist anschließend unter [http://localhost:8080](http://localhost:8080) erreichbar.
 
