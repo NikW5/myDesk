@@ -336,7 +336,7 @@ public class PostfachView extends VerticalLayout {
                 benutzer != null &&
                 nachrichtService.hatNeueNachricht(benutzer)
         );
-    }
+    } 
 
     private Grid<Nachricht> erstelleNachrichtentabelle() {
         Grid<Nachricht> grid = new Grid<>(Nachricht.class, false);
@@ -470,7 +470,7 @@ public class PostfachView extends VerticalLayout {
     private Tabs erstelleNachrichtenTabs() {
         Tab empfangen = new Tab("Empfangene Nachrichten");
         Tab gesendet = new Tab("Gesendete Nachrichten");
-        Tabs tabs = new Tabs(empfangen, gesendet);
+        Tabs tabs = new Tabs(empfangen, gesendet); 
         tabs.setWidthFull();
         tabs.addSelectedChangeListener(event -> {
             gesendeteNachrichtenAnzeigen =

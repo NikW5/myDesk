@@ -35,7 +35,7 @@ public class NachrichtService {
         nachricht.setGelesen(true);
         nachrichtRepository.save(nachricht);
     }
-
+ 
     public Nachricht speichern(
             Benutzer absender,
             Benutzer empfaenger,

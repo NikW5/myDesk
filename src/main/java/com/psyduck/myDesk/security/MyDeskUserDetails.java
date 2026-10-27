@@ -15,7 +15,7 @@ public class MyDeskUserDetails implements UserDetails {
         this.benutzer = benutzer;
     }
 
-    public Benutzer getBenutzer() {
+    public Benutzer getBenutzer() { 
         return benutzer;
     }
 

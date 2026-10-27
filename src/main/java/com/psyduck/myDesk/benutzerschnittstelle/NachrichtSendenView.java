@@ -372,7 +372,7 @@ public class NachrichtSendenView extends VerticalLayout
                         empfaengerBenutzer,
                         betreff.getValue().trim(),
                         nachricht.getValue()
-                );
+                ); 
 
         for (Anhang anhang : anhaenge) {
             anhang.setNachricht(gespeicherteNachricht);

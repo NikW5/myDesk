@@ -16,5 +16,5 @@ public interface NachrichtRepository extends JpaRepository<Nachricht, Integer> {
     Optional<Nachricht> findByIdAndEmpfaenger(
             Integer id,
             Benutzer empfaenger
-    );
+    ); 
 }
