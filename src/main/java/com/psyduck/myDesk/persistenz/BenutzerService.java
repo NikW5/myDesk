@@ -32,7 +32,7 @@ public class BenutzerService {
         return Optional.empty();
     }
 
-
+ 
     public Optional<Benutzer> findeNachBenutzername(String name) {
         return benutzerRepository.findByNameIgnoreCase(name);
     }

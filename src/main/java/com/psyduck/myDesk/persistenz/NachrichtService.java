@@ -18,6 +18,14 @@ public class NachrichtService {
         return nachrichtRepository.findByEmpfaenger(empfaenger);
     }
 
+    public List<Nachricht> getGesendeteNachrichten(Benutzer absender) {
+        if (absender == null) {
+            return List.of();
+        }
+
+        return nachrichtRepository.findByAbsender(absender);
+    }
+
     public boolean hatNeueNachricht(Benutzer empfaenger) {
         return nachrichtRepository
                 .countByEmpfaengerAndGelesenFalse(empfaenger) > 0;
@@ -27,7 +35,7 @@ public class NachrichtService {
         nachricht.setGelesen(true);
         nachrichtRepository.save(nachricht);
     }
-
+ 
     public Nachricht speichern(
             Benutzer absender,
             Benutzer empfaenger,
@@ -44,12 +52,12 @@ public class NachrichtService {
 
         return nachrichtRepository.save(nachricht);
     }
-    
+
     public long getAnzahlUngeleseneNachrichten(Benutzer empfaenger) {
         return nachrichtRepository
                 .countByEmpfaengerAndGelesenFalse(empfaenger);
     }
-    
+
     public Nachricht getNachricht(Integer id) {
         return nachrichtRepository.findById(id).orElse(null);
     }
@@ -62,6 +70,4 @@ public class NachrichtService {
                 .findByIdAndEmpfaenger(id, empfaenger)
                 .orElse(null);
     }
-
-
 }

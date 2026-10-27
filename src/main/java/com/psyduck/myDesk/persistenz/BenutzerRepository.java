@@ -11,4 +11,4 @@ Optional<Benutzer> findByEmailIgnoreCase(String email);
 Optional<Benutzer> findByNameIgnoreCase(String name);
 
 
-}
+} 

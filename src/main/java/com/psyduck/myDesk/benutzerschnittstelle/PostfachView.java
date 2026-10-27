@@ -1,6 +1,8 @@
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import java.io.ByteArrayInputStream;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.Tabs;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,21 +44,34 @@ public class PostfachView extends VerticalLayout {
 
     private final NachrichtService nachrichtService;
     private final AktuellerBenutzerService aktuellerBenutzerService;
-
     private final Span neueNachrichtHinweis;
     private final Grid<Nachricht> grid;
+    private boolean gesendeteNachrichtenAnzeigen = false;
 
-    public PostfachView(
-            NachrichtService nachrichtService,
-            AktuellerBenutzerService aktuellerBenutzerService) {
-
+    public PostfachView(NachrichtService nachrichtService, AktuellerBenutzerService aktuellerBenutzerService) {
         this.nachrichtService = nachrichtService;
         this.aktuellerBenutzerService = aktuellerBenutzerService;
 
+        initialisiereLayout();
+
+        neueNachrichtHinweis = erstelleNeueNachrichtHinweis();
+        grid = erstelleNachrichtentabelle();
+
+        MasterDetailLayout masterDetail = erstelleMasterDetailLayout();
+
+        baueOberflaeche(masterDetail);
+
+        aktualisiereNeueNachrichtHinweis();
+    }
+    
+    private void initialisiereLayout() {
         setSizeFull();
         setPadding(false);
         setSpacing(false);
         addClassName("postfach-background");
+    }
+    
+    private void baueOberflaeche(MasterDetailLayout masterDetail) {
 
         VerticalLayout content = new VerticalLayout();
         content.setSizeFull();
@@ -64,42 +79,35 @@ public class PostfachView extends VerticalLayout {
         content.setSpacing(true);
         content.addClassName("postfach-content");
 
-        H2 titel = new H2("Postfach");
-        titel.addClassName("postfach-title");
-
-        Span untertitel = new Span(
-                "Hier findest du deine Nachrichten."
-        );
-        untertitel.addClassName("postfach-subtitle");
-
-        VerticalLayout kopfbereich = new VerticalLayout(
-                titel,
-                untertitel
-        );
-        kopfbereich.setPadding(false);
-        kopfbereich.setSpacing(false);
-
-        neueNachrichtHinweis = erstelleNeueNachrichtHinweis();
-        grid = erstelleNachrichtentabelle();
-
-        MasterDetailLayout masterDetail =
-                erstelleMasterDetailLayout();
-
         content.add(
-                kopfbereich,
+                erstelleKopfbereich(),
+                erstelleNachrichtenTabs(),
                 erstelleToolbar(),
                 neueNachrichtHinweis,
                 masterDetail
         );
 
         content.expand(masterDetail);
-        add(content);
 
-        aktualisiereNeueNachrichtHinweis();
+        add(content);
+    }
+    
+    private VerticalLayout erstelleKopfbereich() {
+        H2 titel = new H2("Postfach");
+        titel.addClassName("postfach-title");
+
+        Span untertitel = new Span("Hier findest du deine Nachrichten.");
+        untertitel.addClassName("postfach-subtitle");
+
+        VerticalLayout kopfbereich = new VerticalLayout(titel, untertitel);
+        kopfbereich.setPadding(false);
+        kopfbereich.setSpacing(false);
+
+        return kopfbereich;
     }
 
     private HorizontalLayout erstelleToolbar() {
-        Button neueNachricht = new Button(
+    	Button neueNachricht = new Button(
                 "Neue Nachricht",
                 VaadinIcon.EDIT.create(),
                 event -> UI.getCurrent()
@@ -132,11 +140,7 @@ public class PostfachView extends VerticalLayout {
     }
 
     private Span erstelleNeueNachrichtHinweis() {
-        Span hinweis = new Span(
-                VaadinIcon.ENVELOPE.create(),
-                new Span("Neue Nachricht vorhanden")
-        );
-
+        Span hinweis = new Span(VaadinIcon.ENVELOPE.create(), new Span("Neue Nachricht vorhanden"));
         hinweis.addClassName("postfach-notification");
         return hinweis;
     }
@@ -154,8 +158,7 @@ public class PostfachView extends VerticalLayout {
 
         VerticalLayout details = erstelleDetailbereich(layout);
 
-        grid.asSingleSelect().addValueChangeListener(event -> {
-            Nachricht ausgewaehlt = event.getValue();
+        grid.asSingleSelect().addValueChangeListener(event -> {Nachricht ausgewaehlt = event.getValue();
 
             if (ausgewaehlt == null) {
                 layout.setDetail(null);
@@ -187,36 +190,17 @@ public class PostfachView extends VerticalLayout {
         H2 titel = new H2("Nachricht");
         titel.addClassName("postfach-detail-title");
 
-        Button schliessen = new Button(
-                VaadinIcon.CLOSE.create()
-        );
-        schliessen.addThemeVariants(
-                ButtonVariant.LUMO_TERTIARY_INLINE
-        );
-        schliessen.getElement().setAttribute(
-                "aria-label",
-                "Vorschau schließen"
-        );
+        Button schliessen = new Button(VaadinIcon.CLOSE.create());
+        schliessen.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+        schliessen.getElement().setAttribute("aria-label", "Vorschau schließen");
+        schliessen.addClickListener(event -> {grid.asSingleSelect().clear(); masterDetail.setDetail(null);});
 
-        schliessen.addClickListener(event -> {
-            grid.asSingleSelect().clear();
-            masterDetail.setDetail(null);
-        });
-
-        HorizontalLayout header = new HorizontalLayout(
-                titel,
-                schliessen
-        );
-
+        HorizontalLayout header = new HorizontalLayout(titel, schliessen);
         header.setWidthFull();
         header.setPadding(false);
         header.setSpacing(false);
-        header.setJustifyContentMode(
-                FlexComponent.JustifyContentMode.BETWEEN
-        );
-        header.setAlignItems(
-                FlexComponent.Alignment.CENTER
-        );
+        header.setJustifyContentMode(FlexComponent.JustifyContentMode.BETWEEN);
+        header.setAlignItems(FlexComponent.Alignment.CENTER);
         header.addClassName("postfach-detail-header");
 
         details.add(header);
@@ -224,13 +208,9 @@ public class PostfachView extends VerticalLayout {
         return details;
     }
 
-    private void aktualisiereDetailbereich(
-            VerticalLayout details,
-            Nachricht nachricht) {
+    private void aktualisiereDetailbereich(VerticalLayout details, Nachricht nachricht) {
 
-        while (details.getComponentCount() > 1) {
-            details.remove(details.getComponentAt(1));
-        }
+        while (details.getComponentCount() > 1) {details.remove(details.getComponentAt(1));}
 
         TextField titel = new TextField("Titel");
         titel.setWidthFull();
@@ -252,9 +232,7 @@ public class PostfachView extends VerticalLayout {
         inhalt.addClassName("postfach-detail-message");
 
         Span anhangTitel = new Span("Anhänge");
-        anhangTitel.addClassName(
-                "postfach-attachment-title"
-        );
+        anhangTitel.addClassName("postfach-attachment-title");
 
         VerticalLayout anhaenge = new VerticalLayout();
         anhaenge.setPadding(false);
@@ -263,66 +241,33 @@ public class PostfachView extends VerticalLayout {
 
         if (nachricht.getAnhaenge().isEmpty()) {
 
-            Span leer = new Span(
-                    "Keine Anhänge vorhanden."
-            );
-
-            leer.addClassName(
-                    "postfach-no-attachments"
-            );
+            Span leer = new Span("Keine Anhänge vorhanden.");
+            leer.addClassName("postfach-no-attachments");
 
             anhaenge.add(leer);
 
         } else {
 
-            for (Anhang anhang : nachricht.getAnhaenge()) {
-                anhaenge.add(
-                        erstelleAnhang(anhang)
-                );
-            }
+            for (Anhang anhang : nachricht.getAnhaenge()) {anhaenge.add(erstelleAnhang(anhang));}
         }
 
-        Button antworten = new Button(
-                "Antworten",
-                VaadinIcon.REPLY.create()
-        );
-
-        antworten.addThemeVariants(
-                ButtonVariant.LUMO_PRIMARY
-        );
-
+        Button antworten = new Button("Antworten", VaadinIcon.REPLY.create());
+        antworten.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         antworten.addClickListener(event -> {
-
         	UI.getCurrent().navigate(
         	        NachrichtSendenView.class,
         	        new QueryParameters(
-        	                java.util.Map.of(
-        	                        "antwortAuf",
-        	                        java.util.List.of(
-        	                                String.valueOf(nachricht.getId())
-        	                        )
-        	                )
+        	                java.util.Map.of("antwortAuf", java.util.List.of(String.valueOf(nachricht.getId())))
         	        )
         	);
 
         });
 
-        HorizontalLayout antwortBereich =
-                new HorizontalLayout(antworten);
-
+        HorizontalLayout antwortBereich = new HorizontalLayout(antworten);
         antwortBereich.setWidthFull();
-        antwortBereich.setJustifyContentMode(
-                FlexComponent.JustifyContentMode.END
-        );
+        antwortBereich.setJustifyContentMode(FlexComponent.JustifyContentMode.END);
 
-        details.add(
-                titel,
-                von,
-                inhalt,
-                anhangTitel,
-                anhaenge,
-                antwortBereich
-        );
+        details.add(titel, von, inhalt, anhangTitel, anhaenge, antwortBereich);
     }
 
 
@@ -330,8 +275,7 @@ public class PostfachView extends VerticalLayout {
         Span icon = new Span(VaadinIcon.PAPERCLIP.create());
         icon.addClassName("postfach-attachment-icon");
 
-        DownloadHandler downloadHandler =
-                DownloadHandler.fromInputStream(
+        DownloadHandler downloadHandler = DownloadHandler.fromInputStream(
                         event -> new DownloadResponse(
                                 new ByteArrayInputStream(
                                         anhang.getInhalt()
@@ -342,23 +286,14 @@ public class PostfachView extends VerticalLayout {
                         )
                 );
 
-        Anchor download = new Anchor(
-                downloadHandler,
-                anhang.getDateiname()
-        );
+        Anchor download = new Anchor(downloadHandler, anhang.getDateiname());
         download.addClassName("postfach-attachment-link");
 
-        HorizontalLayout zeile = new HorizontalLayout(
-                icon,
-                download
-        );
-
+        HorizontalLayout zeile = new HorizontalLayout(icon, download);
         zeile.setWidthFull();
         zeile.setPadding(false);
         zeile.setSpacing(true);
-        zeile.setAlignItems(
-                FlexComponent.Alignment.CENTER
-        );
+        zeile.setAlignItems(FlexComponent.Alignment.CENTER);
         zeile.addClassName("postfach-attachment");
 
         return zeile;
@@ -371,9 +306,21 @@ public class PostfachView extends VerticalLayout {
     }
 
     private java.util.List<Nachricht> ladeNachrichten() {
-        return nachrichtService.getNachrichten(
-                aktuellerBenutzerService.getAktuellerBenutzer()
-        ).stream()
+        Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
+
+        if (benutzer == null) {
+            return java.util.List.of();
+        }
+
+        java.util.List<Nachricht> nachrichten;
+
+        if (gesendeteNachrichtenAnzeigen) {
+            nachrichten = nachrichtService.getGesendeteNachrichten(benutzer);
+        } else {
+            nachrichten = nachrichtService.getNachrichten(benutzer);
+        }
+
+        return nachrichten.stream()
                 .sorted(
                         Comparator.comparing(
                                 Nachricht::getEmpfangenAm
@@ -383,91 +330,85 @@ public class PostfachView extends VerticalLayout {
     }
 
     private void aktualisiereNeueNachrichtHinweis() {
-        Benutzer benutzer =
-                aktuellerBenutzerService.getAktuellerBenutzer();
+        Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
 
         neueNachrichtHinweis.setVisible(
                 benutzer != null &&
                 nachrichtService.hatNeueNachricht(benutzer)
         );
-    }
+    } 
 
     private Grid<Nachricht> erstelleNachrichtentabelle() {
-        Grid<Nachricht> grid =
-                new Grid<>(Nachricht.class, false);
-
+        Grid<Nachricht> grid = new Grid<>(Nachricht.class, false);
         grid.setSizeFull();
         grid.addClassName("postfach-grid");
 
-        grid.addComponentColumn(nachricht -> {
-            Span absender =
-                    new Span(nachricht.getAbsender().getName());
+        if (gesendeteNachrichtenAnzeigen) {
+            grid.addColumn(nachricht -> nachricht.getEmpfaenger().getName())
+            .setHeader("Empfänger")
+            .setSortable(true)
+            .setComparator(nachricht -> nachricht.getEmpfaenger().getName())
+            .setFlexGrow(1);
 
-            if (!nachricht.isGelesen()) {
-                absender.addClassName("postfach-unread-text");
+        } else {
+            grid.addComponentColumn(nachricht -> {
+                Span absender = new Span(nachricht.getAbsender().getName());
 
-                Span indikator = new Span("●");
-                indikator.addClassName(
-                        "postfach-unread-indicator"
-                );
+                if (!nachricht.isGelesen()) {
+                    absender.addClassName("postfach-unread-text");
 
-                HorizontalLayout layout =
-                        new HorizontalLayout(
-                                indikator,
-                                absender
-                        );
+                    Span indikator = new Span("●");
+                    indikator.addClassName("postfach-unread-indicator");
 
-                layout.setPadding(false);
-                layout.setSpacing(true);
-                layout.setAlignItems(
-                        FlexComponent.Alignment.CENTER
-                );
+                    HorizontalLayout layout = new HorizontalLayout(indikator, absender);
+                    layout.setPadding(false);
+                    layout.setSpacing(true);
+                    layout.setAlignItems(
+                            FlexComponent.Alignment.CENTER
+                    );
 
-                return layout;
-            }
+                    return layout;
+                }
 
-            return absender;
-        })
-        .setHeader("Absender")
-        .setComparator(
-                nachricht ->
-                        nachricht.getAbsender().getName()
-        )
-        .setFlexGrow(1);
+                return absender;
+            })
+            .setHeader("Absender")
+            .setSortable(true)
+            .setComparator(nachricht -> nachricht.getAbsender().getName())
+            .setFlexGrow(1);
+        }
 
-        grid.addComponentColumn(nachricht -> {
-            Span titel = new Span(nachricht.getTitel());
+        grid.addComponentColumn(nachricht -> {Span titel = new Span(nachricht.getTitel());
 
-            if (!nachricht.isGelesen()) {
-                titel.addClassName(
-                        "postfach-unread-text"
-                );
+            if (!gesendeteNachrichtenAnzeigen
+                    && !nachricht.isGelesen()) {
+                titel.addClassName("postfach-unread-text");
             }
 
             return titel;
         })
-        .setHeader("Titel")
+        .setHeader("Betreff")
+        .setSortable(true)
         .setComparator(Nachricht::getTitel)
         .setFlexGrow(2);
 
         grid.addComponentColumn(nachricht -> {
-            Span vorschau =
-                    new Span(nachricht.getVorschau());
-
+            Span vorschau = new Span(nachricht.getVorschau());
             vorschau.addClassName("postfach-preview");
-
             return vorschau;
         })
         .setHeader("Vorschau")
         .setFlexGrow(3);
 
-        grid.addComponentColumn(
-                nachricht ->
-                        formatiereDatumUndUhrzeit(
-                                nachricht.getEmpfangenAm()
-                        )
+        grid.addComponentColumn(nachricht ->
+                formatiereDatumUndUhrzeit(
+                        nachricht.getEmpfangenAm()
+                )
         )
-        .setHeader("Empfangen am")
+        .setHeader(gesendeteNachrichtenAnzeigen
+                        ? "Gesendet am"
+                        : "Empfangen am"
+        )
         .setSortable(true)
         .setComparator(Nachricht::getEmpfangenAm)
         .setFlexGrow(2);
@@ -477,8 +418,7 @@ public class PostfachView extends VerticalLayout {
         return grid;
     }
 
-    private HorizontalLayout formatiereDatumUndUhrzeit(
-            LocalDateTime datum) {
+    private HorizontalLayout formatiereDatumUndUhrzeit(LocalDateTime datum) {
 
         LocalDate heute = LocalDate.now();
         String tag;
@@ -525,5 +465,20 @@ public class PostfachView extends VerticalLayout {
         );
 
         return layout;
+    }
+    
+    private Tabs erstelleNachrichtenTabs() {
+        Tab empfangen = new Tab("Empfangene Nachrichten");
+        Tab gesendet = new Tab("Gesendete Nachrichten");
+        Tabs tabs = new Tabs(empfangen, gesendet); 
+        tabs.setWidthFull();
+        tabs.addSelectedChangeListener(event -> {
+            gesendeteNachrichtenAnzeigen =
+                    event.getSelectedTab() == gesendet;
+
+            aktualisiereNachrichten();
+        });
+
+        return tabs;
     }
 }
