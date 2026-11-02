@@ -15,5 +15,7 @@ public interface ToDoRepository extends JpaRepository<ToDo, Integer> {
             Benutzer benutzer,
             LocalDate faelligAm
     );
+    
+    void deleteByBenutzer(Benutzer benutzer);
 }
 
