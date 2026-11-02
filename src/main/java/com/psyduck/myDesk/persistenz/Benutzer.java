@@ -1,66 +1,45 @@
 package com.psyduck.myDesk.persistenz;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "benutzer")
 public class Benutzer {
 
-@Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
-private Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
-@Column(nullable = false, unique = true)
-private String email;
+    @Column(nullable = false, unique = true)
+    private String email;
 
-@Column(nullable = false)
-private String passwort;
+    @Column(nullable = false)
+    private String passwort;
 
-@Column(name = "benutzername", nullable = false, unique = true)
-private String name;
+    @Column(name = "benutzername", nullable = false, unique = true)
+    private String name;
 
-protected Benutzer() {
-   
-}
+    private String vorname;
+    private String nachname;
 
-public Benutzer(String email, String passwort, String name) {
-    this.email = email;
-    this.passwort = passwort;
-    this.name = name;
-}
+    protected Benutzer() {}
 
-public Integer getId() {
-    return id;
-}
+    public Benutzer(String email, String passwort, String name) {
+        this.email = email;
+        this.passwort = passwort;
+        this.name = name;
+    }
 
-public String getEmail() {
-    return email;
-}
+    public Integer getId() { return id; }
+    public String getEmail() { return email; }
+    public String getPasswort() { return passwort; }
+    public String getName() { return name; }
+    public String getVorname() { return vorname; }
+    public String getNachname() { return nachname; }
 
-public String getPasswort() {
-    return passwort;
-}
-
-public String getName() {
-    return name;
-}
-
-public void setEmail(String email) {
-    this.email = email;
-}
-
-public void setPasswort(String passwort) {
-    this.passwort = passwort;
-}
-
-public void setName(String name) {
-    this.name = name;
-}
-
-
+    public void setEmail(String email) { this.email = email; }
+    public void setPasswort(String passwort) { this.passwort = passwort; }
+    public void setName(String name) { this.name = name; }
+    public void setVorname(String vorname) { this.vorname = vorname; }
+    public void setNachname(String nachname) { this.nachname = nachname; }
 }

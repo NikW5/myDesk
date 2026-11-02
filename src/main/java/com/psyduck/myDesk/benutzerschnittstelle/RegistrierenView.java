@@ -7,6 +7,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
@@ -22,156 +23,97 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 @AnonymousAllowed
 public class RegistrierenView extends VerticalLayout {
  
-private final TextField benutzernameFeld = new TextField("Benutzername");
-private final EmailField emailFeld = new EmailField("E-Mail");
-private final PasswordField passwortFeld = new PasswordField("Passwort");
-private final PasswordField passwortBestaetigenFeld = new PasswordField("Passwort bestätigen");
-private final Button registrierenButton = new Button("Registrieren");
-private final Button zurueckButton = new Button("Zurück");
-private final BenutzerService benutzerService;
+	private final TextField benutzernameFeld = new TextField("Benutzername");
+    private final EmailField emailFeld = new EmailField("E-Mail");
+    private final TextField vornameFeld = new TextField("Vorname (optional)");
+    private final TextField nachnameFeld = new TextField("Nachname (optional)");
+    private final PasswordField passwortFeld = new PasswordField("Passwort");
+    private final PasswordField passwortBestaetigenFeld = new PasswordField("Passwort bestätigen");
+    private final Button registrierenButton = new Button("Registrieren");
+    private final Button zurueckButton = new Button("Zurück");
+    private final BenutzerService benutzerService;
 
-public RegistrierenView(BenutzerService benutzerService) {
-
-    this.benutzerService = benutzerService;
-
-    ansichtAufbauen();
-
-    registrierenButton.addClickListener(event -> registrieren());
-    zurueckButton.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
-}
-
-private void registrieren() {
-
-    String benutzername = benutzernameFeld.getValue().trim();
-    String email = emailFeld.getValue().trim();
-    String passwort = passwortFeld.getValue();
-    String passwortBestaetigt = passwortBestaetigenFeld.getValue();
-
-    if (benutzername.isEmpty()
-            || email.isEmpty()
-            || passwort.isEmpty()
-            || passwortBestaetigt.isEmpty()) {
-
-        getUI().ifPresent(ui ->
-                ui.getPage().executeJs(
-                        "alert('Bitte füllen Sie alle Felder aus.')"
-                )
-        );
-
-        return;
+    public RegistrierenView(BenutzerService benutzerService) {
+    	
+        this.benutzerService = benutzerService;
+        
+        ansichtAufbauen();
+        
+        registrierenButton.addClickListener(event -> registrieren());
+        zurueckButton.addClickListener(event -> UI.getCurrent().navigate(LoginView.class));
     }
 
-    if (!passwort.equals(passwortBestaetigt)) {
+    private void registrieren() {
+        String benutzername = benutzernameFeld.getValue().trim();
+        String email = emailFeld.getValue().trim();
+        String vorname = vornameFeld.getValue().trim();
+        String nachname = nachnameFeld.getValue().trim();
+        String passwort = passwortFeld.getValue();
+        String bestaetigung = passwortBestaetigenFeld.getValue();
 
-        passwortBestaetigenFeld.setInvalid(true);
-        passwortBestaetigenFeld.setErrorMessage(
-                "Die Passwörter stimmen nicht überein."
-        );
+        if (benutzername.isEmpty() || email.isEmpty() || passwort.isEmpty() || bestaetigung.isEmpty()) {
+            Notification.show("Bitte füllen Sie alle Pflichtfelder aus.");
+            return;
+        }
 
-        return;
+        if (emailFeld.isInvalid()) {
+            emailFeld.setErrorMessage("Bitte geben Sie eine gültige E-Mail-Adresse ein.");
+            return;
+        }
 
+        if (!passwort.equals(bestaetigung)) {
+            passwortBestaetigenFeld.setInvalid(true);
+            passwortBestaetigenFeld.setErrorMessage("Die Passwörter stimmen nicht überein.");
+            return;
+        }
+
+        passwortBestaetigenFeld.setInvalid(false);
+
+        if (benutzerService.findeNachBenutzername(benutzername).isPresent()) {
+            benutzernameFeld.setInvalid(true);
+            benutzernameFeld.setErrorMessage("Dieser Benutzername ist bereits vergeben.");
+            return;
+        }
+
+        benutzernameFeld.setInvalid(false);
+
+        if (benutzerService.findeNachEmail(email).isPresent()) {
+            emailFeld.setInvalid(true);
+            emailFeld.setErrorMessage("Diese E-Mail-Adresse ist bereits registriert.");
+            return;
+        }
+
+        emailFeld.setInvalid(false);
+
+        Benutzer benutzer = new Benutzer(email, passwort, benutzername);
+        benutzer.setVorname(vorname.isBlank() ? null : vorname);
+        benutzer.setNachname(nachname.isBlank() ? null : nachname);
+        benutzerService.speichern(benutzer);
+
+        Notification.show("Registrierung erfolgreich!");
+        UI.getCurrent().navigate(LoginView.class);
     }
 
-    passwortBestaetigenFeld.setInvalid(false);
-    
-    if (benutzerService.findeNachBenutzername(benutzername).isPresent()) {
+    private void ansichtAufbauen() {
+        setSizeFull();
+        setAlignItems(Alignment.CENTER);
+        setJustifyContentMode(JustifyContentMode.CENTER);
 
-        benutzernameFeld.setInvalid(true);
-        benutzernameFeld.setErrorMessage(
-                "Dieser Benutzername ist bereits vergeben."
-        );
+        VerticalLayout container = new VerticalLayout();
+        container.setMaxWidth("442px");
+        container.setWidthFull();
+        container.setPadding(true);
+        container.setSpacing(true);
+        container.setAlignItems(Alignment.CENTER);
+        container.getStyle().set("border", "1px solid lightgray").set("border-radius", "4px").set("background-color", "#f8f8f8");
 
-        return;
+        FormLayout formular = new FormLayout();
+        formular.setWidthFull();
+        formular.add(benutzernameFeld, emailFeld, vornameFeld, nachnameFeld, passwortFeld, passwortBestaetigenFeld);
+
+        HorizontalLayout buttonLeiste = new HorizontalLayout(registrierenButton, zurueckButton);
+        container.add(new H2("Registrieren"), formular, buttonLeiste);
+        add(container);
     }
-
-    benutzernameFeld.setInvalid(false);
-
-    if (benutzerService.findeNachEmail(email).isPresent()) {
-
-        emailFeld.setInvalid(true);
-        emailFeld.setErrorMessage(
-                "Diese E-Mail-Adresse ist bereits registriert."
-        );
-
-        return;
-    }
-
-    emailFeld.setInvalid(false);
-
-    Benutzer benutzer = new Benutzer(
-            email,
-            passwort,
-            benutzername
-    );
-
-    benutzerService.speichern(benutzer);
-
-    getUI().ifPresent(ui ->
-            ui.getPage().executeJs(
-                    "alert('Registrierung erfolgreich!')"
-            )
-    );
-
-    UI.getCurrent().navigate(LoginView.class);
-}
-
-private void ansichtAufbauen() {
-
-    setSizeFull();
-    setAlignItems(Alignment.CENTER);
-    setJustifyContentMode(JustifyContentMode.CENTER);
-
-    VerticalLayout layout = new VerticalLayout();
-    layout.setWidth("442px");
-
-    layout.getStyle()
-            .set("border", "1px solid lightgray")
-            .set("padding", "20px");
-
-    VerticalLayout formularContainer = new VerticalLayout();
-    formularContainer.setWidth("400px");
-    formularContainer.setPadding(true);
-    formularContainer.setSpacing(true);
-    formularContainer.setAlignItems(Alignment.CENTER);
-
-    formularContainer.getStyle()
-            .set("border", "1px solid lightgray")
-            .set("border-radius", "4px")
-            .set("padding", "20px")
-            .set("background-color", "#f8f8f8");
-
-    H2 ueberschrift = new H2("Registrieren");
-
-    FormLayout formular = new FormLayout();
-    formular.setWidthFull();
-
-    formular.add(
-            benutzernameFeld,
-            emailFeld,
-            passwortFeld,
-            passwortBestaetigenFeld
-    );
-
-    formular.setColspan(benutzernameFeld, 2);
-    formular.setColspan(emailFeld, 2);
-    formular.setColspan(passwortFeld, 2);
-    formular.setColspan(passwortBestaetigenFeld, 2);
-
-    HorizontalLayout buttonLeiste = new HorizontalLayout(
-            registrierenButton,
-            zurueckButton
-    );
- 
-    formularContainer.add(
-            ueberschrift,
-            formular,
-            buttonLeiste
-    );
-
-    layout.add(formularContainer);
-
-    add(layout);
-}
-
 
 }

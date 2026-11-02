@@ -25,6 +25,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.RouterLink;
+import com.psyduck.myDesk.benutzerschnittstelle.ProfilView;
 
 import jakarta.annotation.security.PermitAll;
 
@@ -147,6 +148,11 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
                 "timer",
                 FokusView.class
         );
+        
+        RouterLink profil = erstelleLink(
+        		"Mein Profil", 
+        		"person", 
+        		ProfilView.class);
 
         navigation.add(
                 dashboard,
@@ -154,7 +160,8 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
                 chat,
                 kalender,
                 todo,
-                fokus
+                fokus,
+                profil
         );
 
         addToDrawer(navigation);

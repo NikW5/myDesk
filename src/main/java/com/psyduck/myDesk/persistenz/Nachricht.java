@@ -14,11 +14,11 @@ public class Nachricht {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "absender_id", nullable = false)
+    @JoinColumn(name = "absender_id")
     private Benutzer absender;
 
     @ManyToOne
-    @JoinColumn(name = "empfaenger_id", nullable = false)
+    @JoinColumn(name = "empfaenger_id")
     private Benutzer empfaenger;
 
     @OneToMany(
