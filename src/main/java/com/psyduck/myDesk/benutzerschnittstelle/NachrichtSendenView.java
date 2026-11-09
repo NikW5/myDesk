@@ -12,13 +12,18 @@ import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.psyduck.myDesk.security.AktuellerBenutzerService;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -323,6 +328,7 @@ public class NachrichtSendenView extends VerticalLayout
     }
 
     private void sendeNachricht() {
+    	
         Benutzer absender =
                 aktuellerBenutzerService.getAktuellerBenutzer();
 
@@ -366,29 +372,81 @@ public class NachrichtSendenView extends VerticalLayout
         betreff.setInvalid(false);
         nachricht.setInvalid(false);
 
-        Nachricht gespeicherteNachricht =
-                nachrichtService.speichern(
-                        absender,
-                        empfaengerBenutzer,
-                        betreff.getValue().trim(),
-                        nachricht.getValue()
-                ); 
+        try {
+        	// Zum Testen: if (true) { throw new RuntimeException("Datenbank-Verbindung abgebrochen!");}
+        	Nachricht gespeicherteNachricht =
+                    nachrichtService.speichern(
+                            absender,
+                            empfaengerBenutzer,
+                            betreff.getValue().trim(),
+                            nachricht.getValue()
+                    ); 
 
-        for (Anhang anhang : anhaenge) {
-            anhang.setNachricht(gespeicherteNachricht);
-            anhangRepository.save(anhang);
-        }
+            for (Anhang anhang : anhaenge) {
+                anhang.setNachricht(gespeicherteNachricht);
+                anhangRepository.save(anhang);
+            }
+            
+            Notification successNotification = createSubmitSuccess();
+            successNotification.open();
 
-        betreff.clear();
-        nachricht.clear();
-        empfaenger.clear();
-        anhaenge.clear();
-        anhangListe.removeAll();
+            betreff.clear();
+            nachricht.clear();
+            empfaenger.clear();
+            anhaenge.clear();
+            anhangListe.removeAll();
+            
+            UI.getCurrent().getPage().executeJs("setTimeout(function() { window.location.href = 'postfach'; }, 2000);");
+            
+        } catch (Exception e) {
+        	Notification errorNotification = createReportError();
+        	errorNotification.open();
+        	
+        	e.printStackTrace();
+        }  
+    }
+    
+    public Notification createSubmitSuccess() {
+        Notification notification = new Notification();
+        notification.addThemeVariants(NotificationVariant.SUCCESS);
+        
+        Icon icon = VaadinIcon.CHECK_CIRCLE.create();
+        HorizontalLayout layout = new HorizontalLayout(icon,
+                new Text("Deine Nachricht wurde erfolgreich gesendet."));
+        
+        Button closeBtn = createCloseBtn();
+        closeBtn.addClickListener(e -> notification.close());
+        
+        layout.addToEnd(closeBtn);
+        layout.setAlignItems(FlexComponent.Alignment.CENTER);
 
-        getUI().ifPresent(ui ->
-                ui.getPage().executeJs(
-                        "alert('Nachricht wurde erfolgreich gesendet.')"
-                )
-        );
+        notification.add(layout);
+
+        return notification;
+    }
+    
+    public Notification createReportError() {
+        Notification notification = new Notification();
+        notification.addThemeVariants(NotificationVariant.ERROR);
+
+        Icon icon = VaadinIcon.WARNING.create();
+        HorizontalLayout layout = new HorizontalLayout(icon,
+                new Text("Die Nachricht konnte wegen eines Fehlers nicht gesendet werden."));
+        
+        Button closeBtn = createCloseBtn();
+        closeBtn.addClickListener(e -> notification.close());
+
+        layout.addToEnd(closeBtn);
+        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        notification.add(layout);
+
+        return notification;
+    }
+    
+    public static Button createCloseBtn() {
+        Button closeBtn = new Button(VaadinIcon.CLOSE.create());
+
+        return closeBtn;
     }
 }
