@@ -354,7 +354,7 @@ public class PostfachView extends VerticalLayout {
             grid.addComponentColumn(nachricht -> {
                 Span absender = new Span(nachricht.getAbsender().getName());
 
-                if (!nachricht.isGelesen()) {
+                if (!gesendeteNachrichtenAnzeigen && !nachricht.isGelesen()) {
                     absender.addClassName("postfach-unread-text");
 
                     Span indikator = new Span("●");
