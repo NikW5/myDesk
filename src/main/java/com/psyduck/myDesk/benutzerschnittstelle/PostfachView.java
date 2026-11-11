@@ -61,7 +61,7 @@ public class PostfachView extends VerticalLayout {
 
         baueOberflaeche(masterDetail);
 
-        aktualisiereNeueNachrichtHinweis();
+        aktualisiereNeueNachrichtHinweis(neueNachrichtHinweis);
     }
     
     private void initialisiereLayout() {
@@ -168,7 +168,7 @@ public class PostfachView extends VerticalLayout {
             if (!ausgewaehlt.isGelesen()) {
                 nachrichtService.alsGelesenMarkieren(ausgewaehlt);
                 grid.getDataProvider().refreshItem(ausgewaehlt);
-                aktualisiereNeueNachrichtHinweis();
+                aktualisiereNeueNachrichtHinweis(neueNachrichtHinweis);
             }
 
             aktualisiereDetailbereich(details, ausgewaehlt);
@@ -302,7 +302,7 @@ public class PostfachView extends VerticalLayout {
     private void aktualisiereNachrichten() {
         grid.setItems(ladeNachrichten());
         grid.asSingleSelect().clear();
-        aktualisiereNeueNachrichtHinweis();
+        aktualisiereNeueNachrichtHinweis(neueNachrichtHinweis);
     }
 
     private java.util.List<Nachricht> ladeNachrichten() {
@@ -328,14 +328,17 @@ public class PostfachView extends VerticalLayout {
                 )
                 .toList();
     }
-
-    private void aktualisiereNeueNachrichtHinweis() {
+    
+    private void aktualisiereNeueNachrichtHinweis(Span neueNachrichtHinweis) {
         Benutzer benutzer = aktuellerBenutzerService.getAktuellerBenutzer();
 
         neueNachrichtHinweis.setVisible(
                 benutzer != null &&
-                nachrichtService.hatNeueNachricht(benutzer)
+                nachrichtService.hatNeueNachricht(benutzer) &&
+                gesendeteNachrichtenAnzeigen == false
         );
+        
+        neueNachrichtHinweis.setText(nachrichtService.getAnzahlUngeleseneNachrichten(benutzer) == 1 ? "Neue Nachricht vorhanden" : "Neue Nachrichten vorhanden");
     } 
 
     private Grid<Nachricht> erstelleNachrichtentabelle() {
@@ -354,7 +357,7 @@ public class PostfachView extends VerticalLayout {
             grid.addComponentColumn(nachricht -> {
                 Span absender = new Span(nachricht.getAbsender().getName());
 
-                if (!nachricht.isGelesen()) {
+                if (!gesendeteNachrichtenAnzeigen && !nachricht.isGelesen()) {
                     absender.addClassName("postfach-unread-text");
 
                     Span indikator = new Span("●");
