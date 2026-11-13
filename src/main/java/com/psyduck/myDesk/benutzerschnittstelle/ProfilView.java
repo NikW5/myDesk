@@ -19,6 +19,7 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 
 @Route(value = "profil", layout = MainLayout.class)
 @PageTitle("Mein Profil")
@@ -153,40 +154,87 @@ public class ProfilView extends VerticalLayout {
 	}
 
 
-    private void zeigeLoeschdialog(Benutzer benutzer) {
-        Dialog dialog = new Dialog();
-        dialog.setHeaderTitle("Konto dauerhaft löschen");
 
-        PasswordField passwortFeld = new PasswordField("Aktuelles Passwort");
-        Checkbox bestaetigung = new Checkbox("Ich möchte mein Konto endgültig löschen.");
-        Button abbrechenButton = new Button("Abbrechen", event -> dialog.close());
-        Button endgueltigLoeschenButton = new Button("Endgültig löschen");
-        endgueltigLoeschenButton.setEnabled(false);
-        endgueltigLoeschenButton.getStyle().set("background-color", "var(--lumo-error-color)").set("color", "white");
+	private void zeigeLoeschdialog(Benutzer benutzer) {
+	    Dialog dialog = new Dialog();
+	    dialog.setHeaderTitle("Konto dauerhaft löschen");
+	    dialog.setWidth("450px");
+	    dialog.setMaxWidth("95vw");
+	    dialog.setCloseOnOutsideClick(false);
+	
+	    PasswordField passwortFeld = new PasswordField("Aktuelles Passwort");
+	    passwortFeld.setWidthFull();
+	
+	    Checkbox bestaetigung = new Checkbox(
+	            "Ich möchte mein Konto endgültig löschen."
+	    );
+	
+	    Button abbrechenButton = new Button("Abbrechen", event -> dialog.close());
+	
+	    Button endgueltigLoeschenButton = new Button(
+	            "Endgültig löschen",
+	            event -> {
+	                if (passwortFeld.isEmpty()) {
+	                    passwortFeld.setInvalid(true);
+	                    passwortFeld.setErrorMessage(
+	                            "Bitte geben Sie Ihr aktuelles Passwort ein."
+	                    );
+	                    return;
+	                }
+	
+	                try {
+	                    benutzerService.loescheKonto(
+	                            benutzer, passwortFeld.getValue()
+	                    );
+	
+	                    dialog.close();
+	                    aktuellerBenutzerService.abmelden();
+	
+	                    getUI().ifPresent(ui -> ui.navigate(LoginView.class));
+	
+	                    Notification.show("Dein Konto wurde gelöscht.");
+	
+	                } catch (IllegalArgumentException e) {
+	                    passwortFeld.setInvalid(true);
+	                    passwortFeld.setErrorMessage(e.getMessage());
+	                }
+	            }
+	    );
+	
+	    endgueltigLoeschenButton.setEnabled(false);
+	    endgueltigLoeschenButton.addThemeVariants(
+	            com.vaadin.flow.component.button.ButtonVariant.LUMO_ERROR
+	    );
+	
+	    bestaetigung.addValueChangeListener(event ->
+	            endgueltigLoeschenButton.setEnabled(
+	                    Boolean.TRUE.equals(event.getValue())
+	            )
+	    );
+	
+	    HorizontalLayout aktionen = new HorizontalLayout(
+	            abbrechenButton, endgueltigLoeschenButton
+	    );
+	
+	    aktionen.setWidthFull();
+	    aktionen.setJustifyContentMode(
+	            FlexComponent.JustifyContentMode.END
+	    );
+	
+	    VerticalLayout inhalt = new VerticalLayout(
+	            new Paragraph(
+	                    "Diese Aktion kann nicht rückgängig gemacht werden."
+	            ),
+	            passwortFeld,
+	            bestaetigung,
+	            aktionen
+	    );
+	
+	    inhalt.setPadding(false);
+	    inhalt.setSpacing(true);
+	
+	    dialog.add(inhalt);
+	    dialog.open();
+	}
 
-        bestaetigung.addValueChangeListener(event -> endgueltigLoeschenButton.setEnabled(Boolean.TRUE.equals(event.getValue())));
-
-        endgueltigLoeschenButton.addClickListener(event -> {
-            if (passwortFeld.isEmpty()) {
-                passwortFeld.setInvalid(true);
-                passwortFeld.setErrorMessage("Bitte geben Sie Ihr aktuelles Passwort ein.");
-                return;
-            }
-
-            try {
-                benutzerService.loescheKonto(benutzer, passwortFeld.getValue());
-                dialog.close();
-                aktuellerBenutzerService.abmelden();
-                getUI().ifPresent(ui -> ui.navigate(LoginView.class));
-                Notification.show("Dein Konto wurde gelöscht.");
-            } catch (IllegalArgumentException e) {
-                passwortFeld.setInvalid(true);
-                passwortFeld.setErrorMessage(e.getMessage());
-            }
-        });
-
-        dialog.add(new VerticalLayout(new Paragraph("Diese Aktion kann nicht rückgängig gemacht werden."), passwortFeld, bestaetigung));
-        dialog.getFooter().add(new HorizontalLayout(abbrechenButton, endgueltigLoeschenButton));
-        dialog.open();
-    }
 }
