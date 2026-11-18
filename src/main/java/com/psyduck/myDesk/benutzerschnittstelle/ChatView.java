@@ -16,8 +16,8 @@ import com.vaadin.flow.router.Route;
 import jakarta.annotation.security.PermitAll;
 
 @StyleSheet("styles.css")
-@Route(value = "chat", layout = MainLayout.class)
-@PermitAll
+//@Route(value = "chat", layout = MainLayout.class)
+//@PermitAll
 public class ChatView extends VerticalLayout {
 	public ChatView() {
 	    setSizeFull();
