@@ -97,7 +97,7 @@ public class DashboardView extends VerticalLayout {
 	        anzahlTodos = toDoRepository.countByBenutzerAndErledigtFalse(benutzer);
 	    }
 
-	    long anzahlChat = 0;
+//	    long anzahlChat = 0;
 
 	    Card kartePostfach = erstelleKarte(
 	            "card-postfach",
@@ -109,15 +109,15 @@ public class DashboardView extends VerticalLayout {
 	                    .navigate(PostfachView.class)
 	    );
 
-	    Card karteChat = erstelleKarte(
-	            "card-chat",
-	            "chat",
-	            "Chat",
-	            String.valueOf(anzahlChat),
-	            "ungelesene Nachrichten",
-	            () -> UI.getCurrent()
-	                    .navigate(ChatView.class)
-	    );
+//	    Card karteChat = erstelleKarte(
+//	            "card-chat",
+//	            "chat",
+//	            "Chat",
+//	            String.valueOf(anzahlChat),
+//	            "ungelesene Nachrichten",
+//	            () -> UI.getCurrent()
+//	                    .navigate(ChatView.class)
+//	    );
 
 	    Card karteKalender = erstelleKarte(
 	            "card-kalender",
@@ -141,7 +141,7 @@ public class DashboardView extends VerticalLayout {
 
 	    HorizontalLayout karten = new HorizontalLayout(
 	            kartePostfach,
-	            karteChat,
+//	            karteChat,
 	            karteKalender,
 	            karteTodos
 	    );

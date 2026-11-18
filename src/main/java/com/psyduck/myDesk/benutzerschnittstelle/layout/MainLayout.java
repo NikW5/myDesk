@@ -125,11 +125,11 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
                 PostfachView.class
         );
 
-        RouterLink chat = erstelleLink(
-                "Chat",
-                "chat",
-                ChatView.class
-        );
+//        RouterLink chat = erstelleLink(
+//                "Chat",
+//                "chat",
+//                ChatView.class
+//        );
 
         RouterLink kalender = erstelleLink(
                 "Kalender",
@@ -143,11 +143,11 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
                 ToDoView.class
         );
 
-        RouterLink fokus = erstelleLink(
-                "Fokus",
-                "timer",
-                FokusView.class
-        );
+//        RouterLink fokus = erstelleLink(
+//                "Fokus",
+//                "timer",
+//                FokusView.class
+//        );
         
         RouterLink profil = erstelleLink(
         		"Mein Profil", 
@@ -157,10 +157,10 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
         navigation.add(
                 dashboard,
                 postfach,
-                chat,
+//                chat,
                 kalender,
                 todo,
-                fokus,
+//                fokus,
                 profil
         );
 
