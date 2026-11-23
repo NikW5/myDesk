@@ -1,4 +1,9 @@
+
 package com.psyduck.myDesk.benutzerschnittstelle;
+
+import java.util.Locale;
+
+import org.springframework.context.MessageSource;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.button.Button;
@@ -19,119 +24,198 @@ import jakarta.annotation.security.PermitAll;
 //@Route(value = "chat", layout = MainLayout.class)
 //@PermitAll
 public class ChatView extends VerticalLayout {
-	public ChatView() {
-	    setSizeFull();
-	    setPadding(false);
-	    setSpacing(false);
-	    addClassName("chat-background");
 
-	    VerticalLayout content = new VerticalLayout();
-	    content.setSizeFull();
-	    content.setPadding(true);
-	    content.setSpacing(true);
-	    content.addClassName("chat-content");
+    private final MessageSource messageSource;
 
-	    H2 titel = new H2("Chat");
-	    titel.addClassName("chat-title");
+    public ChatView(MessageSource messageSource) {
 
-	    Span untertitel = new Span("Tausche dich mit anderen aus.");
-	    untertitel.addClassName("chat-subtitle");
+        this.messageSource = messageSource;
 
-	    VerticalLayout kopfbereich = new VerticalLayout(titel, untertitel);
-	    kopfbereich.setPadding(false);
-	    kopfbereich.setSpacing(false);
+        initialisiereLayout();
 
-	    VerticalLayout chatPanel = erstelleChatPanel();
+        VerticalLayout content = new VerticalLayout();
+        content.setSizeFull();
+        content.setPadding(true);
+        content.setSpacing(true);
+        content.addClassName("chat-content");
 
-	    content.add(kopfbereich, chatPanel);
-	    content.expand(chatPanel);
-	    add(content);
-	}
+        H2 titel = new H2(
+                getText("chat.title")
+        );
+        titel.addClassName("chat-title");
 
-	private VerticalLayout erstelleChatPanel() {
-	    VerticalLayout panel = new VerticalLayout();
-	    panel.setSizeFull();
-	    panel.setPadding(false);
-	    panel.setSpacing(false);
-	    panel.addClassName("chat-panel");
+        Span untertitel = new Span(
+                getText("chat.subtitle")
+        );
+        untertitel.addClassName("chat-subtitle");
 
-	    HorizontalLayout header = erstelleChatHeader();
-	    VerticalLayout nachrichten = erstelleNachrichtenbereich();
-	    HorizontalLayout eingabe = erstelleEingabebereich();
+        VerticalLayout kopfbereich =
+                new VerticalLayout(titel, untertitel);
 
-	    panel.add(header, nachrichten, eingabe);
-	    panel.expand(nachrichten);
+        kopfbereich.setPadding(false);
+        kopfbereich.setSpacing(false);
 
-	    return panel;
-	}
+        VerticalLayout chatPanel = erstelleChatPanel();
 
-	private HorizontalLayout erstelleChatHeader() {
-	    Span icon = new Span("chat");
-	    icon.addClassName("material-symbols-rounded");
-	    icon.addClassName("chat-header-icon");
+        content.add(kopfbereich, chatPanel);
+        content.expand(chatPanel);
 
-	    Span titel = new Span("Chat");
-	    titel.addClassName("chat-panel-title");
+        add(content);
+    }
 
-	    Span status = new Span("Bereit für Nachrichten");
-	    status.addClassName("chat-panel-status");
+    private void initialisiereLayout() {
 
-	    VerticalLayout text = new VerticalLayout(titel, status);
-	    text.setPadding(false);
-	    text.setSpacing(false);
+        setSizeFull();
+        setPadding(false);
+        setSpacing(false);
+        addClassName("chat-background");
+    }
 
-	    HorizontalLayout header = new HorizontalLayout(icon, text);
-	    header.setWidthFull();
-	    header.setPadding(true);
-	    header.setSpacing(true);
-	    header.setAlignItems(FlexComponent.Alignment.CENTER);
-	    header.addClassName("chat-header");
+    private VerticalLayout erstelleChatPanel() {
 
-	    return header;
-	}
+        VerticalLayout panel = new VerticalLayout();
 
-	private VerticalLayout erstelleNachrichtenbereich() {
-	    VerticalLayout nachrichten = new VerticalLayout();
-	    nachrichten.setSizeFull();
-	    nachrichten.setPadding(true);
-	    nachrichten.setSpacing(true);
-	    nachrichten.addClassName("chat-messages");
+        panel.setSizeFull();
+        panel.setPadding(false);
+        panel.setSpacing(false);
+        panel.addClassName("chat-panel");
 
-	    Span leer = new Span("Noch keine Nachrichten");
-	    leer.addClassName("chat-empty-title");
+        HorizontalLayout header = erstelleChatHeader();
 
-	    Span hinweis = new Span("Deine Chat-Unterhaltungen werden hier angezeigt.");
-	    hinweis.addClassName("chat-empty-subtitle");
+        VerticalLayout nachrichten =
+                erstelleNachrichtenbereich();
 
-	    VerticalLayout leerBereich = new VerticalLayout(leer, hinweis);
-	    leerBereich.setPadding(false);
-	    leerBereich.setSpacing(false);
-	    leerBereich.setAlignItems(FlexComponent.Alignment.CENTER);
-	    leerBereich.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-	    leerBereich.setSizeFull();
+        HorizontalLayout eingabe =
+                erstelleEingabebereich();
 
-	    nachrichten.add(leerBereich);
-	    return nachrichten;
-	}
+        panel.add(header, nachrichten, eingabe);
+        panel.expand(nachrichten);
 
-	private HorizontalLayout erstelleEingabebereich() {
-	    TextField eingabe = new TextField();
-	    eingabe.setPlaceholder("Nachricht schreiben ...");
-	    eingabe.setWidthFull();
-	    eingabe.addClassName("chat-input");
+        return panel;
+    }
 
-	    Button senden = new Button("Senden", VaadinIcon.PAPERPLANE.create());
-	    senden.addThemeVariants(ButtonVariant.PRIMARY);
-	    senden.addClassName("chat-send-button");
+    private HorizontalLayout erstelleChatHeader() {
 
-	    HorizontalLayout bereich = new HorizontalLayout(eingabe, senden);
-	    bereich.setWidthFull();
-	    bereich.setPadding(true);
-	    bereich.setSpacing(true);
-	    bereich.setAlignItems(FlexComponent.Alignment.CENTER);
-	    bereich.addClassName("chat-input-area");
+        Span icon = new Span("chat");
+        icon.addClassName("material-symbols-rounded");
+        icon.addClassName("chat-header-icon");
 
-	    return bereich;
-	}
+        Span titel = new Span(
+                getText("chat.panel.title")
+        );
+        titel.addClassName("chat-panel-title");
 
+        Span status = new Span(
+                getText("chat.panel.status")
+        );
+        status.addClassName("chat-panel-status");
+
+        VerticalLayout text =
+                new VerticalLayout(titel, status);
+
+        text.setPadding(false);
+        text.setSpacing(false);
+
+        HorizontalLayout header =
+                new HorizontalLayout(icon, text);
+
+        header.setWidthFull();
+        header.setPadding(true);
+        header.setSpacing(true);
+
+        header.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
+        header.addClassName("chat-header");
+
+        return header;
+    }
+
+    private VerticalLayout erstelleNachrichtenbereich() {
+
+        VerticalLayout nachrichten = new VerticalLayout();
+
+        nachrichten.setSizeFull();
+        nachrichten.setPadding(true);
+        nachrichten.setSpacing(true);
+        nachrichten.addClassName("chat-messages");
+
+        Span leer = new Span(
+                getText("chat.empty.title")
+        );
+        leer.addClassName("chat-empty-title");
+
+        Span hinweis = new Span(
+                getText("chat.empty.subtitle")
+        );
+        hinweis.addClassName("chat-empty-subtitle");
+
+        VerticalLayout leerBereich =
+                new VerticalLayout(leer, hinweis);
+
+        leerBereich.setPadding(false);
+        leerBereich.setSpacing(false);
+
+        leerBereich.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
+        leerBereich.setJustifyContentMode(
+                FlexComponent.JustifyContentMode.CENTER
+        );
+
+        leerBereich.setSizeFull();
+
+        nachrichten.add(leerBereich);
+
+        return nachrichten;
+    }
+
+    private HorizontalLayout erstelleEingabebereich() {
+
+        TextField eingabe = new TextField();
+
+        eingabe.setPlaceholder(
+                getText("chat.input.placeholder")
+        );
+
+        eingabe.setWidthFull();
+        eingabe.addClassName("chat-input");
+
+        Button senden = new Button(
+                getText("chat.send"),
+                VaadinIcon.PAPERPLANE.create()
+        );
+
+        senden.addThemeVariants(
+                ButtonVariant.LUMO_PRIMARY
+        );
+
+        senden.addClassName("chat-send-button");
+
+        HorizontalLayout bereich =
+                new HorizontalLayout(eingabe, senden);
+
+        bereich.setWidthFull();
+        bereich.setPadding(true);
+        bereich.setSpacing(true);
+
+        bereich.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
+        bereich.addClassName("chat-input-area");
+
+        return bereich;
+    }
+
+    private String getText(String schluessel) {
+
+        return messageSource.getMessage(
+                schluessel,
+                null,
+                Locale.GERMAN
+        );
+    }
 }

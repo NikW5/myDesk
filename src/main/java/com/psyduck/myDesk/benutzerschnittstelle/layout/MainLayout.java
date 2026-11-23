@@ -1,14 +1,15 @@
+
 package com.psyduck.myDesk.benutzerschnittstelle.layout;
 
-import com.psyduck.myDesk.benutzerschnittstelle.ChatView;
 import com.psyduck.myDesk.benutzerschnittstelle.DashboardView;
-import com.psyduck.myDesk.benutzerschnittstelle.FokusView;
 import com.psyduck.myDesk.benutzerschnittstelle.KalenderView;
 import com.psyduck.myDesk.benutzerschnittstelle.NachObenButton;
 import com.psyduck.myDesk.benutzerschnittstelle.PostfachView;
+import com.psyduck.myDesk.benutzerschnittstelle.ProfilView;
 import com.psyduck.myDesk.benutzerschnittstelle.ToDoView;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.security.AktuellerBenutzerService;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -25,29 +26,52 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.RouterLink;
-import com.psyduck.myDesk.benutzerschnittstelle.ProfilView;
+
+import org.springframework.context.MessageSource;
 
 import jakarta.annotation.security.PermitAll;
 
+import java.util.Locale;
+
 @StyleSheet("styles.css")
 @PermitAll
-public class MainLayout extends AppLayout implements AfterNavigationObserver {
+public class MainLayout extends AppLayout
+        implements AfterNavigationObserver {
 
     private final AktuellerBenutzerService aktuellerBenutzerService;
+    private final MessageSource messageSource;
+
     private NachObenButton nachObenButton;
 
     public MainLayout(
-            AktuellerBenutzerService aktuellerBenutzerService) {
+            AktuellerBenutzerService aktuellerBenutzerService,
+            MessageSource messageSource) {
 
         this.aktuellerBenutzerService =
                 aktuellerBenutzerService;
+
+        this.messageSource = messageSource;
 
         erstelleHeader();
         erstelleNavigation();
         erstelleNachObenButton();
     }
 
+    /**
+     * Lädt einen Text aus messages.properties.
+     * Falls kein Eintrag existiert, wird der Schlüssel zurückgegeben.
+     */
+    private String getText(String schluessel) {
+        return messageSource.getMessage(
+                schluessel,
+                null,
+                schluessel,
+                Locale.GERMAN
+        );
+    }
+
     private void erstelleHeader() {
+
         DrawerToggle drawerToggle = new DrawerToggle();
 
         Image logo = new Image("/images/logo.png", "myDesk");
@@ -72,15 +96,15 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
         );
 
         benutzerBereich.setSpacing(true);
-        
+
         Button abmelden = new Button(
-                "Abmelden",
+                getText("mainlayout.button.logout"),
                 VaadinIcon.SIGN_OUT.create(),
                 event -> aktuellerBenutzerService.abmelden()
         );
-        
+
         abmelden.addClassName("abmelden-button");
-        
+
         Div spacer = new Div();
 
         HorizontalLayout header = new HorizontalLayout(
@@ -92,9 +116,11 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
         );
 
         header.setWidthFull();
+
         header.setAlignItems(
                 FlexComponent.Alignment.CENTER
         );
+
         header.expand(spacer);
 
         header.getStyle()
@@ -105,8 +131,9 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
     }
 
     private void erstelleNavigation() {
+
         VerticalLayout navigation = new VerticalLayout();
-        
+
         navigation.addClassName("main-drawer");
 
         navigation.setPadding(true);
@@ -114,55 +141,50 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
         navigation.setWidthFull();
 
         RouterLink dashboard = erstelleLink(
-                "Dashboard",
+                getText("mainlayout.navigation.dashboard"),
                 "home",
                 DashboardView.class
         );
 
         RouterLink postfach = erstelleLink(
-                "Postfach",
+                getText("mainlayout.navigation.postfach"),
                 "mail",
                 PostfachView.class
         );
 
-//        RouterLink chat = erstelleLink(
-//                "Chat",
-//                "chat",
-//                ChatView.class
-//        );
-
         RouterLink kalender = erstelleLink(
-                "Kalender",
+                getText("mainlayout.navigation.kalender"),
                 "calendar_month",
                 KalenderView.class
         );
 
         RouterLink todo = erstelleLink(
-                "To-Do",
+                getText("mainlayout.navigation.todo"),
                 "check_box",
                 ToDoView.class
         );
 
-//        RouterLink fokus = erstelleLink(
-//                "Fokus",
-//                "timer",
-//                FokusView.class
-//        );
-        
-        RouterLink profil = erstelleLink(
-        		"Mein Profil", 
-        		"person", 
-        		ProfilView.class);
-
-        navigation.add(
-                dashboard,
-                postfach,
-//                chat,
-                kalender,
-                todo,
-//                fokus,
-                profil
-        );
+		//      RouterLink fokus = erstelleLink(
+		//      "Fokus",
+		//      "timer",
+		//      FokusView.class
+		//);
+		
+		RouterLink profil = erstelleLink(
+		      getText("mainlayout.navigation.profil"),
+		      "person",
+		      ProfilView.class
+		);
+		
+		navigation.add(
+		      dashboard,
+		      postfach,
+		//      chat,
+		      kalender,
+		      todo,
+		//      fokus,
+		      profil
+		);
 
         addToDrawer(navigation);
     }
@@ -176,17 +198,16 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
 
         Span icon = new Span(iconName);
         icon.addClassName("material-symbols-rounded");
-        
+
         Span textSpan = new Span(text);
 
-        HorizontalLayout layout = new HorizontalLayout(
-                icon,
-                textSpan
-        );
+        HorizontalLayout layout =
+                new HorizontalLayout(icon, textSpan);
 
         layout.setAlignItems(
                 FlexComponent.Alignment.CENTER
         );
+
         layout.setSpacing(true);
 
         link.add(layout);
@@ -194,26 +215,27 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
 
         link.getStyle()
                 .set("padding", "var(--lumo-space-s)")
-                .set(
-                        "border-radius",
-                        "var(--lumo-border-radius-m)"
-                )
+                .set("border-radius", "var(--lumo-border-radius-m)")
                 .set("width", "100%")
                 .set("box-sizing", "border-box");
 
         return link;
     }
-    
+
     private void erstelleNachObenButton() {
-    	nachObenButton = new NachObenButton();
-    	
-    	getElement().appendChild(nachObenButton.getElement());
-    	
-    	initialisiereNachObenButton();
+
+        nachObenButton = new NachObenButton();
+
+        getElement().appendChild(
+                nachObenButton.getElement()
+        );
+
+        initialisiereNachObenButton();
     }
-    
+
     private void initialisiereNachObenButton() {
-    	getElement().executeJs("""
+
+        getElement().executeJs("""
                 const button = $0;
                 const content =
                     this.shadowRoot.querySelector('[part="content"]');
@@ -240,7 +262,7 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
                 aktualisiereButton();
             """, nachObenButton.getElement());
     }
-    
+
     @Override
     public void afterNavigation(
             AfterNavigationEvent event) {
@@ -254,8 +276,8 @@ public class MainLayout extends AppLayout implements AfterNavigationObserver {
                 || pfad.equals("postfach");
 
         nachObenButton.getElement().setProperty(
-        		"pageSupportsScrollTop", 
-        		buttonAnzeigen
+                "pageSupportsScrollTop",
+                buttonAnzeigen
         );
     }
 }
