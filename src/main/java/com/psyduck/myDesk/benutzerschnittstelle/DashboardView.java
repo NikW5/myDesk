@@ -1,3 +1,4 @@
+
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
@@ -5,6 +6,7 @@ import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.psyduck.myDesk.persistenz.ToDoRepository;
 import com.psyduck.myDesk.security.AktuellerBenutzerService;
+
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.card.Card;
 import com.vaadin.flow.component.card.CardVariant;
@@ -16,218 +18,249 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 
+import org.springframework.context.MessageSource;
+
 import jakarta.annotation.security.PermitAll;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 @StyleSheet("styles.css")
 @Route(
-value = "dashboard",
-layout = MainLayout.class
+        value = "dashboard",
+        layout = MainLayout.class
 )
 @PermitAll
 public class DashboardView extends VerticalLayout {
-	private final AktuellerBenutzerService aktuellerBenutzerService;
-	private final NachrichtService nachrichtService;
-	private final ToDoRepository toDoRepository;
 
-	private static final List<String> UNTERTEXTE = List.of(
-	    "Was möchtest du heute erledigen?",
-	    "Womit möchtest du heute starten?",
-	    "Was steht heute auf deiner Liste?",
-	    "Bereit für deine nächsten Aufgaben?",
-	    "Was möchtest du heute erreichen?",
-	    "Welche Aufgabe möchtest du als Nächstes angehen?"
-	);
+    private final AktuellerBenutzerService aktuellerBenutzerService;
+    private final NachrichtService nachrichtService;
+    private final ToDoRepository toDoRepository;
+    private final MessageSource messageSource;
 
-	private static final Random RANDOM = new Random();
+    private static final List<String> UNTERTEXTE = List.of(
+            "dashboard.subtitle.1",
+            "dashboard.subtitle.2",
+            "dashboard.subtitle.3",
+            "dashboard.subtitle.4",
+            "dashboard.subtitle.5",
+            "dashboard.subtitle.6"
+    );
 
-	public DashboardView(
-	        AktuellerBenutzerService aktuellerBenutzerService,
-	        NachrichtService nachrichtService,
-	        ToDoRepository toDoRepository) {
+    private static final Random RANDOM = new Random();
 
-	    this.aktuellerBenutzerService = aktuellerBenutzerService;
-	    this.nachrichtService = nachrichtService;
-	    this.toDoRepository = toDoRepository;
+    public DashboardView(
+            AktuellerBenutzerService aktuellerBenutzerService,
+            NachrichtService nachrichtService,
+            ToDoRepository toDoRepository,
+            MessageSource messageSource) {
 
-	    setSizeFull();
-	    addClassName("dashboard-background");
+        this.aktuellerBenutzerService = aktuellerBenutzerService;
+        this.nachrichtService = nachrichtService;
+        this.toDoRepository = toDoRepository;
+        this.messageSource = messageSource;
 
-	    Benutzer benutzer =
-	            aktuellerBenutzerService.getAktuellerBenutzer();
+        setSizeFull();
+        addClassName("dashboard-background");
 
-	    String name =
-	            benutzer != null
-	                    ? benutzer.getName()
-	                    : "";
+        Benutzer benutzer =
+                aktuellerBenutzerService.getAktuellerBenutzer();
 
-	    H2 begruessung = new H2(
-	            erstelleBegruessung(name)
-	    );
-	    begruessung.addClassName("dashboard-title");
+        String name = benutzer != null
+                ? benutzer.getName()
+                : "";
 
-	    Span untertitel = new Span(
-	            waehleZufaelligenUntertext()
-	    );
-	    untertitel.addClassName("dashboard-subtitle");
+        H2 begruessung = new H2(
+                erstelleBegruessung(name)
+        );
 
-	    VerticalLayout textLayout = new VerticalLayout(
-	            begruessung,
-	            untertitel
-	    );
+        begruessung.addClassName("dashboard-title");
 
-	    textLayout.setPadding(true);
-	    textLayout.setSpacing(false);
-	    textLayout.setAlignItems(Alignment.START);
+        Span untertitel = new Span(
+                waehleZufaelligenUntertext()
+        );
 
-	    add(textLayout);
-	    
-	    long anzahlPostfach = 0;
-	    long anzahlKalender = 0;
-	    long anzahlTodos = 0;
+        untertitel.addClassName("dashboard-subtitle");
 
-	    if (benutzer != null) {
+        VerticalLayout textLayout = new VerticalLayout(
+                begruessung,
+                untertitel
+        );
 
-	        anzahlPostfach = nachrichtService.getAnzahlUngeleseneNachrichten(benutzer);
-	        anzahlKalender = toDoRepository.countByBenutzerAndFaelligAm(benutzer, LocalDate.now());
-	        anzahlTodos = toDoRepository.countByBenutzerAndErledigtFalse(benutzer);
-	    }
+        textLayout.setPadding(true);
+        textLayout.setSpacing(false);
+        textLayout.setAlignItems(Alignment.START);
 
-//	    long anzahlChat = 0;
+        add(textLayout);
 
-	    Card kartePostfach = erstelleKarte(
-	            "card-postfach",
-	            "mail",
-	            "Postfach",
-	            String.valueOf(anzahlPostfach),
-	            "neue Nachrichten",
-	            () -> UI.getCurrent()
-	                    .navigate(PostfachView.class)
-	    );
+        long anzahlPostfach = 0;
+        long anzahlKalender = 0;
+        long anzahlTodos = 0;
 
-//	    Card karteChat = erstelleKarte(
-//	            "card-chat",
-//	            "chat",
-//	            "Chat",
-//	            String.valueOf(anzahlChat),
-//	            "ungelesene Nachrichten",
-//	            () -> UI.getCurrent()
-//	                    .navigate(ChatView.class)
-//	    );
+        if (benutzer != null) {
 
-	    Card karteKalender = erstelleKarte(
-	            "card-kalender",
-	            "calendar_month",
-	            "Kalender",
-	            String.valueOf(anzahlKalender),
-	            "heutige Einträge",
-	            () -> UI.getCurrent()
-	                    .navigate(KalenderView.class)
-	    );
+            anzahlPostfach =
+                    nachrichtService.getAnzahlUngeleseneNachrichten(
+                            benutzer
+                    );
 
-	    Card karteTodos = erstelleKarte(
-	            "card-todos",
-	            "check_box",
-	            "To-Dos",
-	            String.valueOf(anzahlTodos),
-	            "offene Aufgaben",
-	            () -> UI.getCurrent()
-	                    .navigate(ToDoView.class)
-	    );
+            anzahlKalender =
+                    toDoRepository.countByBenutzerAndFaelligAm(
+                            benutzer,
+                            LocalDate.now()
+                    );
 
-	    HorizontalLayout karten = new HorizontalLayout(
-	            kartePostfach,
-//	            karteChat,
-	            karteKalender,
-	            karteTodos
-	    );
+            anzahlTodos =
+                    toDoRepository.countByBenutzerAndErledigtFalse(
+                            benutzer
+                    );
+        }
 
-	    karten.setSpacing(true);
-	    karten.setPadding(true);
-	    karten.setWidthFull();
-	    karten.setJustifyContentMode(JustifyContentMode.CENTER);
-	    karten.setAlignItems(Alignment.START);
+        Card kartePostfach = erstelleKarte(
+                "card-postfach",
+                "mail",
+                getText("dashboard.card.postfach"),
+                getText("dashboard.card.postfach.subtitle"),
+                String.valueOf(anzahlPostfach),
+                () -> UI.getCurrent().navigate(PostfachView.class)
+        );
 
-	    add(karten);
-	}
+        Card karteKalender = erstelleKarte(
+                "card-kalender",
+                "calendar_month",
+                getText("dashboard.card.kalender"),
+                getText("dashboard.card.kalender.subtitle"),
+                String.valueOf(anzahlKalender),
+                () -> UI.getCurrent().navigate(KalenderView.class)
+        );
 
-	private String erstelleBegruessung(String name) {
+        Card karteTodos = erstelleKarte(
+                "card-todos",
+                "check_box",
+                getText("dashboard.card.todos"),
+                getText("dashboard.card.todos.subtitle"),
+                String.valueOf(anzahlTodos),
+                () -> UI.getCurrent().navigate(ToDoView.class)
+        );
 
-	    LocalTime jetzt = LocalTime.now();
-	    String begruessung;
+        HorizontalLayout karten = new HorizontalLayout(
+                kartePostfach,
+                karteKalender,
+                karteTodos
+        );
 
-	    if (jetzt.isBefore(LocalTime.NOON)) {
-	        begruessung = "Guten Morgen";
-	    } else if (jetzt.isBefore(LocalTime.of(18, 0))) {
-	        begruessung = "Hallo";
-	    } else {
-	        begruessung = "Guten Abend";
-	    }
+        karten.setSpacing(true);
+        karten.setPadding(true);
+        karten.setWidthFull();
 
-	    if (name.isEmpty()) {
-	        return begruessung;
-	    }
+        karten.setJustifyContentMode(
+                JustifyContentMode.CENTER
+        );
 
-	    return begruessung + ", " + name + "!";
-	}
+        karten.setAlignItems(Alignment.START);
 
-	private String waehleZufaelligenUntertext() {
+        add(karten);
+    }
 
-	    return UNTERTEXTE.get(RANDOM.nextInt(UNTERTEXTE.size()));
-	}
+    private String erstelleBegruessung(String name) {
 
-	private Card erstelleKarte(
-	        String farbKlasse,
-	        String iconName,
-	        String titelText,
-	        String subtitleText,
-	        String contentText,
-	        Runnable aktion
-	) {
+        LocalTime jetzt = LocalTime.now();
 
-	    Card karte = new Card();
+        String schluessel;
 
-	    karte.addThemeVariants(
-	            CardVariant.HORIZONTAL
-	    );
+        if (jetzt.isBefore(LocalTime.NOON)) {
 
-	    karte.addClassNames(
-	            "dashboard-card",
-	            farbKlasse
-	    );
+            schluessel = "dashboard.greeting.morning";
 
-	    Span icon = new Span(iconName);
+        } else if (jetzt.isBefore(LocalTime.of(18, 0))) {
 
-	    icon.getElement()
-	            .getClassList()
-	            .add("material-symbols-rounded");
+            schluessel = "dashboard.greeting.day";
 
-	    icon.addClassNames(
-	            "card-icon-circle",
-	            "card-icon-circle-" + iconName
-	    );
+        } else {
 
-	    karte.setMedia(icon);
+            schluessel = "dashboard.greeting.evening";
+        }
 
-	    Div title = new Div(titelText);
-	    karte.setTitle(title);
+        String begruessung = getText(schluessel);
 
-	    Div subtitle = new Div(subtitleText);
-	    karte.setSubtitle(subtitle);
+        if (name.isBlank()) {
+            return begruessung;
+        }
 
-	    Div content = new Div(contentText);
-	    karte.add(content);
+        return messageSource.getMessage(
+                "dashboard.greeting.named",
+                new Object[]{begruessung, name},
+                begruessung + ", " + name + "!",
+                Locale.GERMAN
+        );
+    }
 
-	    karte.getElement().addEventListener(
-	            "click",
-	            event -> aktion.run()
-	    );
+    private String waehleZufaelligenUntertext() {
 
-	    return karte;
-	}
+        String schluessel = UNTERTEXTE.get(
+                RANDOM.nextInt(UNTERTEXTE.size())
+        );
 
+        return getText(schluessel);
+    }
+
+    private String getText(String schluessel) {
+
+        return messageSource.getMessage(
+                schluessel,
+                null,
+                schluessel,
+                Locale.GERMAN
+        );
+    }
+
+    private Card erstelleKarte(
+            String farbKlasse,
+            String iconName,
+            String titelText,
+            String subtitleText,
+            String contentText,
+            Runnable aktion) {
+
+        Card karte = new Card();
+
+        karte.addThemeVariants(CardVariant.HORIZONTAL);
+
+        karte.addClassNames(
+                "dashboard-card",
+                farbKlasse
+        );
+
+        Span icon = new Span(iconName);
+
+        icon.getElement()
+                .getClassList()
+                .add("material-symbols-rounded");
+
+        icon.addClassNames(
+                "card-icon-circle",
+                "card-icon-circle-" + iconName
+        );
+
+        karte.setMedia(icon);
+
+        Div title = new Div(titelText);
+        karte.setTitle(title);
+
+        Div subtitle = new Div(subtitleText);
+        karte.setSubtitle(subtitle);
+
+        Div content = new Div(contentText);
+        karte.add(content);
+
+        karte.getElement().addEventListener(
+                "click",
+                event -> aktion.run()
+        );
+
+        return karte;
+    }
 }

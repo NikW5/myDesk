@@ -1,7 +1,9 @@
+
 package com.psyduck.myDesk.benutzerschnittstelle;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.psyduck.myDesk.persistenz.Anhang;
@@ -11,6 +13,7 @@ import com.psyduck.myDesk.persistenz.BenutzerService;
 import com.psyduck.myDesk.persistenz.Nachricht;
 import com.psyduck.myDesk.persistenz.NachrichtService;
 import com.psyduck.myDesk.security.AktuellerBenutzerService;
+
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
@@ -30,41 +33,58 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.upload.Upload;
+
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.streams.UploadHandler;
+
+import org.springframework.context.MessageSource;
 
 import jakarta.annotation.security.PermitAll;
 
 @StyleSheet("styles.css")
 @Route(value = "neue_nachricht", layout = MainLayout.class)
-@PageTitle("Neue Nachricht")
 @PermitAll
 public class NachrichtSendenView extends VerticalLayout
         implements BeforeEnterObserver {
 
     private final List<Anhang> anhaenge = new ArrayList<>();
-    private final VerticalLayout anhangListe = new VerticalLayout();
-    private final ComboBox<Benutzer> empfaenger = new ComboBox<>("An");
-    private final TextField betreff = new TextField("Titel");
-    private final TextArea nachricht = new TextArea("Neue Nachricht");
+
+    private final VerticalLayout anhangListe =
+            new VerticalLayout();
+
+    private final ComboBox<Benutzer> empfaenger =
+            new ComboBox<>();
+
+    private final TextField betreff =
+            new TextField();
+
+    private final TextArea nachricht =
+            new TextArea();
+
     private final BenutzerService benutzerService;
     private final NachrichtService nachrichtService;
     private final AnhangRepository anhangRepository;
     private final AktuellerBenutzerService aktuellerBenutzerService;
+    private final MessageSource messageSource;
 
     public NachrichtSendenView(
             BenutzerService benutzerService,
             NachrichtService nachrichtService,
             AnhangRepository anhangRepository,
-            AktuellerBenutzerService aktuellerBenutzerService) {
+            AktuellerBenutzerService aktuellerBenutzerService,
+            MessageSource messageSource) {
 
         this.benutzerService = benutzerService;
         this.nachrichtService = nachrichtService;
         this.anhangRepository = anhangRepository;
         this.aktuellerBenutzerService = aktuellerBenutzerService;
+        this.messageSource = messageSource;
+
+        UI.getCurrent().getPage().setTitle(
+                getText("nachricht.title")
+        );
 
         initialisiereLayout();
 
@@ -73,19 +93,47 @@ public class NachrichtSendenView extends VerticalLayout
 
         baueOberflaeche(nachrichtenPanel);
     }
-    
+
+    private String getText(String schluessel) {
+        return messageSource.getMessage(
+                schluessel,
+                null,
+                schluessel,
+                Locale.GERMAN
+        );
+    }
+
+    private String getText(
+            String schluessel,
+            Object... argumente) {
+
+        return messageSource.getMessage(
+                schluessel,
+                argumente,
+                schluessel,
+                Locale.GERMAN
+        );
+    }
+
     private void initialisiereLayout() {
         setSizeFull();
         setPadding(false);
         setSpacing(false);
         addClassName("nachricht-background");
     }
-    
+
     private VerticalLayout erstelleKopfbereich() {
-        H2 titel = new H2("Neue Nachricht");
+
+        H2 titel = new H2(
+                getText("nachricht.heading")
+        );
+
         titel.addClassName("nachricht-title");
 
-        Span untertitel = new Span("Verfasse eine Nachricht und sende sie an einen anderen Benutzer.");
+        Span untertitel = new Span(
+                getText("nachricht.subtitle")
+        );
+
         untertitel.addClassName("nachricht-subtitle");
 
         VerticalLayout kopfbereich =
@@ -96,15 +144,22 @@ public class NachrichtSendenView extends VerticalLayout
 
         return kopfbereich;
     }
-    
-    private void baueOberflaeche(VerticalLayout nachrichtenPanel) {
+
+    private void baueOberflaeche(
+            VerticalLayout nachrichtenPanel) {
 
         VerticalLayout content = new VerticalLayout();
+
         content.setSizeFull();
         content.setPadding(true);
         content.setSpacing(true);
         content.addClassName("nachricht-content");
-        content.add(erstelleKopfbereich(), nachrichtenPanel);
+
+        content.add(
+                erstelleKopfbereich(),
+                nachrichtenPanel
+        );
+
         content.expand(nachrichtenPanel);
 
         add(content);
@@ -112,6 +167,7 @@ public class NachrichtSendenView extends VerticalLayout
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
+
         String antwortAuf = event.getLocation()
                 .getQueryParameters()
                 .getParameters()
@@ -125,7 +181,9 @@ public class NachrichtSendenView extends VerticalLayout
         }
 
         try {
-            Integer nachrichtId = Integer.valueOf(antwortAuf);
+
+            Integer nachrichtId =
+                    Integer.valueOf(antwortAuf);
 
             Nachricht original =
                     nachrichtService.getNachricht(nachrichtId);
@@ -134,34 +192,42 @@ public class NachrichtSendenView extends VerticalLayout
                 return;
             }
 
-            empfaenger.setValue(original.getAbsender());
+            empfaenger.setValue(
+                    original.getAbsender()
+            );
 
             String originalTitel = original.getTitel();
 
             if (originalTitel.startsWith("Re:")) {
                 betreff.setValue(originalTitel);
             } else {
-                betreff.setValue("Re: " + originalTitel);
+                betreff.setValue(
+                        getText(
+                                "nachricht.reply.subject",
+                                originalTitel
+                        )
+                );
             }
 
-            String zitierterInhalt =
-                    "\n\n--- Ursprüngliche Nachricht ---\n"
-                    + "Von: "
-                    + original.getAbsender().getName()
-                    + "\n"
-                    + "Titel: "
-                    + original.getTitel()
-                    + "\n\n"
-                    + original.getInhalt();
+            String zitierterInhalt = getText(
+                    "nachricht.reply.content",
+                    original.getAbsender().getName(),
+                    original.getTitel(),
+                    original.getInhalt()
+            );
 
             nachricht.setValue(zitierterInhalt);
 
         } catch (NumberFormatException ignored) {
+            // Ungültige Nachrichten-ID wird ignoriert.
         }
     }
 
+
     private VerticalLayout erstelleNachrichtenPanel() {
+
         VerticalLayout panel = new VerticalLayout();
+
         panel.setSizeFull();
         panel.setPadding(true);
         panel.setSpacing(true);
@@ -176,25 +242,50 @@ public class NachrichtSendenView extends VerticalLayout
         HorizontalLayout aktionen =
                 erstelleSendenbereich();
 
-        panel.add(formular, anhangbereich, aktionen);
+        panel.add(
+                formular,
+                anhangbereich,
+                aktionen
+        );
+
         panel.expand(formular);
 
         return panel;
     }
 
     private VerticalLayout erstelleNachrichtenbereich() {
+
         VerticalLayout layout = new VerticalLayout();
+
         layout.setPadding(false);
         layout.setSpacing(true);
         layout.setWidthFull();
 
-        empfaenger.setItems(benutzerService.getBenutzer());
-        empfaenger.setItemLabelGenerator(Benutzer::getName);
+        empfaenger.setLabel(
+                getText("nachricht.field.recipient")
+        );
+
+        empfaenger.setItems(
+                benutzerService.getBenutzer()
+        );
+
+        empfaenger.setItemLabelGenerator(
+                Benutzer::getName
+        );
+
         empfaenger.setWidthFull();
         empfaenger.addClassName("nachricht-field");
 
+        betreff.setLabel(
+                getText("nachricht.field.subject")
+        );
+
         betreff.setWidthFull();
         betreff.addClassName("nachricht-field");
+
+        nachricht.setLabel(
+                getText("nachricht.field.message")
+        );
 
         nachricht.setWidthFull();
         nachricht.setHeight("250px");
@@ -210,16 +301,24 @@ public class NachrichtSendenView extends VerticalLayout
     }
 
     private VerticalLayout erstelleAnhangbereich() {
+
         VerticalLayout layout = new VerticalLayout();
+
         layout.setPadding(false);
         layout.setSpacing(true);
         layout.setWidthFull();
 
-        Span anhangLabel = new Span("Anhänge");
-        anhangLabel.addClassName("nachricht-attachment-title");
+        Span anhangLabel = new Span(
+                getText("nachricht.attachments.title")
+        );
+
+        anhangLabel.addClassName(
+                "nachricht-attachment-title"
+        );
 
         Upload upload = new Upload(
                 UploadHandler.inMemory((metadata, bytes) -> {
+
                     Anhang anhang = new Anhang(
                             metadata.fileName(),
                             metadata.contentType(),
@@ -227,7 +326,10 @@ public class NachrichtSendenView extends VerticalLayout
                     );
 
                     anhaenge.add(anhang);
-                    anhangListe.add(erstelleAnhang(anhang));
+
+                    anhangListe.add(
+                            erstelleAnhang(anhang)
+                    );
                 })
         );
 
@@ -238,7 +340,10 @@ public class NachrichtSendenView extends VerticalLayout
         anhangListe.setPadding(false);
         anhangListe.setSpacing(true);
         anhangListe.setWidthFull();
-        anhangListe.addClassName("nachricht-attachments");
+
+        anhangListe.addClassName(
+                "nachricht-attachments"
+        );
 
         layout.add(
                 anhangLabel,
@@ -250,20 +355,32 @@ public class NachrichtSendenView extends VerticalLayout
     }
 
     private Component erstelleAnhang(Anhang anhang) {
+
         HorizontalLayout layout = new HorizontalLayout();
+
         layout.setWidthFull();
         layout.setPadding(false);
         layout.setSpacing(true);
-        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
         layout.addClassName("nachricht-attachment");
 
         Span icon = new Span();
+
         icon.addClassName("material-symbols-rounded");
         icon.setText("attach_file");
         icon.addClassName("nachricht-attachment-icon");
 
-        Span dateiname = new Span(anhang.getDateiname());
-        dateiname.addClassName("nachricht-attachment-name");
+        Span dateiname = new Span(
+                anhang.getDateiname()
+        );
+
+        dateiname.addClassName(
+                "nachricht-attachment-name"
+        );
 
         Button loeschen = new Button(
                 VaadinIcon.TRASH.create(),
@@ -273,62 +390,86 @@ public class NachrichtSendenView extends VerticalLayout
                 }
         );
 
-        loeschen.addClassName("nachricht-attachment-delete");
-        loeschen.setTooltipText("Anhang entfernen");
+        loeschen.addClassName(
+                "nachricht-attachment-delete"
+        );
 
-        layout.add(icon, dateiname, loeschen);
+        loeschen.setTooltipText(
+                getText("nachricht.attachments.remove")
+        );
+
+        layout.add(
+                icon,
+                dateiname,
+                loeschen
+        );
+
         layout.expand(dateiname);
 
         return layout;
     }
 
     private HorizontalLayout erstelleSendenbereich() {
+
         HorizontalLayout layout = new HorizontalLayout();
+
         layout.setWidthFull();
         layout.setPadding(false);
         layout.setSpacing(true);
+
         layout.setJustifyContentMode(
                 FlexComponent.JustifyContentMode.END
         );
+
         layout.addClassName("nachricht-actions");
 
         Button abbrechen = new Button(
-                "Abbrechen",
+                getText("nachricht.button.cancel"),
                 VaadinIcon.CLOSE.create()
         );
 
         abbrechen.addThemeVariants(
                 ButtonVariant.LUMO_TERTIARY
         );
-        abbrechen.addClassName("nachricht-cancel-button");
+
+        abbrechen.addClassName(
+                "nachricht-cancel-button"
+        );
 
         abbrechen.addClickListener(event ->
-                getUI().ifPresent(ui ->
-                        ui.navigate(PostfachView.class)
+                getUI().ifPresent(
+                        ui -> ui.navigate(PostfachView.class)
                 )
         );
 
         Button senden = new Button(
-                "Senden",
+                getText("nachricht.button.send"),
                 VaadinIcon.PAPERPLANE.create()
         );
 
         senden.addThemeVariants(
                 ButtonVariant.PRIMARY
         );
-        senden.addClassName("nachricht-send-button");
+
+        senden.addClassName(
+                "nachricht-send-button"
+        );
 
         senden.addClickListener(event ->
                 sendeNachricht()
         );
 
-        layout.add(abbrechen, senden);
+        layout.add(
+                abbrechen,
+                senden
+        );
 
         return layout;
     }
 
+
     private void sendeNachricht() {
-    	
+
         Benutzer absender =
                 aktuellerBenutzerService.getAktuellerBenutzer();
 
@@ -336,35 +477,46 @@ public class NachrichtSendenView extends VerticalLayout
                 empfaenger.getValue();
 
         if (absender == null) {
-            getUI().ifPresent(ui ->
-                    ui.getPage().executeJs(
-                            "alert('Kein Benutzer ist eingeloggt.')"
-                    )
+
+            Notification.show(
+                    getText("nachricht.error.not_logged_in"),
+                    3000,
+                    Notification.Position.MIDDLE
             );
+
             return;
         }
 
         if (empfaengerBenutzer == null) {
+
             empfaenger.setInvalid(true);
+
             empfaenger.setErrorMessage(
-                    "Bitte wählen Sie einen Empfänger aus."
+                    getText("nachricht.validation.recipient")
             );
+
             return;
         }
 
         if (betreff.getValue().trim().isEmpty()) {
+
             betreff.setInvalid(true);
+
             betreff.setErrorMessage(
-                    "Bitte geben Sie einen Titel ein."
+                    getText("nachricht.validation.subject")
             );
+
             return;
         }
 
         if (nachricht.getValue().trim().isEmpty()) {
+
             nachricht.setInvalid(true);
+
             nachricht.setErrorMessage(
-                    "Bitte geben Sie eine Nachricht ein."
+                    getText("nachricht.validation.message")
             );
+
             return;
         }
 
@@ -373,79 +525,132 @@ public class NachrichtSendenView extends VerticalLayout
         nachricht.setInvalid(false);
 
         try {
-        	// Zum Testen: if (true) { throw new RuntimeException("Datenbank-Verbindung abgebrochen!");}
-        	Nachricht gespeicherteNachricht =
+
+            Nachricht gespeicherteNachricht =
                     nachrichtService.speichern(
                             absender,
                             empfaengerBenutzer,
                             betreff.getValue().trim(),
                             nachricht.getValue()
-                    ); 
+                    );
 
             for (Anhang anhang : anhaenge) {
-                anhang.setNachricht(gespeicherteNachricht);
+
+                anhang.setNachricht(
+                        gespeicherteNachricht
+                );
+
                 anhangRepository.save(anhang);
             }
-            
-            Notification successNotification = createSubmitSuccess();
+
+            Notification successNotification =
+                    createSubmitSuccess();
+
             successNotification.open();
 
             betreff.clear();
             nachricht.clear();
             empfaenger.clear();
+
             anhaenge.clear();
             anhangListe.removeAll();
-            
-            UI.getCurrent().getPage().executeJs("setTimeout(function() { window.location.href = 'postfach'; }, 2000);");
-            
+
+            UI.getCurrent().getPage().executeJs(
+                    "setTimeout(function() { window.location.href = 'postfach'; }, 2000);"
+            );
+
         } catch (Exception e) {
-        	Notification errorNotification = createReportError();
-        	errorNotification.open();
-        	
-        	e.printStackTrace();
-        }  
+
+            Notification errorNotification =
+                    createReportError();
+
+            errorNotification.open();
+
+            e.printStackTrace();
+        }
     }
-    
+
     public Notification createSubmitSuccess() {
-        Notification notification = new Notification();
-        notification.addThemeVariants(NotificationVariant.SUCCESS);
-        
+
+        Notification notification =
+                new Notification();
+
+        notification.addThemeVariants(
+                NotificationVariant.SUCCESS
+        );
+
         Icon icon = VaadinIcon.CHECK_CIRCLE.create();
-        HorizontalLayout layout = new HorizontalLayout(icon,
-                new Text("Deine Nachricht wurde erfolgreich gesendet."));
-        
+
+        HorizontalLayout layout =
+                new HorizontalLayout(
+                        icon,
+                        new Text(
+                                getText(
+                                        "nachricht.notification.success"
+                                )
+                        )
+                );
+
         Button closeBtn = createCloseBtn();
-        closeBtn.addClickListener(e -> notification.close());
-        
+
+        closeBtn.addClickListener(
+                e -> notification.close()
+        );
+
         layout.addToEnd(closeBtn);
-        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
 
         notification.add(layout);
 
         return notification;
     }
-    
+
     public Notification createReportError() {
-        Notification notification = new Notification();
-        notification.addThemeVariants(NotificationVariant.ERROR);
+
+        Notification notification =
+                new Notification();
+
+        notification.addThemeVariants(
+                NotificationVariant.ERROR
+        );
 
         Icon icon = VaadinIcon.WARNING.create();
-        HorizontalLayout layout = new HorizontalLayout(icon,
-                new Text("Die Nachricht konnte wegen eines Fehlers nicht gesendet werden."));
-        
+
+        HorizontalLayout layout =
+                new HorizontalLayout(
+                        icon,
+                        new Text(
+                                getText(
+                                        "nachricht.notification.error"
+                                )
+                        )
+                );
+
         Button closeBtn = createCloseBtn();
-        closeBtn.addClickListener(e -> notification.close());
+
+        closeBtn.addClickListener(
+                e -> notification.close()
+        );
 
         layout.addToEnd(closeBtn);
-        layout.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        layout.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
 
         notification.add(layout);
 
         return notification;
     }
-    
+
     public static Button createCloseBtn() {
-        Button closeBtn = new Button(VaadinIcon.CLOSE.create());
+
+        Button closeBtn = new Button(
+                VaadinIcon.CLOSE.create()
+        );
 
         return closeBtn;
     }

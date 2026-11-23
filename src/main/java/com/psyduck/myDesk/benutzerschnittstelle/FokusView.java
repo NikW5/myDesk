@@ -1,9 +1,13 @@
+
 package com.psyduck.myDesk.benutzerschnittstelle;
 
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.context.MessageSource;
 
 import com.psyduck.myDesk.benutzerschnittstelle.layout.MainLayout;
 import com.vaadin.flow.component.DetachEvent;
@@ -17,7 +21,7 @@ import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
- 
+
 import jakarta.annotation.security.PermitAll;
 
 //@Route(value = "fokus", layout = MainLayout.class)
@@ -28,38 +32,29 @@ public class FokusView extends VerticalLayout {
     private static final int KURZE_PAUSE_DAUER = 5 * 60;
     private static final int LANGE_PAUSE_DAUER = 15 * 60;
 
+    private final MessageSource messageSource;
+
     private int verbleibendeSekunden = FOKUS_DAUER;
     private int pomodoroAnzahl = 0;
+
+    private String aktuellerModus = "fokus.mode.focus";
 
     private Span timerAnzeige;
     private Span modusAnzeige;
     private Span pomodoroAnzeige;
 
     private Button startPauseButton;
-    private Button resetButton;
 
     private ScheduledExecutorService timerService;
     private ScheduledFuture<?> timerTask;
 
-    public FokusView() {
-        setSizeFull();
-        setPadding(true);
-        setSpacing(true);
+    public FokusView(MessageSource messageSource) {
 
-        H2 titel = new H2("Fokus");
+        this.messageSource = messageSource;
 
-        Span untertitel = new Span(
-                "Arbeite konzentriert und mache regelmäßige Pausen."
-        );
+        initialisiereLayout();
 
-        VerticalLayout kopf = new VerticalLayout(
-                titel,
-                untertitel
-        );
-
-        kopf.setPadding(false);
-        kopf.setSpacing(false);
-
+        VerticalLayout kopf = erstelleKopfbereich();
         Card timerKarte = erstelleTimerKarte();
         HorizontalLayout modusButtons = erstelleModusButtons();
 
@@ -69,29 +64,60 @@ public class FokusView extends VerticalLayout {
         expand(timerKarte);
     }
 
-    private Card erstelleTimerKarte() {
-        modusAnzeige = new Span("Fokus");
+    private void initialisiereLayout() {
 
-        modusAnzeige.getStyle()
-                .set("font-size", "var(--lumo-font-size-l)")
-                .set("font-weight", "600")
-                .set("color", "var(--lumo-primary-color)");
+        setSizeFull();
+        setPadding(true);
+        setSpacing(true);
+
+        addClassName("fokus-background");
+    }
+
+    private VerticalLayout erstelleKopfbereich() {
+
+        H2 titel = new H2(getText("fokus.title"));
+        titel.addClassName("fokus-title");
+
+        Span untertitel = new Span(
+                getText("fokus.subtitle")
+        );
+
+        untertitel.addClassName("fokus-subtitle");
+
+        VerticalLayout kopf = new VerticalLayout(
+                titel,
+                untertitel
+        );
+
+        kopf.setPadding(false);
+        kopf.setSpacing(false);
+        kopf.setAlignItems(FlexComponent.Alignment.CENTER);
+
+        return kopf;
+    }
+
+    private Card erstelleTimerKarte() {
+
+        modusAnzeige = new Span(
+                getText(aktuellerModus)
+        );
+
+        modusAnzeige.addClassName("fokus-mode");
 
         timerAnzeige = new Span(
                 formatiereZeit(verbleibendeSekunden)
         );
 
-        timerAnzeige.getStyle()
-                .set("font-size", "72px")
-                .set("font-weight", "600");
+        timerAnzeige.addClassName("fokus-timer");
 
-        pomodoroAnzeige = new Span("Pomodoros: 0");
+        pomodoroAnzeige = new Span(
+                getPomodoroText()
+        );
 
-        pomodoroAnzeige.getStyle()
-                .set("color", "var(--lumo-secondary-text-color)");
+        pomodoroAnzeige.addClassName("fokus-pomodoro");
 
         startPauseButton = new Button(
-                "Start",
+                getText("fokus.start"),
                 VaadinIcon.PLAY.create()
         );
 
@@ -99,7 +125,10 @@ public class FokusView extends VerticalLayout {
                 ButtonVariant.LUMO_PRIMARY
         );
 
+        startPauseButton.addClassName("fokus-start-button");
+
         startPauseButton.addClickListener(event -> {
+
             if (timerLaeuft()) {
                 pausiereTimer();
             } else {
@@ -107,10 +136,12 @@ public class FokusView extends VerticalLayout {
             }
         });
 
-        resetButton = new Button(
-                "Zurücksetzen",
+        Button resetButton = new Button(
+                getText("fokus.reset"),
                 VaadinIcon.REFRESH.create()
         );
+
+        resetButton.addClassName("fokus-reset-button");
 
         resetButton.addClickListener(
                 event -> setzeTimerZurueck()
@@ -122,6 +153,9 @@ public class FokusView extends VerticalLayout {
         );
 
         buttons.setSpacing(true);
+        buttons.setJustifyContentMode(
+                FlexComponent.JustifyContentMode.CENTER
+        );
 
         VerticalLayout inhalt = new VerticalLayout(
                 modusAnzeige,
@@ -139,36 +173,47 @@ public class FokusView extends VerticalLayout {
         );
 
         inhalt.setSpacing(true);
+        inhalt.setPadding(true);
+        inhalt.setSizeFull();
 
         Card karte = new Card();
         karte.add(inhalt);
         karte.setWidth("500px");
         karte.setMinHeight("400px");
+        karte.addClassName("fokus-card");
 
         return karte;
     }
 
     private HorizontalLayout erstelleModusButtons() {
+
         Button fokus = new Button(
-                "Fokus",
-                event -> wechsleModus("Fokus", FOKUS_DAUER)
+                getText("fokus.mode.focus"),
+                event -> wechsleModus(
+                        "fokus.mode.focus",
+                        FOKUS_DAUER
+                )
         );
 
         Button kurzePause = new Button(
-                "Kurze Pause",
+                getText("fokus.mode.short"),
                 event -> wechsleModus(
-                        "Kurze Pause",
+                        "fokus.mode.short",
                         KURZE_PAUSE_DAUER
                 )
         );
 
         Button langePause = new Button(
-                "Lange Pause",
+                getText("fokus.mode.long"),
                 event -> wechsleModus(
-                        "Lange Pause",
+                        "fokus.mode.long",
                         LANGE_PAUSE_DAUER
                 )
         );
+
+        fokus.addClassName("fokus-mode-button");
+        kurzePause.addClassName("fokus-mode-button");
+        langePause.addClassName("fokus-mode-button");
 
         HorizontalLayout layout = new HorizontalLayout(
                 fokus,
@@ -180,26 +225,43 @@ public class FokusView extends VerticalLayout {
                 FlexComponent.JustifyContentMode.CENTER
         );
 
+        layout.setAlignItems(
+                FlexComponent.Alignment.CENTER
+        );
+
+        layout.getStyle().set("flex-wrap", "wrap");
+
         return layout;
     }
 
     private void starteTimer() {
-        if (timerLaeuft()) {
+
+        if (timerLaeuft() || verbleibendeSekunden <= 0) {
             return;
         }
 
         if (timerService == null || timerService.isShutdown()) {
+
             timerService =
                     Executors.newSingleThreadScheduledExecutor();
         }
 
-        startPauseButton.setText("Pause");
-        startPauseButton.setIcon(VaadinIcon.PAUSE.create());
+        startPauseButton.setText(
+                getText("fokus.pause")
+        );
+
+        startPauseButton.setIcon(
+                VaadinIcon.PAUSE.create()
+        );
 
         timerTask = timerService.scheduleAtFixedRate(
+
                 () -> getUI().ifPresent(ui ->
+
                         ui.access(() -> {
+
                             if (verbleibendeSekunden > 0) {
+
                                 verbleibendeSekunden--;
 
                                 timerAnzeige.setText(
@@ -207,11 +269,22 @@ public class FokusView extends VerticalLayout {
                                                 verbleibendeSekunden
                                         )
                                 );
+
                             } else {
+
                                 pausiereTimer();
+
+                                if ("fokus.mode.focus".equals(aktuellerModus)) {
+                                    zaehlePomodoro();
+                                }
+
+                                getUI().ifPresent(ui2 ->
+                                        ui2.push()
+                                );
                             }
                         })
                 ),
+
                 1,
                 1,
                 TimeUnit.SECONDS
@@ -219,42 +292,62 @@ public class FokusView extends VerticalLayout {
     }
 
     private void pausiereTimer() {
+
         if (timerTask != null) {
+
             timerTask.cancel(false);
             timerTask = null;
         }
 
-        startPauseButton.setText("Start");
-        startPauseButton.setIcon(VaadinIcon.PLAY.create());
-    }
+        startPauseButton.setText(
+                getText("fokus.start")
+        );
 
-    private void setzeTimerZurueck() {
-        pausiereTimer();
-
-        verbleibendeSekunden = FOKUS_DAUER;
-        modusAnzeige.setText("Fokus");
-        timerAnzeige.setText(
-                formatiereZeit(verbleibendeSekunden)
+        startPauseButton.setIcon(
+                VaadinIcon.PLAY.create()
         );
     }
 
+    private void setzeTimerZurueck() {
+
+        pausiereTimer();
+
+        verbleibendeSekunden = FOKUS_DAUER;
+        aktuellerModus = "fokus.mode.focus";
+
+        aktualisiereTimerAnzeige();
+    }
+
     private void wechsleModus(String modus, int dauer) {
+
         pausiereTimer();
 
         verbleibendeSekunden = dauer;
-        modusAnzeige.setText(modus);
+        aktuellerModus = modus;
+
+        aktualisiereTimerAnzeige();
+    }
+
+    private void aktualisiereTimerAnzeige() {
+
+        modusAnzeige.setText(
+                getText(aktuellerModus)
+        );
+
         timerAnzeige.setText(
                 formatiereZeit(verbleibendeSekunden)
         );
     }
 
     private boolean timerLaeuft() {
+
         return timerTask != null
                 && !timerTask.isCancelled()
                 && !timerTask.isDone();
     }
 
     private String formatiereZeit(int sekunden) {
+
         int minuten = sekunden / 60;
         int restSekunden = sekunden % 60;
 
@@ -266,19 +359,45 @@ public class FokusView extends VerticalLayout {
     }
 
     private void zaehlePomodoro() {
+
         pomodoroAnzahl++;
 
         pomodoroAnzeige.setText(
-                "Pomodoros: " + pomodoroAnzahl
+                getPomodoroText()
+        );
+    }
+
+    private String getPomodoroText() {
+
+        return getText("fokus.pomodoros", pomodoroAnzahl);
+    }
+
+    private String getText(String schluessel) {
+
+        return messageSource.getMessage(
+                schluessel,
+                null,
+                Locale.GERMAN
+        );
+    }
+
+    private String getText(String schluessel, Object... argumente) {
+
+        return messageSource.getMessage(
+                schluessel,
+                argumente,
+                Locale.GERMAN
         );
     }
 
     @Override
     protected void onDetach(DetachEvent event) {
+
         pausiereTimer();
 
         if (timerService != null) {
             timerService.shutdownNow();
+            timerService = null;
         }
 
         super.onDetach(event);
