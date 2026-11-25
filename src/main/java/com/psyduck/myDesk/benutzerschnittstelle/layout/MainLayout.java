@@ -9,6 +9,7 @@ import com.psyduck.myDesk.benutzerschnittstelle.ProfilView;
 import com.psyduck.myDesk.benutzerschnittstelle.ToDoView;
 import com.psyduck.myDesk.persistenz.Benutzer;
 import com.psyduck.myDesk.security.AktuellerBenutzerService;
+import com.psyduck.myDesk.persistenz.MessageService;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -27,11 +28,7 @@ import com.vaadin.flow.router.AfterNavigationEvent;
 import com.vaadin.flow.router.AfterNavigationObserver;
 import com.vaadin.flow.router.RouterLink;
 
-import org.springframework.context.MessageSource;
-
 import jakarta.annotation.security.PermitAll;
-
-import java.util.Locale;
 
 @StyleSheet("styles.css")
 @PermitAll
@@ -39,35 +36,22 @@ public class MainLayout extends AppLayout
         implements AfterNavigationObserver {
 
     private final AktuellerBenutzerService aktuellerBenutzerService;
-    private final MessageSource messageSource;
+    private final MessageService messageService;
 
     private NachObenButton nachObenButton;
 
     public MainLayout(
             AktuellerBenutzerService aktuellerBenutzerService,
-            MessageSource messageSource) {
+            MessageService messageService) {
 
         this.aktuellerBenutzerService =
                 aktuellerBenutzerService;
 
-        this.messageSource = messageSource;
+        this.messageService = messageService;
 
         erstelleHeader();
         erstelleNavigation();
         erstelleNachObenButton();
-    }
-
-    /**
-     * Lädt einen Text aus messages.properties.
-     * Falls kein Eintrag existiert, wird der Schlüssel zurückgegeben.
-     */
-    private String getText(String schluessel) {
-        return messageSource.getMessage(
-                schluessel,
-                null,
-                schluessel,
-                Locale.GERMAN
-        );
     }
 
     private void erstelleHeader() {
@@ -98,7 +82,7 @@ public class MainLayout extends AppLayout
         benutzerBereich.setSpacing(true);
 
         Button abmelden = new Button(
-                getText("mainlayout.button.logout"),
+                messageService.get("mainlayout.button.logout"),
                 VaadinIcon.SIGN_OUT.create(),
                 event -> aktuellerBenutzerService.abmelden()
         );
@@ -141,50 +125,42 @@ public class MainLayout extends AppLayout
         navigation.setWidthFull();
 
         RouterLink dashboard = erstelleLink(
-                getText("mainlayout.navigation.dashboard"),
+                messageService.get("mainlayout.navigation.dashboard"),
                 "home",
                 DashboardView.class
         );
 
         RouterLink postfach = erstelleLink(
-                getText("mainlayout.navigation.postfach"),
+                messageService.get("mainlayout.navigation.postfach"),
                 "mail",
                 PostfachView.class
         );
 
         RouterLink kalender = erstelleLink(
-                getText("mainlayout.navigation.kalender"),
+                messageService.get("mainlayout.navigation.kalender"),
                 "calendar_month",
                 KalenderView.class
         );
 
         RouterLink todo = erstelleLink(
-                getText("mainlayout.navigation.todo"),
+                messageService.get("mainlayout.navigation.todo"),
                 "check_box",
                 ToDoView.class
         );
 
-		//      RouterLink fokus = erstelleLink(
-		//      "Fokus",
-		//      "timer",
-		//      FokusView.class
-		//);
-		
-		RouterLink profil = erstelleLink(
-		      getText("mainlayout.navigation.profil"),
-		      "person",
-		      ProfilView.class
-		);
-		
-		navigation.add(
-		      dashboard,
-		      postfach,
-		//      chat,
-		      kalender,
-		      todo,
-		//      fokus,
-		      profil
-		);
+        RouterLink profil = erstelleLink(
+                messageService.get("mainlayout.navigation.profil"),
+                "person",
+                ProfilView.class
+        );
+
+        navigation.add(
+                dashboard,
+                postfach,
+                kalender,
+                todo,
+                profil
+        );
 
         addToDrawer(navigation);
     }

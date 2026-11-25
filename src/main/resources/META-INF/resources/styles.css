@@ -72,7 +72,7 @@ vaadin-app-layout:not([has-drawer]) {
     cursor: pointer;
     --vaadin-card-border-radius: 16px;
     --vaadin-card-title-line-height: 3;
-    --vaadin-card-subtitle-font-size: 3rem;
+    --vaadin-card-subtitle-font-size: 1rem;
     --vaadin-card-subtitle-line-height: 1;
     background-size: contain;
     background-position: bottom;
