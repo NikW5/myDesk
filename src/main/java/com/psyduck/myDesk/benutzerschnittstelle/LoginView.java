@@ -168,6 +168,7 @@ public class LoginView extends VerticalLayout {
         return messageSource.getMessage(
                 schluessel,
                 null,
+                schluessel,
                 Locale.GERMAN
         );
     }
